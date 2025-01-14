@@ -1,24 +1,35 @@
+import Foundation
 import Loggable
 import OSLog
 
-@available(macOS 11.0, *)
-class Foo {
-  static let logger = Logger(
-    subsystem: "LoggablePlugin",
-    category: "Log"
-  )
-  
-  @Log
-  func bar(value: String, line number: Int) -> Int {
-    return number + 1
+public final class Bar: Loggable, @unchecked Sendable {
+  let logger = Logger(subsystem: "X", category: "X")
+  override public func message(location: String) {
+    logger.info("\(location)")
   }
   
-  init() {
-    print("Initialised")
+  override public init() {
+    super.init()
   }
 }
 
-if #available(macOS 11, *) {
-  let foo = Foo()
-  print(foo.bar(value: "FoobarisWorking", line: 2))
+extension Loggable {
+  public static let bar: Loggable = {
+    Bar()
+  }()
 }
+
+let loggable = Loggable.bar
+@Logged(using: loggable)
+class Foo {
+  func bar(value: Int) -> String {
+    return String(value)
+  }
+  
+  init() {
+    print("initalised")
+  }
+}
+
+let foo = Foo()
+print(foo.bar(value: 2))
