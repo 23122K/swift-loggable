@@ -2,7 +2,9 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
-public struct LogMacro: BodyMacro {
+public struct LogMacro: BodyMacro, BodyMacroBuilder {
+  typealias Body = [CodeBlockItemSyntax]
+  
   public static func expansion(
     of node: AttributeSyntax,
     providingBodyFor declaration: some DeclSyntaxProtocol & WithOptionalCodeBlockSyntax,
@@ -10,44 +12,23 @@ public struct LogMacro: BodyMacro {
   ) throws -> [CodeBlockItemSyntax] {
     guard let location = context.location(of: declaration)?.findable,
           let declaration = declaration.as(FunctionDeclSyntax.self)
-    else { return [] }
+    else { return body() }
     
-    return CodeBlockItemListSyntax {
-      CodeBlockItemSyntax.log(for: node.logger ,location: location)
-      CodeBlockItemSyntax.copy(declaration: declaration.simplified)
+    return body {
+      CodeBlockItemSyntax.copy(declaration)
+      CodeBlockItemSyntax.log(for: node.logger, location: location)
       
       if declaration.isThrowing {
-        CodeBlockItemSyntax.try(
-          do: [
-            CodeBlockItemSyntax.call(declaration),
-            CodeBlockItemSyntax.return
-          ],
-          catch: [
-            CodeBlockItemSyntax.throwError()
-          ]
-        )
+        CodeBlockItemSyntax.try {
+          CodeBlockItemSyntax.call(declaration)
+          CodeBlockItemSyntax.return
+        } catch: {
+          CodeBlockItemSyntax.rethrow
+        }
       } else {
         CodeBlockItemSyntax.call(declaration)
         CodeBlockItemSyntax.return
       }
     }
-    .elements
   }
 }
-
-extension AttributeSyntax {
-  var logger: DeclReferenceExprSyntax {
-    switch self.arguments {
-    case let .argumentList(arguments):
-      guard let expression = MemberAccessExprSyntax(arguments.first?.expression)
-      else { fallthrough }
-      return expression.declName
-      
-    default:
-      return DeclReferenceExprSyntax(
-        baseName: .identifier("default")
-      )
-    }
-  }
-}
-

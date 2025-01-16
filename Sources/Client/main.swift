@@ -8,21 +8,24 @@ public final class Bar: Loggable, @unchecked Sendable {
     logger.info("\(location)")
   }
   
+  public static func build() -> Bar {
+    Bar()
+  }
+  
   override public init() {
     super.init()
   }
 }
 
 extension Loggable {
-  public static let bar: Loggable = {
+  public static func bar() -> Bar {
     Bar()
-  }()
+  }
 }
 
-let loggable = Loggable.bar
-@Logged(using: loggable)
+@Logged
 class Foo {
-  func bar(value: Int) -> String {
+  static func bar(value: Int) -> String {
     return String(value)
   }
   
@@ -30,6 +33,5 @@ class Foo {
     print("initalised")
   }
 }
-
 let foo = Foo()
-print(foo.bar(value: 2))
+print(Foo.bar(value: 2))

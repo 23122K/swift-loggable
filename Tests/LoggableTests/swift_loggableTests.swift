@@ -19,7 +19,7 @@ final class swift_loggableTests: XCTestCase {
         #if canImport(Macros)
         assertMacroExpansion(
             """
-            @Log(using: .default)
+            @Log(using: Loggable.init())
             func bar() {
               print("X")
             }
