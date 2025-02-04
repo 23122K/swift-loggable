@@ -1,7 +1,7 @@
 import SwiftSyntax
 
 extension AttributeSyntax {
-  var logger: ExprSyntax {
+  var loggable: ExprSyntax {
     switch self.arguments {
     case let .argumentList(arguments):
       for argument in arguments {
@@ -38,7 +38,7 @@ extension AttributeSyntax {
   static func copy(_ syntax: AttributeSyntax) -> AttributeSyntax {
     syntax.modify { syntax in
       syntax.attributeName = TypeSyntax(
-        IdentifierTypeSyntax(name: .log)
+        IdentifierTypeSyntax(name: .Log)
       )
       return syntax
     }
@@ -50,7 +50,7 @@ extension AttributeSyntax {
     ExprSyntax(
       MemberAccessExprSyntax(
         base: DeclReferenceExprSyntax(
-          baseName: .loggable
+          baseName: .Loggable
         ),
         period: .periodToken(),
         declName: declName

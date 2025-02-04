@@ -13,29 +13,6 @@ extension CodeBlockItemSyntax {
     self.init(item: .expr(ExprSyntax(expression)))
   }
   
-  static func log(for expression: some ExprSyntaxProtocol, location: String) -> CodeBlockItemSyntax {
-    CodeBlockItemSyntax(
-      FunctionCallExprSyntax(
-        calledExpression: MemberAccessExprSyntax(
-          base: ExprSyntax(expression),
-          period: .periodToken(),
-          name: .identifier("message")
-        ),
-        leftParen: .leftParenToken(),
-        arguments: LabeledExprListSyntax(
-          arrayLiteral: LabeledExprSyntax(
-            label: .location,
-            colon: .colonToken(),
-            expression: StringLiteralExprSyntax(
-              content: location
-            )
-          )
-        ),
-        rightParen: .rightParenToken()
-      )
-    )
-  }
-  
   static let rethrow = CodeBlockItemSyntax(
     ThrowStmtSyntax(
       expression: DeclReferenceExprSyntax(
@@ -77,7 +54,9 @@ extension CodeBlockItemSyntax {
             bindings: PatternBindingListSyntax(
               arrayLiteral: PatternBindingSyntax(
                 pattern: IdentifierPatternSyntax(
-                  identifier: .result
+                  identifier: functionDeclSyntax.signature.isVoid
+                    ? .identifier("_")
+                    : .result
                 ),
                 initializer: functionDeclSyntax.asInitializerClauseSyntax()
               )

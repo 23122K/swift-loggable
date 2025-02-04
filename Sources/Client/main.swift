@@ -2,36 +2,24 @@ import Foundation
 import Loggable
 import OSLog
 
-public final class Bar: Loggable, @unchecked Sendable {
-  let logger = Logger(subsystem: "X", category: "X")
-  override public func message(location: String) {
-    logger.info("\(location)")
-  }
-  
-  public static func build() -> Bar {
-    Bar()
-  }
-  
-  override public init() {
-    super.init()
-  }
-}
-
-extension Loggable {
-  public static func bar() -> Bar {
-    Bar()
-  }
-}
-
 @Logged
 class Foo {
-  static func bar(value: Int) -> String {
-    return String(value)
+  struct Person {
+    var age = 12
   }
   
-  init() {
-    print("initalised")
+  static func bar(value: Int) -> Int {
+    return value * 2
+  }
+
+  func someThrowingFunc() throws {
+    throw NSError(domain: "foo.domain.com", code: 1)
   }
 }
+
 let foo = Foo()
-print(Foo.bar(value: 2))
+do {
+  try foo.someThrowingFunc()
+} catch { }
+
+Foo.bar(value: 1)

@@ -21,7 +21,19 @@ struct CodeBlockItemSyntaxBuilder {
     components.flatMap { $0 }
   }
   
-  func buildOptional(
+  static func buildExpression(
+    _ expression: [CodeBlockItemSyntax]
+  ) -> [CodeBlockItemSyntax] {
+    expression
+  }
+  
+  static func buildExpression(
+    _ expression: CodeBlockItemSyntax
+  ) -> [CodeBlockItemSyntax] {
+    [expression]
+  }
+  
+  static func buildOptional(
     _ component: [CodeBlockItemSyntax]?
   ) -> [CodeBlockItemSyntax] {
     component ?? []
@@ -37,17 +49,5 @@ struct CodeBlockItemSyntaxBuilder {
     second component: [CodeBlockItemSyntax]
   ) -> [CodeBlockItemSyntax] {
     component
-  }
-  
-  static func buildExpression(
-    _ expression: CodeBlockItemSyntax
-  ) -> [CodeBlockItemSyntax] {
-    [expression]
-  }
-  
-  static func buildArray(
-    _ components: [[CodeBlockItemSyntax]]
-  ) -> [CodeBlockItemSyntax] {
-    components.flatMap { $0 }
   }
 }

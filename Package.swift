@@ -19,19 +19,28 @@ let package = Package(
     ),
   ],
   dependencies: [
-    .package(url: "https://github.com/swiftlang/swift-syntax.git", from: "600.0.0-latest"),
+    .package(
+      url: "https://github.com/swiftlang/swift-syntax.git",
+      from: "600.0.0-latest"
+    ),
   ],
   targets: [
     .macro(
-      name: "Macros",
+      name: "LoggableMacro",
       dependencies: [
-        .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
-        .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
+        .product(
+          name: "SwiftSyntaxMacros",
+          package: "swift-syntax"
+        ),
+        .product(
+          name: "SwiftCompilerPlugin",
+          package: "swift-syntax"
+        )
       ]
     ),
     .target(
       name: "Loggable",
-      dependencies: ["Macros"]
+      dependencies: ["LoggableMacro"]
     ),
     .executableTarget(
       name: "Client",
@@ -40,8 +49,11 @@ let package = Package(
     .testTarget(
       name: "LoggableTests",
       dependencies: [
-        "Macros",
-        .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
+        "LoggableMacro",
+        .product(
+          name: "SwiftSyntaxMacrosTestSupport",
+          package: "swift-syntax"
+        )
       ]
     ),
   ]

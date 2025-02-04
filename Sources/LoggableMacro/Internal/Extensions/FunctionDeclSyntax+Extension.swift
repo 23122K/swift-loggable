@@ -14,8 +14,11 @@ extension FunctionDeclSyntax {
     self.signature.parameterClause.parameters
   }
   
-  var asDeclSyntax: DeclSyntax {
-    DeclSyntax(self)
+  var calee: String {
+    var declaration = self
+    declaration.attributes = []
+    declaration.body = nil
+    return declaration.trimmedDescription
   }
   
   var isAsync: Bool {
@@ -24,6 +27,10 @@ extension FunctionDeclSyntax {
   
   var isThrowing: Bool {
     self.signature.effectSpecifiers?.throwsClause != nil
+  }
+  
+  var hasParameters: Bool {
+    self.signature.parameterClause.parameters.isEmpty == false
   }
   
   func asInitializerClauseSyntax() -> InitializerClauseSyntax {

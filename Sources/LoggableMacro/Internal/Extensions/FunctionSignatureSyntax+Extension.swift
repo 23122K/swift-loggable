@@ -7,4 +7,8 @@ extension FunctionSignatureSyntax {
       return signature
     }
   }
+  
+  var isVoid: Bool {
+    self.returnClause == nil
+  }
 }
