@@ -5,43 +5,47 @@ import CompilerPluginSupport
 let package = Package(
   name: "swift-loggable",
   platforms: [
-    .macOS(.v10_15),
+    .macOS(.v14),
     .iOS(.v18)
   ],
   products: [
     .library(
       name: "Loggable",
       targets: ["Loggable"]
-    ),
-    .executable(
-      name: "Client",
-      targets: ["Client"]
-    ),
+    )
   ],
   dependencies: [
-    .package(url: "https://github.com/swiftlang/swift-syntax.git", from: "600.0.0-latest"),
+    .package(
+      url: "https://github.com/swiftlang/swift-syntax.git",
+      from: "600.0.0-latest"
+    ),
   ],
   targets: [
     .macro(
-      name: "Macros",
+      name: "LoggableMacro",
       dependencies: [
-        .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
-        .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
+        .product(
+          name: "SwiftSyntaxMacros",
+          package: "swift-syntax"
+        ),
+        .product(
+          name: "SwiftCompilerPlugin",
+          package: "swift-syntax"
+        )
       ]
     ),
     .target(
       name: "Loggable",
-      dependencies: ["Macros"]
-    ),
-    .executableTarget(
-      name: "Client",
-      dependencies: ["Loggable"]
+      dependencies: ["LoggableMacro"]
     ),
     .testTarget(
       name: "LoggableTests",
       dependencies: [
-        "Macros",
-        .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
+        "LoggableMacro",
+        .product(
+          name: "SwiftSyntaxMacrosTestSupport",
+          package: "swift-syntax"
+        )
       ]
     ),
   ]

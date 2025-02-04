@@ -8,7 +8,9 @@ import XCTest
 import Macros
 
 let testMacros: [String: Macro.Type] = [
-    "Log": LogMacro.self
+  "Log": LogMacro.self,
+  "Logged": LoggedMacro.self,
+  "Omit": OmitMacro.self
 ]
 #endif
 
@@ -17,20 +19,14 @@ final class swift_loggableTests: XCTestCase {
         #if canImport(Macros)
         assertMacroExpansion(
             """
-            class Foo {
-              static let logger = Logger(subsystem: "LoggablePlugin", category: "Log")
-              
-              @Log func bar(value: String, line number: Int = #line) -> Int {
-                let result = bar(value: value, line: line)
-              }
-              
-              init() {
-                print("Initialised")
-              }
+            @Log(using: Loggable.init())
+            func bar() {
+              print("X")
             }
             """,
             expandedSource: """
-            (a + b, "a + b")
+            struct Foo {
+            }
             """,
             macros: testMacros
         )
