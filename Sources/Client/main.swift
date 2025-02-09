@@ -3,7 +3,7 @@ import Loggable
 import OSLog
 import LocalAuthentication
 
-//@Logged
+@Logged
 class Foo<E: Error> {
   struct Person {
     var age = 12
@@ -19,6 +19,12 @@ class Foo<E: Error> {
     return value * 2
   }
   
+  @Log
+  func throwing() throws {
+    throw NSError(domain: "foo.domain", code: .zero)
+    print("XD")
+  }
+  
   func genericParameter(error: E) throws {
     throw error
   }
@@ -31,8 +37,7 @@ class Foo<E: Error> {
 let foo = Foo<NSError>()
 let x: () -> Int = { 2 }
 var y = 2
-foo.baz(value: &y)
-foo.bar(1)
-foo.bar(x())
-foo.bar( { 3 }() )
-
+foo.bar(2)
+do {
+  try foo.throwing()
+} catch { }

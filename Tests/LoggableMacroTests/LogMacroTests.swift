@@ -22,10 +22,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func foo() {
-        func _foo() {
-          print("Foo")
-        }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func foo()")
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func foo()")
       }
       """
     }
@@ -42,10 +39,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func foo() {
-        func _foo() {
-          print("Foo")
-        }
-        CustomLogger().log(location: "TestModule/Test.swift:1:1", of: "func foo()")
+        CustomLogger().log(at: "TestModule/Test.swift:1:1", of: "func foo()")
       }
       """
     }
@@ -62,10 +56,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func foo() {
-        func _foo() {
-          print("Foo")
-        }
-        Loggable.custom.log(location: "TestModule/Test.swift:1:1", of: "func foo()")
+        Loggable.custom.log(at: "TestModule/Test.swift:1:1", of: "func foo()")
       }
       """
     }
@@ -85,9 +76,8 @@ final class LogMacroTests: XCTestCase {
         func _foo() -> String {
           return "Foo"
         }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func foo() -> String")
         let result = _foo()
-        Loggable.default.log(result: result)
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func foo() -> String", result: result)
         return result
       }
       """
@@ -108,9 +98,8 @@ final class LogMacroTests: XCTestCase {
         func _foo(bar: String) -> String {
           print("Foo: \(bar)")
         }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func foo(bar: String) -> String")
         let result = _foo(bar: bar)
-        Loggable.default.log(result: result)
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func foo(bar: String) -> String", result: result)
         return result
       }
       """#
@@ -131,9 +120,8 @@ final class LogMacroTests: XCTestCase {
         func _foo(bar: String) -> String {
           return "Foo: \(bar)"
         }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func foo(bar: String) -> String")
         let result = _foo(bar: bar)
-        Loggable.default.log(result: result)
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func foo(bar: String) -> String", result: result)
         return result
       }
       """#
@@ -154,9 +142,8 @@ final class LogMacroTests: XCTestCase {
         func _foo(bar: String, biz: Int) -> (String, Int) {
           return ("Bar: \(bar)", biz * 2)
         }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func foo(_ bar: String, baz biz: Int) -> (String, Int)")
         let result = _foo(bar: bar, biz: biz)
-        Loggable.default.log(result: result)
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func foo(_ bar: String, baz biz: Int) -> (String, Int)", result: result)
         return result
       }
       """#
@@ -174,10 +161,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       mutating func foo() {
-        func _foo() {
-          self.counter += 1
-        }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "mutating func foo()")
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "mutating func foo()")
       }
       """
     }
@@ -194,10 +178,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       mutating func foo(bar: String) {
-        func _foo(bar: String) {
-          self.bar = bar
-        }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "mutating func foo(bar: String)")
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "mutating func foo(bar: String)")
       }
       """
     }
@@ -225,11 +206,10 @@ final class LogMacroTests: XCTestCase {
             self.counter -= 1
           }
         }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "mutating func foo() throws")
         do {
           let _ = try _foo()
         } catch {
-          Loggable.default.log(error: error)
+          Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "mutating func foo() throws", error: error)
           throw error
         }
       }
@@ -246,20 +226,19 @@ final class LogMacroTests: XCTestCase {
       }
       """#
     } expansion: {
-      #"""
+      """
       func foo() throws {
         func _foo() throws {
           throw NSError()
         }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func foo() throws")
         do {
           let _ = try _foo()
         } catch {
-          Loggable.default.log(error: error)
+          Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func foo() throws", error: error)
           throw error
         }
       }
-      """#
+      """
     }
   }
   
@@ -276,7 +255,7 @@ final class LogMacroTests: XCTestCase {
       }
       """#
     } expansion: {
-      #"""
+      """
       func foo() throws -> Int {
         func _foo() throws -> Int {
           if Bool.random() {
@@ -285,17 +264,16 @@ final class LogMacroTests: XCTestCase {
             return .zero
           }
         }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func foo() throws -> Int")
         do {
           let result = try _foo()
-          Loggable.default.log(result: result)
+          Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func foo() throws -> Int", result: result)
           return result
         } catch {
-          Loggable.default.log(error: error)
+          Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func foo() throws -> Int", error: error)
           throw error
         }
       }
-      """#
+      """
     }
   }
   
@@ -323,11 +301,10 @@ final class LogMacroTests: XCTestCase {
             print("false")
           }
         }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func foo(_ value: Int) throws")
         do {
           let _ = try _foo(value: value)
         } catch {
-          Loggable.default.log(error: error)
+          Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func foo(_ value: Int) throws", error: error)
           throw error
         }
       }
@@ -357,13 +334,12 @@ final class LogMacroTests: XCTestCase {
             return (value, "\(content): \(value)")
           }
         }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func foo(_ value: Int, content: String) throws -> (Int, String)")
         do {
           let result = try _foo(value: value, content: content)
-          Loggable.default.log(result: result)
+          Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func foo(_ value: Int, content: String) throws -> (Int, String)", result: result)
           return result
         } catch {
-          Loggable.default.log(error: error)
+          Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func foo(_ value: Int, content: String) throws -> (Int, String)", error: error)
           throw error
         }
       }
@@ -402,10 +378,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func performTask(completion: @escaping () -> Void) {
-        func _performTask(completion: @escaping () -> Void) {
-          completion()
-        }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func performTask(completion: @escaping () -> Void)")
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func performTask(completion: @escaping () -> Void)")
       }
       """
     }
@@ -425,9 +398,8 @@ final class LogMacroTests: XCTestCase {
         func _check(condition: @autoclosure () -> Bool) -> Bool {
           return condition()
         }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func check(condition: @autoclosure () -> Bool) -> Bool")
         let result = _check(condition: condition())
-        Loggable.default.log(result: result)
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func check(condition: @autoclosure () -> Bool) -> Bool", result: result)
         return result
       }
       """
@@ -445,10 +417,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func update(value: inout Int, with newValue: Int) {
-        func _update(value: inout Int, newValue: Int) {
-          value = newValue
-        }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func update(value: inout Int, with newValue: Int)")
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func update(value: inout Int, with newValue: Int)")
       }
       """
     }
@@ -468,9 +437,8 @@ final class LogMacroTests: XCTestCase {
         func _staticMethod(info: String) -> String {
           return "Static: \(info)"
         }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "static func staticMethod(info: String) -> String")
         let result = _staticMethod(info: info)
-        Loggable.default.log(result: result)
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "static func staticMethod(info: String) -> String", result: result)
         return result
       }
       """#
@@ -491,11 +459,10 @@ final class LogMacroTests: XCTestCase {
         func _execute(operation: () throws -> Void) rethrows {
           try operation()
         }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func execute(operation: () throws -> Void) rethrows")
         do {
           let _ = try _execute(operation: operation)
         } catch {
-          Loggable.default.log(error: error)
+          Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func execute(operation: () throws -> Void) rethrows", error: error)
           throw error
         }
       }
@@ -517,9 +484,8 @@ final class LogMacroTests: XCTestCase {
         func _transform(value: Int, transform: (Int) -> String) -> String {
           return transform(value)
         }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func transform(value: Int, using transform: (Int) -> String) -> String")
         let result = _transform(value: value, transform: transform)
-        Loggable.default.log(result: result)
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func transform(value: Int, using transform: (Int) -> String) -> String", result: result)
         return result
       }
       """
@@ -540,9 +506,8 @@ final class LogMacroTests: XCTestCase {
         func _identity(value: T) -> T {
           return value
         }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func identity<T>(_ value: T) -> T")
         let result = _identity(value: value)
-        Loggable.default.log(result: result)
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func identity<T>(_ value: T) -> T", result: result)
         return result
       }
       """
@@ -563,9 +528,8 @@ final class LogMacroTests: XCTestCase {
         func _combine(first: T, second: U) -> (T, U) {
           return (first, second)
         }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func combine<T, U>(first: T, second: U) -> (T, U) where T: CustomStringConvertible, U: CustomStringConvertible")
         let result = _combine(first: first, second: second)
-        Loggable.default.log(result: result)
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func combine<T, U>(first: T, second: U) -> (T, U) where T: CustomStringConvertible, U: CustomStringConvertible", result: result)
         return result
       }
       """
@@ -586,9 +550,8 @@ final class LogMacroTests: XCTestCase {
         func _greet(name: String) -> String {
           return "Hello, \(name)!"
         }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: #"func greet(name: String = "Guest") -> String"#)
         let result = _greet(name: name)
-        Loggable.default.log(result: result)
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: #"func greet(name: String = "Guest") -> String"#, result: result)
         return result
       }
       """#
@@ -609,9 +572,8 @@ final class LogMacroTests: XCTestCase {
         func _sum(numbers: Int...) -> Int {
           return numbers.reduce(0, +)
         }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func sum(numbers: Int...) -> Int")
         let result = _sum(numbers: numbers)
-        Loggable.default.log(result: result)
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func sum(numbers: Int...) -> Int", result: result)
         return result
       }
       """
@@ -634,9 +596,8 @@ final class LogMacroTests: XCTestCase {
         func _compute(value: Int) -> Int {
           return value * value
         }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func compute(value: Int) -> Int")
         let result = _compute(value: value)
-        Loggable.default.log(result: result)
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func compute(value: Int) -> Int", result: result)
         return result
       }
       """
@@ -659,9 +620,8 @@ final class LogMacroTests: XCTestCase {
             $0 + 1
           }
         }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func makeIncrementer() -> (Int) -> Int")
         let result = _makeIncrementer()
-        Loggable.default.log(result: result)
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func makeIncrementer() -> (Int) -> Int", result: result)
         return result
       }
       """
@@ -682,13 +642,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func fetchData(completion: @escaping () async -> String) {
-        func _fetchData(completion: @escaping () async -> String) {
-          Task {
-            let data = await completion()
-            print(data)
-          }
-        }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func fetchData(completion: @escaping () async -> String)")
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func fetchData(completion: @escaping () async -> String)")
       }
       """
     }
@@ -707,10 +661,7 @@ final class LogMacroTests: XCTestCase {
       """
       @MainActor
       func updateUI(message: String) {
-        func _updateUI(message: String) {
-          print(message)
-        }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func updateUI(message: String)")
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func updateUI(message: String)")
       }
       """
     }
@@ -730,9 +681,8 @@ final class LogMacroTests: XCTestCase {
         func _process(first: T, second: U) -> Bool {
           return true
         }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func process<T: Equatable, U: Numeric>(first: T, second: U) -> Bool")
         let result = _process(first: first, second: second)
-        Loggable.default.log(result: result)
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func process<T: Equatable, U: Numeric>(first: T, second: U) -> Bool", result: result)
         return result
       }
       """
@@ -752,10 +702,7 @@ final class LogMacroTests: XCTestCase {
       """
       @objc
       func performAction() {
-        func _performAction() {
-          print("Action performed")
-        }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func performAction()")
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func performAction()")
       }
       """
     }
@@ -775,9 +722,8 @@ final class LogMacroTests: XCTestCase {
         func _getOptionalValue() -> Int? {
           return nil
         }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func getOptionalValue() -> Int?")
         let result = _getOptionalValue()
-        Loggable.default.log(result: result)
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func getOptionalValue() -> Int?", result: result)
         return result
       }
       """
@@ -798,13 +744,12 @@ final class LogMacroTests: XCTestCase {
         func _performAsyncTask(completion: @escaping () async throws -> String) async throws -> String {
           return try await completion()
         }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func performAsyncTask(completion: @escaping () async throws -> String) async throws -> String")
         do {
           let result = try await _performAsyncTask(completion: completion)
-          Loggable.default.log(result: result)
+          Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func performAsyncTask(completion: @escaping () async throws -> String) async throws -> String", result: result)
           return result
         } catch {
-          Loggable.default.log(error: error)
+          Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func performAsyncTask(completion: @escaping () async throws -> String) async throws -> String", error: error)
           throw error
         }
       }
@@ -826,9 +771,8 @@ final class LogMacroTests: XCTestCase {
         func _description() -> String {
           return "Override"
         }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "override func description() -> String")
         let result = _description()
-        Loggable.default.log(result: result)
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "override func description() -> String", result: result)
         return result
       }
       """
@@ -846,10 +790,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func updateScore(score: inout Int, increment: Int = 1) {
-        func _updateScore(score: inout Int, increment: Int) {
-          score += increment
-        }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func updateScore(score: inout Int, increment: Int = 1)")
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func updateScore(score: inout Int, increment: Int = 1)")
       }
       """
     }
@@ -869,9 +810,8 @@ final class LogMacroTests: XCTestCase {
         func _optionalTest(value: String?) -> String {
           return value ?? "Default"
         }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func optionalTest(value: String?) -> String")
         let result = _optionalTest(value: value)
-        Loggable.default.log(result: result)
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func optionalTest(value: String?) -> String", result: result)
         return result
       }
       """
@@ -896,9 +836,8 @@ final class LogMacroTests: XCTestCase {
         {
           return []
         }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func merge<T, U>(_ first: [T], with second: [U]) -> [(T, U)]\n  where T: Comparable, U: Comparable")
         let result = _merge(first: first, second: second)
-        Loggable.default.log(result: result)
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func merge<T, U>(_ first: [T], with second: [U]) -> [(T, U)]\n  where T: Comparable, U: Comparable", result: result)
         return result
       }
       """#
@@ -916,10 +855,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func perform(action: (() -> Void)? = nil) {
-        func _perform(action: (() -> Void)?) {
-          action?()
-        }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func perform(action: (() -> Void)? = nil)")
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func perform(action: (() -> Void)? = nil)")
       }
       """
     }
@@ -941,9 +877,8 @@ final class LogMacroTests: XCTestCase {
         func _create(value: T) -> [T] {
           return [value]
         }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "static func create<T>(value: T) -> [T]")
         let result = _create(value: value)
-        Loggable.default.log(result: result)
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "static func create<T>(value: T) -> [T]", result: result)
         return result
       }
       """
@@ -964,9 +899,8 @@ final class LogMacroTests: XCTestCase {
         func _process(pair: (Int, String)) -> String {
           return "\(pair.0) - \(pair.1)"
         }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func process(pair: (Int, String)) -> String")
         let result = _process(pair: pair)
-        Loggable.default.log(result: result)
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func process(pair: (Int, String)) -> String", result: result)
         return result
       }
       """#
@@ -987,9 +921,8 @@ final class LogMacroTests: XCTestCase {
         func _filterElements(elements: [T], predicate: (T) -> Bool) -> [T] {
           return elements.filter(predicate)
         }
-        Loggable.default.log(location: "TestModule/Test.swift:1:1", of: "func filterElements<T>(elements: [T], using predicate: (T) -> Bool) -> [T]")
         let result = _filterElements(elements: elements, predicate: predicate)
-        Loggable.default.log(result: result)
+        Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func filterElements<T>(elements: [T], using predicate: (T) -> Bool) -> [T]", result: result)
         return result
       }
       """
