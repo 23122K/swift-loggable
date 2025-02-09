@@ -6,7 +6,7 @@ extension AttributeSyntax {
     case let .argumentList(arguments):
       for argument in arguments {
         switch argument {
-        case let argument where argument.parameter(is: .using):
+        case let argument where argument.label?.tokenKind == .using:
           switch argument.expression {
           case let expression where expression.is(DeclReferenceExprSyntax.self):
             return expression
@@ -36,12 +36,11 @@ extension AttributeSyntax {
   }
   
   static func copy(_ syntax: AttributeSyntax) -> AttributeSyntax {
-    syntax.modify { syntax in
-      syntax.attributeName = TypeSyntax(
-        IdentifierTypeSyntax(name: .Log)
-      )
-      return syntax
-    }
+    var syntax = syntax
+    syntax.attributeName = TypeSyntax(
+      IdentifierTypeSyntax(name: .Log)
+    )
+    return syntax
   }
   
   private static func fallback(

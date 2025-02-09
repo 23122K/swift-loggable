@@ -12,50 +12,61 @@ public struct LogMacro: BodyMacro, BodyMacroBuilder {
     in context: some MacroExpansionContext
   ) throws -> [CodeBlockItemSyntax] {
     guard let location = context.location(of: declaration)?.findable,
-          let declaration = declaration.as(FunctionDeclSyntax.self)
+          let function = FunctionSyntax(from: declaration)
     else { return body() }
     
-    
     return body {
+      // TODO: - Hande the logging of parametres provided to a function
+      
       let loggable = LoggableSyntax(for: node.loggable)
-      
-      CodeBlockItemSyntax.copy(declaration)
-      loggable.log {
-        Argument(.location, content: location)
-        Argument(.of, content: declaration.calee)
-      }
-      
-// TODO: - Hande the logging of parametres provided to a function
-//      if declaration.hasParameters {
-//        loggable.log {
-//          Argument(.parameters, content: "Parameters")
-//        }
-//      }
-      
-      
-      if declaration.isThrowing {
+      switch function.declaration.signature.isThrowing {
+      case false where function.declaration.signature.isVoid:
+        loggable.log {
+          Argument(.at, content: location)
+          Argument(.of, content: function.declaration.description)
+        }
+        
+      case true where function.declaration.signature.isVoid:
+        CodeBlockItemSyntax(function.declaration.plain)
         CodeBlockItemSyntax.try {
-          CodeBlockItemSyntax.call(declaration)
-          if !declaration.signature.isVoid { // TODO: - Handle case when function retuns Void
-            loggable.log {
-              Argument(.result, reference: .result)
-            }
-            CodeBlockItemSyntax.return
-          }
+          CodeBlockItemSyntax.call(function)
         } catch: {
           loggable.log {
+            Argument(.at, content: location)
+            Argument(.of, content: function.declaration.description)
             Argument(.error, reference: .error)
           }
           CodeBlockItemSyntax.rethrow
         }
-      } else {
-        CodeBlockItemSyntax.call(declaration)
-        if !declaration.signature.isVoid { // TODO: - Handle case when function retuns Void
+        
+      case true:
+        CodeBlockItemSyntax(function.declaration.plain)
+        CodeBlockItemSyntax.try {
+          CodeBlockItemSyntax.call(function)
           loggable.log {
+            Argument(.at, content: location)
+            Argument(.of, content: function.declaration.description)
             Argument(.result, reference: .result)
           }
           CodeBlockItemSyntax.return
+        } catch: {
+          loggable.log {
+            Argument(.at, content: location)
+            Argument(.of, content: function.declaration.description)
+            Argument(.error, reference: .error)
+          }
+          CodeBlockItemSyntax.rethrow
         }
+        
+      case false:
+        CodeBlockItemSyntax(function.declaration.plain)
+        CodeBlockItemSyntax.call(function)
+        loggable.log {
+          Argument(.at, content: location)
+          Argument(.of, content: function.declaration.description)
+          Argument(.result, reference: .result)
+        }
+        CodeBlockItemSyntax.return
       }
     }
   }

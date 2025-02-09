@@ -8,16 +8,20 @@ open class Loggable: @unchecked Sendable {
     os_log(.info, "→ Function: %@\n→ Location: %@", declaration, location)
   }
   
-  open func log(parameters: Any) {
-    print(parameters)
+  open func log(at location: String, of declaration: String, result: Any) {
+    os_log(
+      .info,
+      "→ Function: %@\n→ Location: %@\n→ Result: %@",
+      declaration, location, "\(result)"
+    )
   }
   
-  open func log(error: Error) {
-    os_log(.error, "→ Error: %@", "\(error)")
-  }
-  
-  open func log(result: Any) {
-    os_log(.info, "→ Result: %@", "\(result)")
+  open func log(at location: String, of declaration: String, error: any Error) {
+    os_log(
+      .error,
+      "→ Function: %@\n→ Location: %@\n→ Error: %@",
+      declaration, location, "\(error)"
+    )
   }
   
   public init() { }
