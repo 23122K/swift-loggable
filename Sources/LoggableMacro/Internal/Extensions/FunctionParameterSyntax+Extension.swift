@@ -1,4 +1,5 @@
 import SwiftSyntax
+import OSLog
 
 extension FunctionParameterSyntax {
   var argument: TokenSyntax {
@@ -25,8 +26,45 @@ extension FunctionParameterSyntax {
     }
   }
   
+  var isAutoclosure: Bool {
+    guard let attributedType = AttributedTypeSyntax(self.type) else {
+      return false
+    }
+    
+    return attributedType.attributes.contains { attribute in
+      guard case let .attribute(syntax) = attribute else { return false }
+      
+      guard let name = syntax.attributeName.as(IdentifierTypeSyntax.self) else { return false }
+      return name.name.tokenKind == .identifier("autoclosure")
+    }
+  }
+  
   func asLabeledExprSyntax(trailingComma presence: SourcePresence) -> LabeledExprSyntax {
-    guard isInout else {
+    if isInout {
+      os_log("isInout")
+      return LabeledExprSyntax(
+        label: self.argument,
+        colon: .colonToken(),
+        expression: InOutExprSyntax(
+          expression: DeclReferenceExprSyntax(baseName: self.argument)
+        ),
+        trailingComma: .commaToken(presence: presence)
+      )
+    } else if isAutoclosure {
+      os_log("isAutoclosure")
+      return LabeledExprSyntax(
+        label: self.argument,
+        colon: .colonToken(),
+        expression: FunctionCallExprSyntax(
+          calledExpression: DeclReferenceExprSyntax(baseName: self.argument),
+          leftParen: .leftParenToken(),
+          arguments: [],
+          rightParen: .rightParenToken()
+        ),
+        trailingComma: .commaToken(presence: presence)
+      )
+    } else {
+      os_log("Other")
       return LabeledExprSyntax(
         label: self.argument,
         colon: .colonToken(),
@@ -34,15 +72,6 @@ extension FunctionParameterSyntax {
         trailingComma: .commaToken(presence: presence)
       )
     }
-    
-    return LabeledExprSyntax(
-      label: self.argument,
-      colon: .colonToken(),
-      expression: InOutExprSyntax(
-        expression: DeclReferenceExprSyntax(baseName: self.argument)
-      ),
-      trailingComma: .commaToken(presence: presence)
-    )
   }
   
   var simplify: FunctionParameterSyntax {

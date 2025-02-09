@@ -7,6 +7,8 @@ extension FunctionDeclSyntax {
     declaration.modifiers = []
     declaration.name = .identifier("_\(declaration.name.text)")
     declaration.signature = declaration.signature.simplifySignature
+    declaration.genericParameterClause = nil
+    declaration.genericWhereClause = nil
     return declaration
   }
   
@@ -19,6 +21,10 @@ extension FunctionDeclSyntax {
     declaration.attributes = []
     declaration.body = nil
     return declaration.trimmedDescription
+  }
+  
+  var isGeneric: Bool {
+    self.genericParameterClause != nil
   }
   
   var isAsync: Bool {

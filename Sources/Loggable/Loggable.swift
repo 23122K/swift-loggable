@@ -12,7 +12,7 @@ open class Loggable: @unchecked Sendable {
     print(parameters)
   }
   
-  open func log(error: Error) {
+  open func log(error: any Error) {
     os_log(.error, "→ Error: %@", "\(error)")
   }
   
