@@ -15,7 +15,7 @@ struct FunctionSyntax {
       return syntax.trimmedDescription
     }
     
-    var initializerClauseSyntax: InitializerClauseSyntax {
+    var initializer: InitializerClauseSyntax {
       let expression = FunctionCallExprSyntax(
         calledExpression: DeclReferenceExprSyntax(
           baseName: .identifier("_\(self.syntax.name.text)")
@@ -116,7 +116,7 @@ struct FunctionSyntax {
           return attributedType.attributes.contains { attribute in
             guard case let .attribute(syntax) = attribute else { return false }
             guard let name = syntax.attributeName.as(IdentifierTypeSyntax.self) else { return false }
-            return name.name.tokenKind == .identifier("autoclosure")
+            return name.name.tokenKind == .autoclosure
           }
         }
         

@@ -54,7 +54,7 @@ extension CodeBlockItemSyntax {
                     ? .identifier("_")
                     : .result
                 ),
-                initializer: function.declaration.initializerClauseSyntax
+                initializer: function.declaration.initializer
               )
             )
           )
