@@ -15,43 +15,55 @@ public struct LogMacro: BodyMacro, BodyMacroBuilder {
           let function = FunctionSyntax(from: declaration)
     else { return body() }
     
-    let loggable = LoggableSyntax(for: node.loggable)
-    
     return body {
-      CodeBlockItemSyntax(function.declaration.plain)
-      loggable.log {
-        Argument(.location, content: location)
-        Argument(.of, content: function.declaration.description)
-      }
+      // TODO: - Hande the logging of parametres provided to a function
       
-// TODO: - Hande the logging of parametres provided to a function
-//      if declaration.hasParameters {
-//        loggable.log {
-//          Argument(.parameters, content: "Parameters")
-//        }
-//      }
-      
+      let loggable = LoggableSyntax(for: node.loggable)
       switch function.declaration.signature.isThrowing {
-      case true where function.declaration.signature.isVoid,
-        false where function.declaration.signature.isVoid: []
+      case false where function.declaration.signature.isVoid:
+        loggable.log {
+          Argument(.at, content: location)
+          Argument(.of, content: function.declaration.description)
+        }
+        
+      case true where function.declaration.signature.isVoid:
+        CodeBlockItemSyntax(function.declaration.plain)
+        CodeBlockItemSyntax.try {
+          CodeBlockItemSyntax.call(function)
+        } catch: {
+          loggable.log {
+            Argument(.at, content: location)
+            Argument(.of, content: function.declaration.description)
+            Argument(.error, reference: .error)
+          }
+          CodeBlockItemSyntax.rethrow
+        }
         
       case true:
+        CodeBlockItemSyntax(function.declaration.plain)
         CodeBlockItemSyntax.try {
           CodeBlockItemSyntax.call(function)
           loggable.log {
+            Argument(.at, content: location)
+            Argument(.of, content: function.declaration.description)
             Argument(.result, reference: .result)
           }
           CodeBlockItemSyntax.return
         } catch: {
           loggable.log {
+            Argument(.at, content: location)
+            Argument(.of, content: function.declaration.description)
             Argument(.error, reference: .error)
           }
           CodeBlockItemSyntax.rethrow
         }
         
       case false:
+        CodeBlockItemSyntax(function.declaration.plain)
         CodeBlockItemSyntax.call(function)
         loggable.log {
+          Argument(.at, content: location)
+          Argument(.of, content: function.declaration.description)
           Argument(.result, reference: .result)
         }
         CodeBlockItemSyntax.return

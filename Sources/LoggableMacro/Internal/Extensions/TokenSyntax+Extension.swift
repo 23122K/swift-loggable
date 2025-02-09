@@ -1,6 +1,7 @@
 import SwiftSyntax
 
 extension TokenSyntax {
+  static let at = TokenSyntax.identifier("at")
   static let of = TokenSyntax.identifier("of")
   static let log = TokenSyntax.identifier("log")
   static let Log = TokenSyntax.identifier("Log")

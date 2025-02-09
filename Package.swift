@@ -5,7 +5,7 @@ import CompilerPluginSupport
 let package = Package(
   name: "swift-loggable",
   platforms: [
-    .macOS(.v14),
+    .macOS(.v12),
     .iOS(.v18)
   ],
   products: [
@@ -23,6 +23,10 @@ let package = Package(
       url: "https://github.com/swiftlang/swift-syntax.git",
       from: "600.0.0-latest"
     ),
+    .package(
+      url: "https://github.com/pointfreeco/swift-macro-testing.git",
+      branch: "main"
+    )
   ],
   targets: [
     .macro(
@@ -47,12 +51,16 @@ let package = Package(
       dependencies: ["Loggable"]
     ),
     .testTarget(
-      name: "LoggableTests",
+      name: "LoggableMacroTests",
       dependencies: [
         "LoggableMacro",
         .product(
           name: "SwiftSyntaxMacrosTestSupport",
           package: "swift-syntax"
+        ),
+        .product(
+          name: "MacroTesting",
+          package: "swift-macro-testing"
         )
       ]
     ),
