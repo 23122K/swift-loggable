@@ -12,17 +12,16 @@ public struct LogMacro: BodyMacro, BodyMacroBuilder {
     in context: some MacroExpansionContext
   ) throws -> [CodeBlockItemSyntax] {
     guard let location = context.location(of: declaration)?.findable,
-          let declaration = declaration.as(FunctionDeclSyntax.self)
+          let function = FunctionSyntax(from: declaration)
     else { return body() }
     
+    let loggable = LoggableSyntax(for: node.loggable)
     
     return body {
-      let loggable = LoggableSyntax(for: node.loggable)
-      
-      CodeBlockItemSyntax.copy(declaration)
+      CodeBlockItemSyntax(function.declaration.plain)
       loggable.log {
         Argument(.location, content: location)
-        Argument(.of, content: declaration.calee)
+        Argument(.of, content: function.declaration.description)
       }
       
 // TODO: - Hande the logging of parametres provided to a function
@@ -32,30 +31,30 @@ public struct LogMacro: BodyMacro, BodyMacroBuilder {
 //        }
 //      }
       
-      
-      if declaration.isThrowing {
+      switch function.declaration.signature.isThrowing {
+      case true where function.declaration.signature.isVoid,
+        false where function.declaration.signature.isVoid: []
+        
+      case true:
         CodeBlockItemSyntax.try {
-          CodeBlockItemSyntax.call(declaration)
-          if !declaration.signature.isVoid { // TODO: - Handle case when function retuns Void
-            loggable.log {
-              Argument(.result, reference: .result)
-            }
-            CodeBlockItemSyntax.return
+          CodeBlockItemSyntax.call(function)
+          loggable.log {
+            Argument(.result, reference: .result)
           }
+          CodeBlockItemSyntax.return
         } catch: {
           loggable.log {
             Argument(.error, reference: .error)
           }
           CodeBlockItemSyntax.rethrow
         }
-      } else {
-        CodeBlockItemSyntax.call(declaration)
-        if !declaration.signature.isVoid { // TODO: - Handle case when function retuns Void
-          loggable.log {
-            Argument(.result, reference: .result)
-          }
-          CodeBlockItemSyntax.return
+        
+      case false:
+        CodeBlockItemSyntax.call(function)
+        loggable.log {
+          Argument(.result, reference: .result)
         }
+        CodeBlockItemSyntax.return
       }
     }
   }

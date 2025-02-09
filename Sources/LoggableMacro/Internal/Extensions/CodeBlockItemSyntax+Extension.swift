@@ -21,10 +21,6 @@ extension CodeBlockItemSyntax {
     )
   )
   
-  static func copy(_ declaration: FunctionDeclSyntax) -> CodeBlockItemSyntax {
-    self.init(declaration.simplified)
-  }
-  
   static func `try`(
     @CodeBlockItemSyntaxBuilder _ doStatements: @escaping () -> [CodeBlockItemSyntax],
     @CodeBlockItemSyntaxBuilder catch statements: @escaping () -> [CodeBlockItemSyntax]
@@ -45,7 +41,7 @@ extension CodeBlockItemSyntax {
     )
   }
   
-  static func call(_ functionDeclSyntax: FunctionDeclSyntax) -> CodeBlockItemSyntax {
+  static func call(_ function: FunctionSyntax) -> CodeBlockItemSyntax {
     CodeBlockItemSyntax(
       item: .decl(
         DeclSyntax(
@@ -54,11 +50,11 @@ extension CodeBlockItemSyntax {
             bindings: PatternBindingListSyntax(
               arrayLiteral: PatternBindingSyntax(
                 pattern: IdentifierPatternSyntax(
-                  identifier: functionDeclSyntax.signature.isVoid
+                  identifier: function.declaration.signature.isVoid
                     ? .identifier("_")
                     : .result
                 ),
-                initializer: functionDeclSyntax.asInitializerClauseSyntax()
+                initializer: function.declaration.initializerClauseSyntax
               )
             )
           )
