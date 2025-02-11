@@ -1,6 +1,7 @@
 import SwiftSyntaxMacros
 
 extension AbstractSourceLocation {
+  /// Returns the source location formatted for use with Open Quickly, eg. `Foo.swift:12:6`
   var findable: String {
     let _file = self.file
       .trimmedDescription

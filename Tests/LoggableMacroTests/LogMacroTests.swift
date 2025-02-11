@@ -363,10 +363,6 @@ final class LogMacroTests: XCTestCase {
     }
   }
   
-  func test_asyncThorwingFunction_withParameter_returnsVoid() throws {
-    
-  }
-  
   func test_function_withEscapingClosure_returnsVoid() throws {
     assertMacro {
       #"""

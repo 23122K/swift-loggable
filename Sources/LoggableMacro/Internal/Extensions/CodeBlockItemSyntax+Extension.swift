@@ -50,11 +50,11 @@ extension CodeBlockItemSyntax {
             bindings: PatternBindingListSyntax(
               arrayLiteral: PatternBindingSyntax(
                 pattern: IdentifierPatternSyntax(
-                  identifier: function.declaration.signature.isVoid
+                  identifier: function.isVoid
                     ? .identifier("_")
                     : .result
                 ),
-                initializer: function.declaration.initializer
+                initializer: function.initializer
               )
             )
           )
