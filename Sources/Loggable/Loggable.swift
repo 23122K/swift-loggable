@@ -3,11 +3,11 @@ import OSLog
 
 open class Loggable: @unchecked Sendable {
   public static let `default` = Loggable()
-  
+
   open func log(location: String, of declaration: String) {
     os_log(.info, "→ Function: %@\n→ Location: %@", declaration, location)
   }
-  
+
   open func log(at location: String, of declaration: String, result: Any) {
     os_log(
       .info,
@@ -15,7 +15,7 @@ open class Loggable: @unchecked Sendable {
       declaration, location, "\(result)"
     )
   }
-  
+
   open func log(at location: String, of declaration: String, error: any Error) {
     os_log(
       .error,
@@ -23,6 +23,6 @@ open class Loggable: @unchecked Sendable {
       declaration, location, "\(error)"
     )
   }
-  
-  public init() { }
+
+  public init() {}
 }

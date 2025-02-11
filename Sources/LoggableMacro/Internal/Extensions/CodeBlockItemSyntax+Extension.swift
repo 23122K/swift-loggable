@@ -4,15 +4,15 @@ extension CodeBlockItemSyntax {
   init(_ statement: some StmtSyntaxProtocol) {
     self.init(item: .stmt(StmtSyntax(statement)))
   }
-  
+
   init(_ declaration: some DeclSyntaxProtocol) {
     self.init(item: .decl(DeclSyntax(declaration)))
   }
-  
+
   init(_ expression: some ExprSyntaxProtocol) {
     self.init(item: .expr(ExprSyntax(expression)))
   }
-  
+
   static let rethrow = CodeBlockItemSyntax(
     ThrowStmtSyntax(
       expression: DeclReferenceExprSyntax(
@@ -20,7 +20,7 @@ extension CodeBlockItemSyntax {
       )
     )
   )
-  
+
   static func `try`(
     @CodeBlockItemSyntaxBuilder _ doStatements: @escaping () -> [CodeBlockItemSyntax],
     @CodeBlockItemSyntaxBuilder catch statements: @escaping () -> [CodeBlockItemSyntax]
@@ -40,7 +40,7 @@ extension CodeBlockItemSyntax {
       )
     )
   }
-  
+
   static func call(_ function: FunctionSyntax) -> CodeBlockItemSyntax {
     CodeBlockItemSyntax(
       item: .decl(
@@ -50,11 +50,11 @@ extension CodeBlockItemSyntax {
             bindings: PatternBindingListSyntax(
               arrayLiteral: PatternBindingSyntax(
                 pattern: IdentifierPatternSyntax(
-                  identifier: function.declaration.signature.isVoid
+                  identifier: function.isVoid
                     ? .identifier("_")
                     : .result
                 ),
-                initializer: function.declaration.initializer
+                initializer: function.initializer
               )
             )
           )

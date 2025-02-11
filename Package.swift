@@ -1,12 +1,12 @@
 // swift-tools-version: 6.0
-import PackageDescription
 import CompilerPluginSupport
+import PackageDescription
 
 let package = Package(
   name: "swift-loggable",
   platforms: [
     .macOS(.v12),
-    .iOS(.v18)
+    .iOS(.v18),
   ],
   products: [
     .library(
@@ -21,8 +21,8 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-macro-testing.git",
-      branch: "main"
-    )
+      from: "0.5.2"
+    ),
   ],
   targets: [
     .macro(
@@ -35,7 +35,7 @@ let package = Package(
         .product(
           name: "SwiftCompilerPlugin",
           package: "swift-syntax"
-        )
+        ),
       ]
     ),
     .target(
@@ -53,7 +53,7 @@ let package = Package(
         .product(
           name: "MacroTesting",
           package: "swift-macro-testing"
-        )
+        ),
       ]
     ),
   ]

@@ -10,7 +10,7 @@ public struct LoggedMacro: MemberAttributeMacro {
     in context: some MacroExpansionContext
   ) throws -> [AttributeSyntax] {
     guard let member = FunctionDeclSyntax(member),
-          !member.attributes.contains(where: \.isOmit)
+          !member.attributes.contains(where: \.isLoggableAttribute)
     else { return [] }
     return [AttributeSyntax.copy(node)]
   }

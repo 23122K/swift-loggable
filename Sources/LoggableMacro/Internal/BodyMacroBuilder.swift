@@ -20,31 +20,31 @@ struct CodeBlockItemSyntaxBuilder {
   ) -> [CodeBlockItemSyntax] {
     components.flatMap { $0 }
   }
-  
+
   static func buildExpression(
     _ expression: [CodeBlockItemSyntax]
   ) -> [CodeBlockItemSyntax] {
     expression
   }
-  
+
   static func buildExpression(
     _ expression: CodeBlockItemSyntax
   ) -> [CodeBlockItemSyntax] {
     [expression]
   }
-  
+
   static func buildOptional(
     _ component: [CodeBlockItemSyntax]?
   ) -> [CodeBlockItemSyntax] {
     component ?? []
   }
-  
+
   static func buildEither(
     first component: [CodeBlockItemSyntax]
   ) -> [CodeBlockItemSyntax] {
     component
   }
-  
+
   static func buildEither(
     second component: [CodeBlockItemSyntax]
   ) -> [CodeBlockItemSyntax] {

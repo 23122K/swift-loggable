@@ -5,7 +5,7 @@ import SwiftSyntaxMacros
 public struct LogMacro: BodyMacro, BodyMacroBuilder {
   typealias Body = [CodeBlockItemSyntax]
   typealias Argument = LoggableSyntax.ArgumentSyntax
-  
+
   public static func expansion(
     of node: AttributeSyntax,
     providingBodyFor declaration: some DeclSyntaxProtocol & WithOptionalCodeBlockSyntax,
@@ -14,56 +14,55 @@ public struct LogMacro: BodyMacro, BodyMacroBuilder {
     guard let location = context.location(of: declaration)?.findable,
           let function = FunctionSyntax(from: declaration)
     else { return body() }
-    
+
     return body {
       // TODO: - Hande the logging of parametres provided to a function
-      
       let loggable = LoggableSyntax(for: node.loggable)
-      switch function.declaration.signature.isThrowing {
-      case false where function.declaration.signature.isVoid:
+      switch function.isThrowing {
+      case false where function.isVoid:
         loggable.log {
           Argument(.at, content: location)
-          Argument(.of, content: function.declaration.description)
+          Argument(.of, content: function.description)
         }
-        
-      case true where function.declaration.signature.isVoid:
-        CodeBlockItemSyntax(function.declaration.plain)
+
+      case true where function.isVoid:
+        CodeBlockItemSyntax(function.plain)
         CodeBlockItemSyntax.try {
           CodeBlockItemSyntax.call(function)
         } catch: {
           loggable.log {
             Argument(.at, content: location)
-            Argument(.of, content: function.declaration.description)
+            Argument(.of, content: function.description)
             Argument(.error, reference: .error)
           }
           CodeBlockItemSyntax.rethrow
         }
-        
+
       case true:
-        CodeBlockItemSyntax(function.declaration.plain)
+        CodeBlockItemSyntax(function.plain)
         CodeBlockItemSyntax.try {
           CodeBlockItemSyntax.call(function)
           loggable.log {
             Argument(.at, content: location)
-            Argument(.of, content: function.declaration.description)
+            Argument(.of, content: function.description)
             Argument(.result, reference: .result)
           }
           CodeBlockItemSyntax.return
         } catch: {
           loggable.log {
             Argument(.at, content: location)
-            Argument(.of, content: function.declaration.description)
+            Argument(.of, content: function.description)
             Argument(.error, reference: .error)
           }
           CodeBlockItemSyntax.rethrow
         }
-        
+
       case false:
-        CodeBlockItemSyntax(function.declaration.plain)
+        CodeBlockItemSyntax(function.plain)
         CodeBlockItemSyntax.call(function)
         loggable.log {
           Argument(.at, content: location)
-          Argument(.of, content: function.declaration.description)
+          Argument(.of, content: function.description)
           Argument(.result, reference: .result)
         }
         CodeBlockItemSyntax.return
