@@ -4,13 +4,14 @@ import XCTest
 
 final class LogMacroTests: XCTestCase {
   override func invokeTest() {
-      withMacroTesting(
-        macros: ["Log": LogMacro.self]
-      ) {
-        super.invokeTest()
-      }
+    withMacroTesting(
+      record: .never,
+      macros: ["Log": LogMacro.self]
+    ) {
+      super.invokeTest()
     }
-  
+  }
+
   func test_function_withNoParameters_returnsVoid() throws {
     assertMacro {
       #"""
@@ -27,7 +28,7 @@ final class LogMacroTests: XCTestCase {
       """
     }
   }
-  
+
   func test_function_withNoParameters_returnsVoid_customLogger() throws {
     assertMacro {
       #"""
@@ -44,7 +45,7 @@ final class LogMacroTests: XCTestCase {
       """
     }
   }
-  
+
   func test_function_withNoParameters_returnsVoid_customStaticLogger() throws {
     assertMacro {
       #"""
@@ -61,7 +62,7 @@ final class LogMacroTests: XCTestCase {
       """
     }
   }
-  
+
   func test_function_withNoParameters_returnsValue() throws {
     assertMacro {
       #"""
@@ -83,7 +84,7 @@ final class LogMacroTests: XCTestCase {
       """
     }
   }
-  
+
   func test_function_withParameters_returnsVoid() throws {
     assertMacro {
       #"""
@@ -105,7 +106,7 @@ final class LogMacroTests: XCTestCase {
       """#
     }
   }
-  
+
   func test_function_withParameters_returnsValue() throws {
     assertMacro {
       #"""
@@ -127,7 +128,7 @@ final class LogMacroTests: XCTestCase {
       """#
     }
   }
-  
+
   func test_function_withLabeledParameters_returnsTuple() throws {
     assertMacro {
       #"""
@@ -149,7 +150,7 @@ final class LogMacroTests: XCTestCase {
       """#
     }
   }
-  
+
   func test_mutatingFunction_withNoParameters_returnsVoid() throws {
     assertMacro {
       #"""
@@ -166,7 +167,7 @@ final class LogMacroTests: XCTestCase {
       """
     }
   }
-  
+
   func test_mutatingFunction_withParameters_returnsVoid() throws {
     assertMacro {
       #"""
@@ -183,7 +184,7 @@ final class LogMacroTests: XCTestCase {
       """
     }
   }
-  
+
   func test_mutatingThrowingFunction_withNoParametres_returnsVoid() throws {
     assertMacro {
       #"""
@@ -216,7 +217,7 @@ final class LogMacroTests: XCTestCase {
       """
     }
   }
-  
+
   func test_throwingFunction_noParameters_returnsVoid() throws {
     assertMacro {
       #"""
@@ -241,7 +242,7 @@ final class LogMacroTests: XCTestCase {
       """
     }
   }
-  
+
   func test_throwingFunction_noParameters_returnsValue() throws {
     assertMacro {
       #"""
@@ -276,7 +277,7 @@ final class LogMacroTests: XCTestCase {
       """
     }
   }
-  
+
   func test_throwingFunction_withParameters_returnsVoid() throws {
     assertMacro {
       #"""
@@ -311,7 +312,7 @@ final class LogMacroTests: XCTestCase {
       """
     }
   }
-  
+
   func test_throwingFunction_withParameters_returnsTuple() throws {
     assertMacro {
       #"""
@@ -346,7 +347,7 @@ final class LogMacroTests: XCTestCase {
       """#
     }
   }
-  
+
   func test_asyncThrowingFunction_noParametres_returnsVoid() throws {
     assertMacro {
       #"""
@@ -362,7 +363,7 @@ final class LogMacroTests: XCTestCase {
       """
     }
   }
-  
+
   func test_function_withEscapingClosure_returnsVoid() throws {
     assertMacro {
       #"""

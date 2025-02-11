@@ -5,7 +5,7 @@ import SwiftSyntaxMacros
 public struct LogMacro: BodyMacro, BodyMacroBuilder {
   typealias Body = [CodeBlockItemSyntax]
   typealias Argument = LoggableSyntax.ArgumentSyntax
-  
+
   public static func expansion(
     of node: AttributeSyntax,
     providingBodyFor declaration: some DeclSyntaxProtocol & WithOptionalCodeBlockSyntax,
@@ -14,7 +14,7 @@ public struct LogMacro: BodyMacro, BodyMacroBuilder {
     guard let location = context.location(of: declaration)?.findable,
           let function = FunctionSyntax(from: declaration)
     else { return body() }
-    
+
     return body {
       // TODO: - Hande the logging of parametres provided to a function
       let loggable = LoggableSyntax(for: node.loggable)
@@ -24,7 +24,7 @@ public struct LogMacro: BodyMacro, BodyMacroBuilder {
           Argument(.at, content: location)
           Argument(.of, content: function.description)
         }
-        
+
       case true where function.isVoid:
         CodeBlockItemSyntax(function.plain)
         CodeBlockItemSyntax.try {
@@ -37,7 +37,7 @@ public struct LogMacro: BodyMacro, BodyMacroBuilder {
           }
           CodeBlockItemSyntax.rethrow
         }
-        
+
       case true:
         CodeBlockItemSyntax(function.plain)
         CodeBlockItemSyntax.try {
@@ -56,7 +56,7 @@ public struct LogMacro: BodyMacro, BodyMacroBuilder {
           }
           CodeBlockItemSyntax.rethrow
         }
-        
+
       case false:
         CodeBlockItemSyntax(function.plain)
         CodeBlockItemSyntax.call(function)
