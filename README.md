@@ -20,7 +20,7 @@ Providing a custom argument to `@Logged` automatically propagates it to every fu
 
 As of now, there are three methods for you to override:
 ```swift
-open func log(location: String, of declaration: String)
+open func log(at location: String, of declaration: String)
 ```
 This method is invoked when the function neither returns a value nor throws an error.
 
