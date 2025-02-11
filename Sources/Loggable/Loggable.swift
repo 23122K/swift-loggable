@@ -4,7 +4,7 @@ import OSLog
 open class Loggable: @unchecked Sendable {
   public static let `default` = Loggable()
 
-  open func log(location: String, of declaration: String) {
+  open func log(at location: String, of declaration: String) {
     os_log(.info, "→ Function: %@\n→ Location: %@", declaration, location)
   }
 
