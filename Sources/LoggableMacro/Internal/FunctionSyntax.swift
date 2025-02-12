@@ -4,6 +4,12 @@ import SwiftSyntax
 struct FunctionSyntax {
   let syntax: FunctionDeclSyntax
   let signature: Signature
+  
+  /// Returns the original body of the called function as an array of `CodeBlockItemSyntax`.
+  /// If the function body is missing, an empty array is returned.
+  var body: [CodeBlockItemSyntax] {
+    self.syntax.body?.statements.compactMap { $0 } ?? []
+  }
 
   subscript<T>(dynamicMember keyPath: KeyPath<Signature, T>) -> T {
     get { signature[keyPath: keyPath] }
