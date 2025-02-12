@@ -23,6 +23,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func foo() {
+        print("Foo")
         Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func foo()")
       }
       """
@@ -40,6 +41,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func foo() {
+        print("Foo")
         CustomLogger().log(at: "TestModule/Test.swift:1:1", of: "func foo()")
       }
       """
@@ -57,6 +59,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func foo() {
+        print("Foo")
         Loggable.custom.log(at: "TestModule/Test.swift:1:1", of: "func foo()")
       }
       """
@@ -162,6 +165,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       mutating func foo() {
+        self.counter += 1
         Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "mutating func foo()")
       }
       """
@@ -179,6 +183,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       mutating func foo(bar: String) {
+        self.bar = bar
         Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "mutating func foo(bar: String)")
       }
       """
@@ -375,6 +380,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func performTask(completion: @escaping () -> Void) {
+        completion()
         Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func performTask(completion: @escaping () -> Void)")
       }
       """
@@ -414,6 +420,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func update(value: inout Int, with newValue: Int) {
+        value = newValue
         Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func update(value: inout Int, with newValue: Int)")
       }
       """
@@ -639,6 +646,10 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func fetchData(completion: @escaping () async -> String) {
+        Task {
+            let data = await completion()
+            print(data)
+          }
         Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func fetchData(completion: @escaping () async -> String)")
       }
       """
@@ -658,6 +669,7 @@ final class LogMacroTests: XCTestCase {
       """
       @MainActor
       func updateUI(message: String) {
+        print(message)
         Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func updateUI(message: String)")
       }
       """
@@ -699,6 +711,7 @@ final class LogMacroTests: XCTestCase {
       """
       @objc
       func performAction() {
+        print("Action performed")
         Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func performAction()")
       }
       """
@@ -787,6 +800,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func updateScore(score: inout Int, increment: Int = 1) {
+        score += increment
         Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func updateScore(score: inout Int, increment: Int = 1)")
       }
       """
@@ -852,6 +866,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func perform(action: (() -> Void)? = nil) {
+        action?()
         Loggable.default.log(at: "TestModule/Test.swift:1:1", of: "func perform(action: (() -> Void)? = nil)")
       }
       """
