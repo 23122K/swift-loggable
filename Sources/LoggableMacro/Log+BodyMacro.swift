@@ -20,6 +20,7 @@ public struct LogMacro: BodyMacro, BodyMacroBuilder {
       let loggable = LoggableSyntax(for: node.loggable)
       switch function.isThrowing {
       case false where function.isVoid:
+        function.body
         loggable.log {
           Argument(.at, content: location)
           Argument(.of, content: function.description)
