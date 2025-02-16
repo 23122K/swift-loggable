@@ -36,35 +36,37 @@ struct LoggableSyntax {
     }
   }
 
-  func event(for declaration: String, at location: String) -> VariableDeclSyntax {
-    VariableDeclSyntax(
-      bindingSpecifier: .keyword(.var),
-      bindings: PatternBindingListSyntax(
-        arrayLiteral: PatternBindingSyntax(
-          pattern: IdentifierPatternSyntax(identifier: .identifier("event")),
-          initializer: InitializerClauseSyntax(
-            value: FunctionCallExprSyntax(
-              calledExpression: MemberAccessExprSyntax(
-                base: DeclReferenceExprSyntax(baseName: .Loggable),
-                name: .identifier("Event")
-              ),
-              leftParen: .leftParenToken(),
-              arguments: LabeledExprListSyntax(
-                  [
+  func event(at location: String, for declaration: FunctionSyntax) -> CodeBlockItemSyntax {
+    CodeBlockItemSyntax(
+      VariableDeclSyntax(
+        bindingSpecifier: .keyword(.var),
+        bindings: PatternBindingListSyntax(
+          arrayLiteral: PatternBindingSyntax(
+            pattern: IdentifierPatternSyntax(identifier: .identifier("event")),
+            initializer: InitializerClauseSyntax(
+              value: FunctionCallExprSyntax(
+                calledExpression: MemberAccessExprSyntax(
+                  base: DeclReferenceExprSyntax(baseName: .Loggable),
+                  name: .identifier("Event")
+                ),
+                leftParen: .leftParenToken(),
+                arguments: LabeledExprListSyntax(
+                    [
+                      LabeledExprSyntax(
+                      label: "location",
+                      colon: .colonToken(),
+                      expression: StringLiteralExprSyntax(content: location),
+                      trailingComma: .commaToken()
+                    ),
                     LabeledExprSyntax(
-                    label: "location",
-                    colon: .colonToken(),
-                    expression: StringLiteralExprSyntax(content: location),
-                    trailingComma: .commaToken()
-                  ),
-                  LabeledExprSyntax(
-                    label: "declaration",
-                    colon: .colonToken(),
-                    expression: StringLiteralExprSyntax(content: declaration)
-                  )
-                ]
-              ),
-              rightParen: .rightParenToken()
+                      label: "declaration",
+                      colon: .colonToken(),
+                      expression: StringLiteralExprSyntax(content: declaration.description)
+                    )
+                  ]
+                ),
+                rightParen: .rightParenToken()
+              )
             )
           )
         )
@@ -72,33 +74,37 @@ struct LoggableSyntax {
     )
   }
 
-  func event(type: TokenSyntax, rightOperand expression: ExprSyntaxType) -> InfixOperatorExprSyntax {
-    InfixOperatorExprSyntax(
-      leftOperand: MemberAccessExprSyntax(
-        base: DeclReferenceExprSyntax(baseName: .identifier("event")),
-        name: type
-      ),
-      operator: AssignmentExprSyntax(),
-      rightOperand: expression.exprSytnaxProtocol
+  func capture(_ name: TokenSyntax, result expression: ExprSyntaxType) -> CodeBlockItemSyntax {
+    CodeBlockItemSyntax(
+      InfixOperatorExprSyntax(
+        leftOperand: MemberAccessExprSyntax(
+          base: DeclReferenceExprSyntax(baseName: .identifier("event")),
+          name: name
+        ),
+        operator: AssignmentExprSyntax(),
+        rightOperand: expression.exprSytnaxProtocol
+      )
     )
   }
 
-  var emit: FunctionCallExprSyntax {
-    FunctionCallExprSyntax(
-      calledExpression: MemberAccessExprSyntax(
-        base: ExprSyntax(expression),
-        period: .periodToken(),
-        name: .identifier("emit")
-      ),
-      leftParen: .leftParenToken(),
-      arguments: LabeledExprListSyntax(
-        arrayLiteral: LabeledExprSyntax(
-          label: .identifier("event"),
-          colon: .colonToken(),
-          expression: DeclReferenceExprSyntax(baseName: .identifier("event"))
-        )
-      ),
-      rightParen: .rightParenToken()
+  var emit: CodeBlockItemSyntax {
+    CodeBlockItemSyntax (
+      FunctionCallExprSyntax(
+        calledExpression: MemberAccessExprSyntax(
+          base: ExprSyntax(expression),
+          period: .periodToken(),
+          name: .identifier("emit")
+        ),
+        leftParen: .leftParenToken(),
+        arguments: LabeledExprListSyntax(
+          arrayLiteral: LabeledExprSyntax(
+            label: .identifier("event"),
+            colon: .colonToken(),
+            expression: DeclReferenceExprSyntax(baseName: .identifier("event"))
+          )
+        ),
+        rightParen: .rightParenToken()
+      )
     )
   }
 

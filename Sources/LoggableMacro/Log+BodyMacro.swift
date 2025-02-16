@@ -17,22 +17,20 @@ public struct LogMacro: BodyMacro, BodyMacroBuilder {
 
     return body {
       let loggable = LoggableSyntax(for: node.loggable)
+      loggable.event(at: location, for: function)
+
       switch function.isThrowing {
       case false where function.isVoid:
         function.body
-        CodeBlockItemSyntax(
-          loggable.event(
-            for: function.description,
-            at: location
-          )
-        )
-        CodeBlockItemSyntax(loggable.emit)
+        loggable.emit
 
       case true where function.isVoid:
         CodeBlockItemSyntax(function.plain)
         CodeBlockItemSyntax.try {
           CodeBlockItemSyntax.call(function)
         } catch: {
+//          loggable.capture(.error)
+//          loggable.emit
           loggable.log {
             Argument(.at, content: location)
             Argument(.of, content: function.description)
