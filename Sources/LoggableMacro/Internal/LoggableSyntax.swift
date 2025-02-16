@@ -7,6 +7,7 @@ struct LoggableSyntax {
   enum ExprSyntaxType: Equatable {
     case stringLiteral(String)
     case declReference(TokenSyntax)
+    case array([TokenSyntax])
 
     var exprSytnaxProtocol: ExprSyntaxProtocol {
       switch self {
@@ -15,8 +16,90 @@ struct LoggableSyntax {
 
       case let .declReference(baseName):
         return DeclReferenceExprSyntax(baseName: baseName)
+        
+      case let .array(elements):
+        return ArrayExprSyntax(
+          elements: ArrayElementListSyntax(
+            elements.map { element in
+              ArrayElementSyntax(
+                expression: DeclReferenceExprSyntax(baseName: element),
+                trailingComma: .commaToken(
+                  presence: elements.last == element
+                    ? .missing
+                    : .present
+                )
+              )
+            }
+          )
+        )
       }
     }
+  }
+
+  func event(for declaration: String, at location: String) -> VariableDeclSyntax {
+    VariableDeclSyntax(
+      bindingSpecifier: .keyword(.var),
+      bindings: PatternBindingListSyntax(
+        arrayLiteral: PatternBindingSyntax(
+          pattern: IdentifierPatternSyntax(identifier: .identifier("event")),
+          initializer: InitializerClauseSyntax(
+            value: FunctionCallExprSyntax(
+              calledExpression: MemberAccessExprSyntax(
+                base: DeclReferenceExprSyntax(baseName: .Loggable),
+                name: .identifier("Event")
+              ),
+              leftParen: .leftParenToken(),
+              arguments: LabeledExprListSyntax(
+                  [
+                    LabeledExprSyntax(
+                    label: "location",
+                    colon: .colonToken(),
+                    expression: StringLiteralExprSyntax(content: location),
+                    trailingComma: .commaToken()
+                  ),
+                  LabeledExprSyntax(
+                    label: "declaration",
+                    colon: .colonToken(),
+                    expression: StringLiteralExprSyntax(content: declaration)
+                  )
+                ]
+              ),
+              rightParen: .rightParenToken()
+            )
+          )
+        )
+      )
+    )
+  }
+
+  func event(type: TokenSyntax, rightOperand expression: ExprSyntaxType) -> InfixOperatorExprSyntax {
+    InfixOperatorExprSyntax(
+      leftOperand: MemberAccessExprSyntax(
+        base: DeclReferenceExprSyntax(baseName: .identifier("event")),
+        name: type
+      ),
+      operator: AssignmentExprSyntax(),
+      rightOperand: expression.exprSytnaxProtocol
+    )
+  }
+
+  var emit: FunctionCallExprSyntax {
+    FunctionCallExprSyntax(
+      calledExpression: MemberAccessExprSyntax(
+        base: ExprSyntax(expression),
+        period: .periodToken(),
+        name: .identifier("emit")
+      ),
+      leftParen: .leftParenToken(),
+      arguments: LabeledExprListSyntax(
+        arrayLiteral: LabeledExprSyntax(
+          label: .identifier("event"),
+          colon: .colonToken(),
+          expression: DeclReferenceExprSyntax(baseName: .identifier("event"))
+        )
+      ),
+      rightParen: .rightParenToken()
+    )
   }
 
   struct ArgumentSyntax: Equatable {
@@ -35,6 +118,13 @@ struct LoggableSyntax {
     private init(label: TokenSyntax, expression: ExprSyntaxType) {
       self.label = label
       self.expression = expression
+    }
+    
+    init(_ label: TokenSyntax, reference elements: [TokenSyntax]) {
+      self.init(
+        label: label,
+        expression: .array(elements)
+      )
     }
 
     init(_ label: TokenSyntax, reference syntax: TokenSyntax) {

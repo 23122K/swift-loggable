@@ -1,43 +1,17 @@
 import Foundation
-import LocalAuthentication
 import Loggable
-import OSLog
 
-@Logged
-class Foo<E: Error> {
-  struct Person {
-    var age = 12
-  }
-
-  @Log
-  func bar(_ value: @escaping @autoclosure () -> Int) -> Int {
-    return value()
-  }
-
-  @Log
-  func baz(value: inout Int) -> Int {
-    return value * 2
-  }
-
-  @Log
-  func throwing() throws {
-    throw NSError(domain: "foo.domain", code: .zero)
-    print("XD")
-  }
-
-  func genericParameter(error: E) throws {
-    throw error
-  }
-
-  func genericParameterWithWhereClouse(error: E) throws {
-    throw error
-  }
+@Log
+func foo(
+  value: String,
+  _ intValue: Int = 0,
+  someInout: inout Bool,
+  callback: @escaping @autoclosure () throws -> String
+) {
+  print(try? callback())
+  print("foo of intValue: \(value)")
 }
 
-let foo = Foo<NSError>()
-let x: () -> Int = { 2 }
-var y = 2
-foo.bar(2)
-do {
-  try foo.throwing()
-} catch {}
+
+var voo = true
+foo(value: "Gello", someInout: &voo, callback: "Some callback")

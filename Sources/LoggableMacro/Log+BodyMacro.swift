@@ -16,15 +16,17 @@ public struct LogMacro: BodyMacro, BodyMacroBuilder {
     else { return body() }
 
     return body {
-      // TODO: - Hande the logging of parametres provided to a function
       let loggable = LoggableSyntax(for: node.loggable)
       switch function.isThrowing {
       case false where function.isVoid:
         function.body
-        loggable.log {
-          Argument(.at, content: location)
-          Argument(.of, content: function.description)
-        }
+        CodeBlockItemSyntax(
+          loggable.event(
+            for: function.description,
+            at: location
+          )
+        )
+        CodeBlockItemSyntax(loggable.emit)
 
       case true where function.isVoid:
         CodeBlockItemSyntax(function.plain)
