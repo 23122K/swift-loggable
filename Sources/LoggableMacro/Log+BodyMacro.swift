@@ -19,6 +19,10 @@ public struct LogMacro: BodyMacro, BodyMacroBuilder {
       let loggable = LoggableSyntax(for: node.loggable)
       loggable.event(at: location, for: function)
 
+      if !function.parameters.isEmpty {
+        loggable.capture(.parameters(function.parameters))
+      }
+
       switch function.isThrowing {
       case false where function.isVoid:
         function.body
@@ -29,13 +33,8 @@ public struct LogMacro: BodyMacro, BodyMacroBuilder {
         CodeBlockItemSyntax.try {
           CodeBlockItemSyntax.call(function)
         } catch: {
-//          loggable.capture(.error)
-//          loggable.emit
-          loggable.log {
-            Argument(.at, content: location)
-            Argument(.of, content: function.description)
-            Argument(.error, reference: .error)
-          }
+          loggable.capture(.error)
+          loggable.emit
           CodeBlockItemSyntax.rethrow
         }
 
@@ -43,29 +42,20 @@ public struct LogMacro: BodyMacro, BodyMacroBuilder {
         CodeBlockItemSyntax(function.plain)
         CodeBlockItemSyntax.try {
           CodeBlockItemSyntax.call(function)
-          loggable.log {
-            Argument(.at, content: location)
-            Argument(.of, content: function.description)
-            Argument(.result, reference: .result)
-          }
+          loggable.capture(.result)
+          loggable.emit
           CodeBlockItemSyntax.return
         } catch: {
-          loggable.log {
-            Argument(.at, content: location)
-            Argument(.of, content: function.description)
-            Argument(.error, reference: .error)
-          }
+          loggable.capture(.error)
+          loggable.emit
           CodeBlockItemSyntax.rethrow
         }
 
       case false:
         CodeBlockItemSyntax(function.plain)
         CodeBlockItemSyntax.call(function)
-        loggable.log {
-          Argument(.at, content: location)
-          Argument(.of, content: function.description)
-          Argument(.result, reference: .result)
-        }
+        loggable.capture(.result)
+        loggable.emit
         CodeBlockItemSyntax.return
       }
     }

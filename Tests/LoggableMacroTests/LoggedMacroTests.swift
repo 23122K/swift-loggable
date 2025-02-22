@@ -105,4 +105,51 @@ final class LoggedMacroTests: XCTestCase {
       """
     }
   }
+
+  func test_struct_withCustomLoggableImplementation() throws {
+    assertMacro {
+      #"""
+      @Logged(using: .custom)
+      class Foo {
+        func identity<T>(_ value: T) -> T {
+          return value
+        }
+
+        func makeIncrementer() -> (Int) -> Int {
+          return { $0 + 1 }
+        }
+
+        @Log
+        func fetchData(completion: @escaping () async -> String) {
+          Task {
+            let data = await completion()
+            print(data)
+          }
+        }
+      }
+      """#
+    } expansion: {
+      """
+      class Foo {
+        @Log(using: .custom)
+        func identity<T>(_ value: T) -> T {
+          return value
+        }
+        @Log(using: .custom)
+
+        func makeIncrementer() -> (Int) -> Int {
+          return { $0 + 1 }
+        }
+
+        @Log
+        func fetchData(completion: @escaping () async -> String) {
+          Task {
+            let data = await completion()
+            print(data)
+          }
+        }
+      }
+      """
+    }
+  }
 }

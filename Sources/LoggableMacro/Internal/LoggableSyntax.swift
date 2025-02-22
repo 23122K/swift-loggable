@@ -4,38 +4,6 @@ import SwiftSyntax
 struct LoggableSyntax {
   let expression: any ExprSyntaxProtocol
 
-  enum ExprSyntaxType: Equatable {
-    case stringLiteral(String)
-    case declReference(TokenSyntax)
-    case array([TokenSyntax])
-
-    var exprSytnaxProtocol: ExprSyntaxProtocol {
-      switch self {
-      case let .stringLiteral(content):
-        return StringLiteralExprSyntax(content: content)
-
-      case let .declReference(baseName):
-        return DeclReferenceExprSyntax(baseName: baseName)
-        
-      case let .array(elements):
-        return ArrayExprSyntax(
-          elements: ArrayElementListSyntax(
-            elements.map { element in
-              ArrayElementSyntax(
-                expression: DeclReferenceExprSyntax(baseName: element),
-                trailingComma: .commaToken(
-                  presence: elements.last == element
-                    ? .missing
-                    : .present
-                )
-              )
-            }
-          )
-        )
-      }
-    }
-  }
-
   func event(at location: String, for declaration: FunctionSyntax) -> CodeBlockItemSyntax {
     CodeBlockItemSyntax(
       VariableDeclSyntax(
@@ -50,21 +18,23 @@ struct LoggableSyntax {
                   name: .identifier("Event")
                 ),
                 leftParen: .leftParenToken(),
-                arguments: LabeledExprListSyntax(
-                    [
-                      LabeledExprSyntax(
-                      label: "location",
-                      colon: .colonToken(),
-                      expression: StringLiteralExprSyntax(content: location),
-                      trailingComma: .commaToken()
-                    ),
-                    LabeledExprSyntax(
-                      label: "declaration",
-                      colon: .colonToken(),
-                      expression: StringLiteralExprSyntax(content: declaration.description)
-                    )
-                  ]
-                ),
+                arguments: LabeledExprListSyntax {
+                  LabeledExprSyntax(
+                    leadingTrivia: .newline,
+                    label: "location",
+                    colon: .colonToken(),
+                    expression: StringLiteralExprSyntax(content: location),
+                    trailingComma: .commaToken(),
+                    trailingTrivia: .newline
+                  )
+
+                  LabeledExprSyntax(
+                    label: "declaration",
+                    colon: .colonToken(),
+                    expression: StringLiteralExprSyntax(content: declaration.description),
+                    trailingTrivia: .newline
+                  )
+                },
                 rightParen: .rightParenToken()
               )
             )
@@ -74,15 +44,15 @@ struct LoggableSyntax {
     )
   }
 
-  func capture(_ name: TokenSyntax, result expression: ExprSyntaxType) -> CodeBlockItemSyntax {
+  func capture(_ argument: ArgumentSyntax) -> CodeBlockItemSyntax {
     CodeBlockItemSyntax(
       InfixOperatorExprSyntax(
         leftOperand: MemberAccessExprSyntax(
           base: DeclReferenceExprSyntax(baseName: .identifier("event")),
-          name: name
+          name: argument.label
         ),
         operator: AssignmentExprSyntax(),
-        rightOperand: expression.exprSytnaxProtocol
+        rightOperand: argument.expression.exprSytnaxProtocol
       )
     )
   }
@@ -108,6 +78,39 @@ struct LoggableSyntax {
     )
   }
 
+  enum ExprSyntaxType: Equatable {
+    case stringLiteral(String)
+    case declReference(TokenSyntax)
+    case dictionary([TokenSyntax])
+
+    var exprSytnaxProtocol: ExprSyntaxProtocol {
+      switch self {
+      case let .stringLiteral(content):
+        return StringLiteralExprSyntax(content: content)
+
+      case let .declReference(baseName):
+        return DeclReferenceExprSyntax(baseName: baseName)
+
+      case let .dictionary(elements):
+        return DictionaryExprSyntax(
+          leftSquare: .leftSquareToken(trailingTrivia: .newline),
+          rightSquare: .rightSquareToken(leadingTrivia: .newline)
+        ) {
+          DictionaryElementListSyntax {
+            elements.map { element in
+              DictionaryElementSyntax(
+                key: StringLiteralExprSyntax(content: element.text),
+                value: DeclReferenceExprSyntax(baseName: element.trimmed),
+                trailingComma: .commaToken(presence: elements.last == element ? .missing : .present),
+                trailingTrivia: .newline
+              )
+            }
+          }
+        }
+      }
+    }
+  }
+
   struct ArgumentSyntax: Equatable {
     let label: TokenSyntax
     let expression: ExprSyntaxType
@@ -126,10 +129,10 @@ struct LoggableSyntax {
       self.expression = expression
     }
     
-    init(_ label: TokenSyntax, reference elements: [TokenSyntax]) {
+    init(_ label: TokenSyntax, elements: [TokenSyntax]) {
       self.init(
         label: label,
-        expression: .array(elements)
+        expression: .dictionary(elements)
       )
     }
 
@@ -148,47 +151,28 @@ struct LoggableSyntax {
     }
   }
 
-  @resultBuilder
-  struct ArgumentSyntaxBuilder {
-    static func buildBlock(_ components: [ArgumentSyntax]...) -> [ArgumentSyntax] {
-      components.flatMap { $0 }
-    }
-
-    static func buildExpression(_ expression: ArgumentSyntax) -> [ArgumentSyntax] {
-      [expression]
-    }
-
-    static func buildExpression(_ expression: [ArgumentSyntax]) -> [ArgumentSyntax] {
-      expression
-    }
-  }
-
-  func log(
-    @ArgumentSyntaxBuilder _ arguments: () -> [ArgumentSyntax]
-  ) -> CodeBlockItemSyntax {
-    CodeBlockItemSyntax(
-      FunctionCallExprSyntax(
-        calledExpression: MemberAccessExprSyntax(
-          base: ExprSyntax(expression),
-          period: .periodToken(),
-          name: .log
-        ),
-        leftParen: .leftParenToken(),
-        arguments: LabeledExprListSyntax(
-          arguments().map { argument in
-            argument.labeledExprSyntax(
-              comma: arguments().last == argument
-                ? .missing
-                : .present
-            )
-          }
-        ),
-        rightParen: .rightParenToken()
-      )
-    )
-  }
-
   init(for expression: some ExprSyntaxProtocol) {
     self.expression = expression
+  }
+}
+
+extension LoggableSyntax.ArgumentSyntax {
+  static let error = LoggableSyntax.ArgumentSyntax(
+    .error,
+    reference: .error
+  )
+
+  static let result = LoggableSyntax.ArgumentSyntax(
+    .result,
+    reference: .result
+  )
+
+  static func parameters(
+    _ parameters: [FunctionSyntax.Signature.Parameter]
+  ) -> LoggableSyntax.ArgumentSyntax {
+    LoggableSyntax.ArgumentSyntax(
+      .identifier("parameters"),
+      elements: parameters.map(\.name)
+    )
   }
 }
