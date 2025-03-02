@@ -27,7 +27,6 @@ struct LoggableSyntax {
                     trailingComma: .commaToken(),
                     trailingTrivia: .newline
                   )
-
                   LabeledExprSyntax(
                     label: .predefined.declaration,
                     colon: .colonToken(),
@@ -114,41 +113,6 @@ struct LoggableSyntax {
   struct ArgumentSyntax: Equatable {
     let label: TokenSyntax
     let expression: ExprSyntaxType
-
-    func labeledExprSyntax(comma presence: SourcePresence) -> LabeledExprSyntax {
-      LabeledExprSyntax(
-        label: label,
-        colon: .colonToken(),
-        expression: expression.exprSytnaxProtocol,
-        trailingComma: .commaToken(presence: presence)
-      )
-    }
-
-    private init(label: TokenSyntax, expression: ExprSyntaxType) {
-      self.label = label
-      self.expression = expression
-    }
-    
-    init(_ label: TokenSyntax, elements: [TokenSyntax]) {
-      self.init(
-        label: label,
-        expression: .dictionary(elements)
-      )
-    }
-
-    init(_ label: TokenSyntax, reference syntax: TokenSyntax) {
-      self.init(
-        label: label,
-        expression: .declReference(syntax)
-      )
-    }
-
-    init(_ label: TokenSyntax, content: String) {
-      self.init(
-        label: label,
-        expression: .stringLiteral(content)
-      )
-    }
   }
 
   init(for expression: some ExprSyntaxProtocol) {
@@ -158,21 +122,21 @@ struct LoggableSyntax {
 
 extension LoggableSyntax.ArgumentSyntax {
   static let error = LoggableSyntax.ArgumentSyntax(
-    .predefined.error,
-    reference: .predefined.error
+    label: .predefined.error,
+    expression: .declReference(.predefined.error)
   )
 
   static let result = LoggableSyntax.ArgumentSyntax(
-    .predefined.result,
-    reference: .predefined.result
+    label: .predefined.result,
+    expression: .declReference(.predefined.result)
   )
 
   static func parameters(
-    _ parameters: [FunctionSyntax.Signature.Parameter]
+    _ elements: [FunctionSyntax.Signature.Parameter]
   ) -> LoggableSyntax.ArgumentSyntax {
     LoggableSyntax.ArgumentSyntax(
-      .predefined.parameters,
-      elements: parameters.map(\.name)
+      label: .predefined.parameters,
+      expression: .dictionary(elements.map(\.name))
     )
   }
 }
