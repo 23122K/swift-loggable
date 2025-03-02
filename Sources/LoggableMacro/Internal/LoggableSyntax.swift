@@ -10,18 +10,18 @@ struct LoggableSyntax {
         bindingSpecifier: .keyword(.var),
         bindings: PatternBindingListSyntax(
           arrayLiteral: PatternBindingSyntax(
-            pattern: IdentifierPatternSyntax(identifier: .identifier("event")),
+            pattern: IdentifierPatternSyntax(identifier: .predefined.event),
             initializer: InitializerClauseSyntax(
               value: FunctionCallExprSyntax(
                 calledExpression: MemberAccessExprSyntax(
-                  base: DeclReferenceExprSyntax(baseName: .Loggable),
-                  name: .identifier("Event")
+                  base: DeclReferenceExprSyntax(baseName: .predefined.Loggable),
+                  name: .predefined.Event
                 ),
                 leftParen: .leftParenToken(),
                 arguments: LabeledExprListSyntax {
                   LabeledExprSyntax(
                     leadingTrivia: .newline,
-                    label: "location",
+                    label: .predefined.location,
                     colon: .colonToken(),
                     expression: StringLiteralExprSyntax(content: location),
                     trailingComma: .commaToken(),
@@ -29,7 +29,7 @@ struct LoggableSyntax {
                   )
 
                   LabeledExprSyntax(
-                    label: "declaration",
+                    label: .predefined.declaration,
                     colon: .colonToken(),
                     expression: StringLiteralExprSyntax(content: declaration.description),
                     trailingTrivia: .newline
@@ -48,7 +48,7 @@ struct LoggableSyntax {
     CodeBlockItemSyntax(
       InfixOperatorExprSyntax(
         leftOperand: MemberAccessExprSyntax(
-          base: DeclReferenceExprSyntax(baseName: .identifier("event")),
+          base: DeclReferenceExprSyntax(baseName: .predefined.event),
           name: argument.label
         ),
         operator: AssignmentExprSyntax(),
@@ -63,14 +63,14 @@ struct LoggableSyntax {
         calledExpression: MemberAccessExprSyntax(
           base: ExprSyntax(expression),
           period: .periodToken(),
-          name: .identifier("emit")
+          name: .predefined.emit
         ),
         leftParen: .leftParenToken(),
         arguments: LabeledExprListSyntax(
           arrayLiteral: LabeledExprSyntax(
-            label: .identifier("event"),
+            label: .predefined.event,
             colon: .colonToken(),
-            expression: DeclReferenceExprSyntax(baseName: .identifier("event"))
+            expression: DeclReferenceExprSyntax(baseName: .predefined.event)
           )
         ),
         rightParen: .rightParenToken()
@@ -158,20 +158,20 @@ struct LoggableSyntax {
 
 extension LoggableSyntax.ArgumentSyntax {
   static let error = LoggableSyntax.ArgumentSyntax(
-    .error,
-    reference: .error
+    .predefined.error,
+    reference: .predefined.error
   )
 
   static let result = LoggableSyntax.ArgumentSyntax(
-    .result,
-    reference: .result
+    .predefined.result,
+    reference: .predefined.result
   )
 
   static func parameters(
     _ parameters: [FunctionSyntax.Signature.Parameter]
   ) -> LoggableSyntax.ArgumentSyntax {
     LoggableSyntax.ArgumentSyntax(
-      .identifier("parameters"),
+      .predefined.parameters,
       elements: parameters.map(\.name)
     )
   }

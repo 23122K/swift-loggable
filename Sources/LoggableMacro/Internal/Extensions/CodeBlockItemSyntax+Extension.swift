@@ -16,7 +16,7 @@ extension CodeBlockItemSyntax {
   static let rethrow = CodeBlockItemSyntax(
     ThrowStmtSyntax(
       expression: DeclReferenceExprSyntax(
-        baseName: .error
+        baseName: .predefined.error
       )
     )
   )
@@ -52,7 +52,7 @@ extension CodeBlockItemSyntax {
                 pattern: IdentifierPatternSyntax(
                   identifier: function.isVoid
                     ? .identifier("_")
-                    : .result
+                    : .predefined.result
                 ),
                 initializer: function.initializer
               )
@@ -68,7 +68,7 @@ extension CodeBlockItemSyntax {
       StmtSyntax(
         ReturnStmtSyntax(
           expression: DeclReferenceExprSyntax(
-            baseName: .result
+            baseName: .predefined.result
           )
         )
       )

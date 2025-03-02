@@ -132,7 +132,7 @@ struct FunctionSyntax {
         return attributedType.attributes.contains { attribute in
           guard case let .attribute(syntax) = attribute else { return false }
           guard let name = syntax.attributeName.as(IdentifierTypeSyntax.self) else { return false }
-          return name.name.tokenKind == .autoclosure
+          return name.name.tokenKind == .predefined.autoclosure
         }
       }
 
