@@ -1,12 +1,30 @@
 import SwiftSyntax
 
 extension TokenKind {
-  struct Predefined {
-    let autoclosure = TokenKind.identifier("autoclosure")
-    let using = TokenKind.identifier("using")
-    let omit = TokenKind.identifier("Omit")
-    let log = TokenKind.identifier("Log")
+  enum Predefined {
+    case autoclosure
+    case using
+    case Omit
+    case Log
+
+    var identifer: TokenKind {
+      switch self {
+      case .autoclosure:
+        return TokenKind.identifier("autoclosure")
+
+      case .using:
+        return TokenKind.identifier("using")
+
+      case .Omit:
+        return TokenKind.identifier("Omit")
+
+      case .Log:
+        return TokenKind.identifier("Log")
+      }
+    }
   }
 
-  static let predefined = Predefined()
+  static func predefined(_ token: Predefined) -> TokenKind {
+    token.identifer
+  }
 }

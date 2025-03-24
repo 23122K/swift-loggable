@@ -6,7 +6,7 @@ extension AttributeListSyntax.Element {
     case let .attribute(attribute):
       guard let syntax = IdentifierTypeSyntax(attribute.attributeName)
       else { fallthrough }
-      return syntax.name.tokenKind == .predefined.omit || syntax.name.tokenKind == .predefined.log
+      return syntax.name.tokenKind == .predefined(.Omit) || syntax.name.tokenKind == .predefined(.Log)
 
     default:
       return false

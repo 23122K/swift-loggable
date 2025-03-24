@@ -16,7 +16,7 @@ extension CodeBlockItemSyntax {
   static let rethrow = CodeBlockItemSyntax(
     ThrowStmtSyntax(
       expression: DeclReferenceExprSyntax(
-        baseName: .predefined.error
+        baseName: .predefined(.error)
       )
     )
   )
@@ -50,9 +50,11 @@ extension CodeBlockItemSyntax {
             bindings: PatternBindingListSyntax(
               arrayLiteral: PatternBindingSyntax(
                 pattern: IdentifierPatternSyntax(
-                  identifier: function.isVoid
-                    ? .identifier("_")
-                    : .predefined.result
+                  identifier: .predefined(
+                    function.isVoid
+                      ? ._
+                      : .result
+                  )
                 ),
                 initializer: function.initializer
               )
@@ -68,7 +70,7 @@ extension CodeBlockItemSyntax {
       StmtSyntax(
         ReturnStmtSyntax(
           expression: DeclReferenceExprSyntax(
-            baseName: .predefined.result
+            baseName: .predefined(.result)
           )
         )
       )

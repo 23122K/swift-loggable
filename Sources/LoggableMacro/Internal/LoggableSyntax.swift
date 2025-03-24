@@ -4,31 +4,56 @@ import SwiftSyntax
 struct LoggableSyntax {
   let expression: any ExprSyntaxProtocol
 
+  func initialize() -> CodeBlockItemSyntax {
+    CodeBlockItemSyntax(
+      VariableDeclSyntax(
+        bindingSpecifier: .keyword(.let),
+        bindings: PatternBindingListSyntax(
+          arrayLiteral: PatternBindingSyntax(
+            pattern: IdentifierPatternSyntax(
+              identifier: .predefined(.loggable)
+            ),
+            typeAnnotation: TypeAnnotationSyntax(
+              type: SomeOrAnyTypeSyntax(
+                someOrAnySpecifier: .keyword(.any),
+                constraint: IdentifierTypeSyntax(
+                  name: .predefined(.Loggable)
+                )
+              )
+            ),
+            initializer: InitializerClauseSyntax(
+              value: DeclReferenceExprSyntax(baseName: .identifier(".signposter"))
+            )
+          )
+        )
+      )
+    )
+  }
+
   func event(at location: String, for declaration: FunctionSyntax) -> CodeBlockItemSyntax {
     CodeBlockItemSyntax(
       VariableDeclSyntax(
         bindingSpecifier: .keyword(.var),
         bindings: PatternBindingListSyntax(
           arrayLiteral: PatternBindingSyntax(
-            pattern: IdentifierPatternSyntax(identifier: .predefined.event),
+            pattern: IdentifierPatternSyntax(identifier: .predefined(.event)),
             initializer: InitializerClauseSyntax(
               value: FunctionCallExprSyntax(
-                calledExpression: MemberAccessExprSyntax(
-                  base: DeclReferenceExprSyntax(baseName: .predefined.Loggable),
-                  name: .predefined.Event
+                calledExpression: DeclReferenceExprSyntax(
+                  baseName: .predefined(.Event)
                 ),
                 leftParen: .leftParenToken(),
                 arguments: LabeledExprListSyntax {
                   LabeledExprSyntax(
                     leadingTrivia: .newline,
-                    label: .predefined.location,
+                    label: .predefined(.location),
                     colon: .colonToken(),
                     expression: StringLiteralExprSyntax(content: location),
                     trailingComma: .commaToken(),
                     trailingTrivia: .newline
                   )
                   LabeledExprSyntax(
-                    label: .predefined.declaration,
+                    label: .predefined(.declaration),
                     colon: .colonToken(),
                     expression: StringLiteralExprSyntax(content: declaration.description),
                     trailingTrivia: .newline
@@ -47,7 +72,7 @@ struct LoggableSyntax {
     CodeBlockItemSyntax(
       InfixOperatorExprSyntax(
         leftOperand: MemberAccessExprSyntax(
-          base: DeclReferenceExprSyntax(baseName: .predefined.event),
+          base: DeclReferenceExprSyntax(baseName: .predefined(.event)),
           name: argument.label
         ),
         operator: AssignmentExprSyntax(),
@@ -60,16 +85,18 @@ struct LoggableSyntax {
     CodeBlockItemSyntax (
       FunctionCallExprSyntax(
         calledExpression: MemberAccessExprSyntax(
-          base: ExprSyntax(expression),
+          base: DeclReferenceExprSyntax(
+            baseName: .predefined(.loggable)
+          ),
           period: .periodToken(),
-          name: .predefined.emit
+          name: .predefined(.emit)
         ),
         leftParen: .leftParenToken(),
         arguments: LabeledExprListSyntax(
           arrayLiteral: LabeledExprSyntax(
-            label: .predefined.event,
+            label: .predefined(.event),
             colon: .colonToken(),
-            expression: DeclReferenceExprSyntax(baseName: .predefined.event)
+            expression: DeclReferenceExprSyntax(baseName: .predefined(.event))
           )
         ),
         rightParen: .rightParenToken()
@@ -122,20 +149,20 @@ struct LoggableSyntax {
 
 extension LoggableSyntax.ArgumentSyntax {
   static let error = LoggableSyntax.ArgumentSyntax(
-    label: .predefined.error,
-    expression: .declReference(.predefined.error)
+    label: .predefined(.error),
+    expression: .declReference(.predefined(.error))
   )
 
   static let result = LoggableSyntax.ArgumentSyntax(
-    label: .predefined.result,
-    expression: .declReference(.predefined.result)
+    label: .predefined(.result),
+    expression: .declReference(.predefined(.result))
   )
 
   static func parameters(
     _ elements: [FunctionSyntax.Signature.Parameter]
   ) -> LoggableSyntax.ArgumentSyntax {
     LoggableSyntax.ArgumentSyntax(
-      label: .predefined.parameters,
+      label: .predefined(.parameters),
       expression: .dictionary(elements.map(\.name))
     )
   }

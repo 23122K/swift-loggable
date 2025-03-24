@@ -1,11 +1,11 @@
 @attached(memberAttribute)
-public macro Logged(using loggable: Loggable = .default) = #externalMacro(
+public macro Logged(using loggable: any Loggable = .signposter) = #externalMacro(
   module: "LoggableMacro",
   type: "LoggedMacro"
 )
 
 @attached(body)
-public macro Log(using loggable: Loggable = .default) = #externalMacro(
+public macro Log(using loggable: any Loggable = .signposter) = #externalMacro(
   module: "LoggableMacro",
   type: "LogMacro"
 )

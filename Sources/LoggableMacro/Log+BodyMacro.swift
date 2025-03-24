@@ -17,6 +17,7 @@ public struct LogMacro: BodyMacro, BodyMacroBuilder {
 
     return body {
       let loggable = LoggableSyntax(for: node.loggable)
+      loggable.initialize()
       loggable.event(at: location, for: function)
 
       if !function.parameters.isEmpty {
