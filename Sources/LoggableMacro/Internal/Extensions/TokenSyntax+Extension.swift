@@ -17,6 +17,7 @@ extension TokenSyntax {
     case parameters
     case signposter
     case declaration
+    case Conformance
 
     var identifier: TokenSyntax {
       switch self {
@@ -64,6 +65,9 @@ extension TokenSyntax {
 
       case .declaration:
         return TokenSyntax.identifier("declaration")
+
+      case .Conformance:
+        return TokenSyntax.identifier("Conformance")
       }
     }
   }

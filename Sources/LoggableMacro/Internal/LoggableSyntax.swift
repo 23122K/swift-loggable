@@ -16,8 +16,11 @@ struct LoggableSyntax {
             typeAnnotation: TypeAnnotationSyntax(
               type: SomeOrAnyTypeSyntax(
                 someOrAnySpecifier: .keyword(.any),
-                constraint: IdentifierTypeSyntax(
-                  name: .predefined(.Loggable)
+                constraint: MemberTypeSyntax(
+                  baseType: IdentifierTypeSyntax(
+                    name: .predefined(.Loggable)
+                  ),
+                  name: .predefined(.Conformance)
                 )
               )
             ),
@@ -39,8 +42,11 @@ struct LoggableSyntax {
             pattern: IdentifierPatternSyntax(identifier: .predefined(.event)),
             initializer: InitializerClauseSyntax(
               value: FunctionCallExprSyntax(
-                calledExpression: DeclReferenceExprSyntax(
-                  baseName: .predefined(.Event)
+                calledExpression: MemberAccessExprSyntax(
+                  base: DeclReferenceExprSyntax(
+                    baseName: .predefined(.Loggable)
+                  ),
+                  name: .predefined(.Event)
                 ),
                 leftParen: .leftParenToken(),
                 arguments: LabeledExprListSyntax {

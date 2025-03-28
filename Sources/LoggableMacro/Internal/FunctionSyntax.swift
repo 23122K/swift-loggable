@@ -3,6 +3,7 @@ import SwiftSyntax
 @dynamicMemberLookup
 struct FunctionSyntax {
   let syntax: FunctionDeclSyntax
+  let attributes: [Attribute]
   let signature: Signature
   
   /// Returns the original body of the called function as an array of `CodeBlockItemSyntax`.
@@ -196,14 +197,37 @@ struct FunctionSyntax {
     }
   }
 
+  struct Attribute {
+    let syntax: AttributeSyntax
+    let name: TokenSyntax
+
+    var isLogMacroPresent: Bool {
+      self.name == .predefined(.Log)
+    }
+  }
+
   init(_ syntax: FunctionDeclSyntax) {
     self.syntax = syntax
     self.signature = Signature(syntax: syntax.signature)
+    self.attributes = syntax.attributes.compactMap(\.asFunctionSyntaxAttribute)
   }
 
   init?(from syntax: some DeclSyntaxProtocol) {
     guard let syntax = syntax.as(FunctionDeclSyntax.self)
     else { return nil }
     self.init(syntax)
+  }
+}
+
+extension AttributeListSyntax.Element {
+  var asFunctionSyntaxAttribute: FunctionSyntax.Attribute? {
+    guard
+      case let .attribute(syntax) = self,
+      let identifier = IdentifierTypeSyntax(syntax.attributeName)
+    else { return nil }
+    return FunctionSyntax.Attribute(
+      syntax: syntax,
+      name: identifier.name
+    )
   }
 }

@@ -2,37 +2,13 @@ import SwiftSyntax
 
 extension AttributeSyntax {
   var loggable: ExprSyntax {
-    switch self.arguments {
-    case let .argumentList(arguments):
-      for argument in arguments {
-        switch argument {
-        case let argument where argument.label?.tokenKind == .predefined(.using):
-          switch argument.expression {
-          case let expression where expression.is(DeclReferenceExprSyntax.self):
-            return expression
+    guard case let .argumentList(arguments) = self.arguments
+    else { return Self.fallback() }
 
-          case let expression where expression.is(MemberAccessExprSyntax.self):
-            let syntax = expression.as(MemberAccessExprSyntax.self).unsafelyUnwrapped
-            return syntax.base == nil
-              ? Self.fallback(for: syntax.declName)
-              : expression
-
-          case let expression where expression.is(FunctionCallExprSyntax.self):
-            return expression
-
-          default:
-            continue
-          }
-
-        default:
-          continue
-        }
-      }
-      fallthrough
-
-    default:
-      return Self.fallback()
+    for argument in arguments where argument.label?.tokenKind == .predefined(.using) {
+      return argument.expression
     }
+    return Self.fallback()
   }
 
   static func copy(_ syntax: AttributeSyntax) -> AttributeSyntax {
@@ -48,14 +24,6 @@ extension AttributeSyntax {
   private static func fallback(
     for declName: DeclReferenceExprSyntax = DeclReferenceExprSyntax(baseName: .predefined(.signposter))
   ) -> ExprSyntax {
-    ExprSyntax(
-      MemberAccessExprSyntax(
-        base: DeclReferenceExprSyntax(
-          baseName: .predefined(.Loggable)
-        ),
-        period: .periodToken(),
-        declName: declName
-      )
-    )
+    ExprSyntax(declName)
   }
 }

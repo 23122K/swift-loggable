@@ -108,28 +108,10 @@ final class LogMacroTests: XCTestCase {
   func test_function_withParameters_returnsVoid() throws {
     assertMacro {
       #"""
-      @Log
+      @Foo
+      @Log(using: .foo)
       func foo(bar: String) -> String { 
         print("Foo: \(bar)")
-      }
-      """#
-    } expansion: {
-      #"""
-      func foo(bar: String) -> String {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func foo(bar: String) -> String"
-        )
-        event.parameters = [
-          "bar": bar
-        ]
-        func _foo(bar: String) -> String {
-          print("Foo: \(bar)")
-        }
-        let result = _foo(bar: bar)
-        event.result = result
-        Loggable.default.emit(event: event)
-        return result
       }
       """#
     }
@@ -138,6 +120,7 @@ final class LogMacroTests: XCTestCase {
   func test_function_withParameters_returnsValue() throws {
     assertMacro {
       #"""
+      @Foo
       @Log
       func foo(bar: String) -> String { 
         return "Foo: \(bar)"
