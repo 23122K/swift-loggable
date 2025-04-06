@@ -1,11 +1,22 @@
+@_exported public import LoggableCore
+
 @attached(memberAttribute)
-public macro Logged(using loggable: any Loggable.Conformance = .signposter) = #externalMacro(
+public macro Logged(using loggable: any Loggable = .signposter) = #externalMacro(
   module: "LoggableMacro",
   type: "LoggedMacro"
 )
 
 @attached(body)
-public macro Log(using loggable: any Loggable.Conformance = .signposter) = #externalMacro(
+public macro Log(using loggable: any Loggable = .signposter) = #externalMacro(
+  module: "LoggableMacro",
+  type: "LogMacro"
+)
+
+@attached(body)
+public macro Log(
+  using loggable: any Loggable = .signposter,
+  omit: any Ommitable...
+) = #externalMacro(
   module: "LoggableMacro",
   type: "LogMacro"
 )
@@ -17,13 +28,13 @@ public macro Omit() = #externalMacro(
 )
 
 @attached(body)
-public macro Omit(_ ommitableTraits: any Ommitable...) = #externalMacro(
+public macro Omit(_ traits: any Ommitable...) = #externalMacro(
   module: "LoggableMacro",
   type: "OmitMacro"
 )
 
 @attached(body)
-public macro Redact(_ redactableTraits: any Redactable...) = #externalMacro(
+public macro Tag(_ tag: any Taggable...) =  #externalMacro(
   module: "LoggableMacro",
-  type: "RedactMacro"
+  type: "TagMacro"
 )

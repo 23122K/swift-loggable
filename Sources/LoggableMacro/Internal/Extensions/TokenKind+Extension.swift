@@ -5,8 +5,11 @@ extension TokenKind {
     case autoclosure
     case capture
     case using
+    case omit
+    case Redact
     case Omit
     case Log
+    case Logged
     case redactableTraits
 
     var identifer: TokenKind {
@@ -23,8 +26,17 @@ extension TokenKind {
       case .Omit:
         return TokenKind.identifier("Omit")
 
+      case .omit:
+        return TokenKind.identifier("omit")
+
       case .Log:
         return TokenKind.identifier("Log")
+
+      case .Redact:
+        return TokenKind.identifier("Redact")
+
+      case .Logged:
+        return TokenKind.identifier("Logged")
 
       case .redactableTraits:
         return TokenKind.identifier("redactableTraits")

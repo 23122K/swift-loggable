@@ -1,4 +1,5 @@
 import SwiftSyntax
+import SwiftDiagnostics
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
@@ -14,6 +15,13 @@ public struct LogMacro: BodyMacro, BodyMacroBuilder {
     guard let location = context.location(of: declaration)?.findable,
           let function = FunctionSyntax(from: declaration)
     else { return body() }
+
+    context.diagnose(
+      Diagnostic(
+        node: node,
+        message: ._debug(function.traits.debugDescription)
+      )
+    )
 
     return body {
       let loggable = LoggableSyntax(for: node.loggable)
@@ -55,7 +63,7 @@ public struct LogMacro: BodyMacro, BodyMacroBuilder {
       case false:
         CodeBlockItemSyntax(function.plain)
         CodeBlockItemSyntax.call(function)
-        loggable.capture(.result)
+//        loggable.capture(.result)
         loggable.emit
         CodeBlockItemSyntax.return
       }

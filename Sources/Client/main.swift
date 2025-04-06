@@ -3,15 +3,20 @@ import Loggable
 import OSLog
 import SwiftUI
 
-extension Ommitable where Self == Loggable.Trait {
-  static var int: Self { ._parameter("int") }
-}
+@Logged
+struct Foo {
+  @Tag(.info)
+  @Omit(.result)
+  static func foo(value: String, int: Int) {
+    print("foo of intValue: \(value)")
+  }
 
-@Redact(.result)
-@Log
-func foo(value: String, int: Int) {
-  print("foo of intValue: \(value)")
+//  @Omit
+  static func someView() -> some View {
+    return EmptyView()
+  }
 }
 
 var voo = true
-foo(value: "Gello", int: .zero)
+Foo.foo(value: "Gello", int: .zero)
+

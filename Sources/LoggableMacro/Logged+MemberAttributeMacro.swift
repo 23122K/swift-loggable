@@ -10,8 +10,13 @@ public struct LoggedMacro: MemberAttributeMacro {
     in context: some MacroExpansionContext
   ) throws -> [AttributeSyntax] {
     guard let member = FunctionDeclSyntax(member),
-          !member.attributes.contains(where: \.isLoggableAttribute)
+          !member.attributes.contains(where: \.isLogOrOmitWithoutArgument)
     else { return [] }
+
+//    context.diagnose(
+//      .init(node: node, message: ._debug(member.debugDescription))
+//    )
+
     return [AttributeSyntax.copy(node)]
   }
 }

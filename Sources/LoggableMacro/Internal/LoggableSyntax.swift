@@ -1,4 +1,5 @@
 import Foundation
+import LoggableCore
 import SwiftSyntax
 
 struct LoggableSyntax {
@@ -16,11 +17,8 @@ struct LoggableSyntax {
             typeAnnotation: TypeAnnotationSyntax(
               type: SomeOrAnyTypeSyntax(
                 someOrAnySpecifier: .keyword(.any),
-                constraint: MemberTypeSyntax(
-                  baseType: IdentifierTypeSyntax(
-                    name: .predefined(.Loggable)
-                  ),
-                  name: .predefined(.Conformance)
+                constraint:IdentifierTypeSyntax(
+                  name: .predefined(.Loggable)
                 )
               )
             ),
@@ -42,11 +40,8 @@ struct LoggableSyntax {
             pattern: IdentifierPatternSyntax(identifier: .predefined(.event)),
             initializer: InitializerClauseSyntax(
               value: FunctionCallExprSyntax(
-                calledExpression: MemberAccessExprSyntax(
-                  base: DeclReferenceExprSyntax(
-                    baseName: .predefined(.Loggable)
-                  ),
-                  name: .predefined(.Event)
+                calledExpression: DeclReferenceExprSyntax(
+                  baseName: .predefined(.LoggableEvent)
                 ),
                 leftParen: .leftParenToken(),
                 arguments: LabeledExprListSyntax {

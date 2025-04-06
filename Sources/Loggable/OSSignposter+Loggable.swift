@@ -1,7 +1,8 @@
 import OSLog
+import LoggableCore
 
-extension OSSignposter: Loggable.Conformance {
-  public func emit(event: Loggable.Event) {
+extension OSSignposter: Loggable {
+  public func emit(event: LoggableEvent) {
     os_log(
       event.result.isSuccess ? .info : .error,
       "→ Function: %@\n→ Location: %@\n→ Parameters: %@\n→ Result: %@",
@@ -10,6 +11,6 @@ extension OSSignposter: Loggable.Conformance {
   }
 }
 
-extension Loggable.Conformance where Self == OSSignposter {
+extension Loggable where Self == OSSignposter {
   public static var signposter: Self { Self() }
 }

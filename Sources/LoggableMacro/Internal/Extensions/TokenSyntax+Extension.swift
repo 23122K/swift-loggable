@@ -18,6 +18,9 @@ extension TokenSyntax {
     case signposter
     case declaration
     case Conformance
+    case LoggableEvent
+    case Omit
+    case Redact
 
     var identifier: TokenSyntax {
       switch self {
@@ -68,6 +71,15 @@ extension TokenSyntax {
 
       case .Conformance:
         return TokenSyntax.identifier("Conformance")
+
+      case .LoggableEvent:
+        return TokenSyntax.identifier("LoggableEvent")
+
+      case .Omit:
+        return TokenSyntax.identifier("Omit")
+
+      case .Redact:
+        return TokenSyntax.identifier("Redact")
       }
     }
   }
