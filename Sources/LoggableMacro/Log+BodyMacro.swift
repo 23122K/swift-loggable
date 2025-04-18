@@ -1,35 +1,33 @@
+import LoggableCore
 import SwiftSyntax
 import SwiftDiagnostics
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
-public struct LogMacro: BodyMacro, BodyMacroBuilder {
-  typealias Body = [CodeBlockItemSyntax]
+public class LogMacro: MacroBuilder.Body {
   typealias Argument = LoggableSyntax.ArgumentSyntax
 
   public static func expansion(
     of node: AttributeSyntax,
-    providingBodyFor declaration: some DeclSyntaxProtocol & WithOptionalCodeBlockSyntax,
-    in context: some MacroExpansionContext
-  ) throws -> [CodeBlockItemSyntax] {
-    guard let location = context.location(of: declaration)?.findable,
-          let function = FunctionSyntax(from: declaration)
-    else { return body() }
-
-    context.diagnose(
-      Diagnostic(
-        node: node,
-        message: ._debug(function.traits.debugDescription)
-      )
-    )
-
+    for function: FunctionSyntax,
+    in context: some MacroExpansionContext,
+    using loggable: LoggableSyntax
+  ) -> [CodeBlockItemSyntax] {
     return body {
-      let loggable = LoggableSyntax(for: node.loggable)
       loggable.initialize()
-      loggable.event(at: location, for: function)
+      loggable.event(for: function, tags: function.traits.taggable)
 
-      if !function.parameters.isEmpty {
-        loggable.capture(.parameters(function.parameters))
+      if !function.parameters.isEmpty || !function.traits.ommitable.contains(where: { $0 == .parameters}) {
+        loggable.capture(
+          .parameters(
+            function.parameters.compactMap { parameter in
+              if !function.traits.ommitable.contains(where: { $0 == .parameter(parameter.name.text) }) {
+                return parameter
+              }
+              return nil
+            }
+          )
+        )
       }
 
       switch function.isThrowing {
@@ -63,7 +61,9 @@ public struct LogMacro: BodyMacro, BodyMacroBuilder {
       case false:
         CodeBlockItemSyntax(function.plain)
         CodeBlockItemSyntax.call(function)
-//        loggable.capture(.result)
+        if !function.traits.ommitable.contains { $0 == .result } {
+          loggable.capture(.result)
+        }
         loggable.emit
         CodeBlockItemSyntax.return
       }

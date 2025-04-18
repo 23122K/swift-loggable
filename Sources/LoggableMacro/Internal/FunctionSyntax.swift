@@ -2,11 +2,11 @@ import LoggableCore
 import SwiftSyntax
 
 @dynamicMemberLookup
-struct FunctionSyntax {
+public struct FunctionSyntax {
   let syntax: FunctionDeclSyntax
   let attributes: [Attribute]
   let signature: Signature
-  let traits: [Any]
+  let traits: [TraitSyntax]
 
   /// Returns the original body of the called function as an array of `CodeBlockItemSyntax`.
   /// If the function body is missing, an empty array is returned.
@@ -212,7 +212,7 @@ struct FunctionSyntax {
     self.syntax = syntax
     self.signature = Signature(syntax: syntax.signature)
     self.attributes = syntax.attributes.compactMap(\.asFunctionSyntaxAttribute)
-    self.traits = syntax.attributes._attributes
+    self.traits = syntax.attributes.parsableTraitSyntax()
   }
 
   init?(from syntax: some DeclSyntaxProtocol) {

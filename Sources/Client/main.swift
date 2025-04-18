@@ -3,18 +3,19 @@ import Loggable
 import OSLog
 import SwiftUI
 
-@Logged
 struct Foo {
-  @Tag(.info)
-  @Omit(.result)
-  static func foo(value: String, int: Int) {
+  @Omit(.parameters)
+  @Tag(.debug)
+  @Log(using: .signposter, omit: .result, tag: .debug)
+  static func foo(value: String, int: Int) -> Bool {
     print("foo of intValue: \(value)")
+    return true
   }
 
 //  @Omit
-  static func someView() -> some View {
-    return EmptyView()
-  }
+//  static func someView() -> some View {
+//    return EmptyView()
+//  }
 }
 
 var voo = true

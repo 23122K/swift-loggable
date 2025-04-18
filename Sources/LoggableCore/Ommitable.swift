@@ -1,6 +1,6 @@
 
-public protocol Ommitable: Sendable, Equatable, ExpressibleByStringLiteral {
-  static func _parameter(_ name: String) -> Self
+public protocol Ommitable: _Trait {
+  static func _parameter(_: String) -> Self
   static var _parameters: Self { get }
   static var _result: Self { get }
 }
@@ -45,3 +45,9 @@ extension StringLiteralType: Ommitable {
 }
 
 extension Ommitable where Self == StringLiteralType {}
+
+extension String {
+  fileprivate static func _parameterRawValue(_ name: String) -> String { #"parameter_\(name)"# }
+  fileprivate static let _parametersRawValue = #"parameters"#
+  fileprivate static let _resultRawValue = #"result"#
+}

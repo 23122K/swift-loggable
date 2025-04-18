@@ -4,6 +4,7 @@ extension TokenSyntax {
   enum Predefined {
     case `_`
     case log
+    case tags
     case Log
     case emit
     case event
@@ -12,6 +13,8 @@ extension TokenSyntax {
     case result
     case location
     case `default`
+    case failure
+    case success
     case loggable
     case Loggable
     case parameters
@@ -26,7 +29,16 @@ extension TokenSyntax {
       switch self {
       case ._:
         return TokenSyntax.identifier("_")
-        
+
+      case .failure:
+        return TokenSyntax.identifier("failure")
+
+      case .success:
+        return TokenSyntax.identifier("success")
+
+      case .tags:
+        return TokenSyntax.identifier("tags")
+
       case .log:
         return TokenSyntax.identifier("log")
 

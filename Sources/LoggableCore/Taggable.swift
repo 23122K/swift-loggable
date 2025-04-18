@@ -1,6 +1,6 @@
 
-public protocol Taggable: Sendable, Equatable, ExpressibleByStringLiteral {
-  static func _tag(_ value: String) -> Self
+public protocol Taggable: _Trait {
+  static func _tag(_: String) -> Self
 }
 
 public enum TaggableTrait: Taggable {
@@ -11,6 +11,19 @@ public enum TaggableTrait: Taggable {
   }
 }
 
+extension TaggableTrait: RawRepresentable {
+  public init(rawValue: String) {
+    self.init(stringLiteral: rawValue)
+  }
+
+  public var rawValue: String {
+    switch self {
+    case let ._tag(value):
+      return value
+    }
+  }
+}
+
 extension String: Taggable {
   public static func _tag(_ value: String) -> String {
     ._tagRawValue(value)
@@ -18,3 +31,7 @@ extension String: Taggable {
 }
 
 extension Taggable where Self == StringLiteralType {}
+
+extension String {
+  fileprivate static func _tagRawValue(_ value: String) -> String { #"tag_\(value)"# }
+}

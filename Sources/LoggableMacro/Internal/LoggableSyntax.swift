@@ -2,8 +2,9 @@ import Foundation
 import LoggableCore
 import SwiftSyntax
 
-struct LoggableSyntax {
+public struct LoggableSyntax {
   let expression: any ExprSyntaxProtocol
+  let location: String
 
   func initialize() -> CodeBlockItemSyntax {
     CodeBlockItemSyntax(
@@ -31,7 +32,7 @@ struct LoggableSyntax {
     )
   }
 
-  func event(at location: String, for declaration: FunctionSyntax) -> CodeBlockItemSyntax {
+  func event(for declaration: FunctionSyntax, tags: [TaggableTrait]) -> CodeBlockItemSyntax {
     CodeBlockItemSyntax(
       VariableDeclSyntax(
         bindingSpecifier: .keyword(.var),
@@ -49,7 +50,7 @@ struct LoggableSyntax {
                     leadingTrivia: .newline,
                     label: .predefined(.location),
                     colon: .colonToken(),
-                    expression: StringLiteralExprSyntax(content: location),
+                    expression: StringLiteralExprSyntax(content: self.location),
                     trailingComma: .commaToken(),
                     trailingTrivia: .newline
                   )
@@ -57,6 +58,22 @@ struct LoggableSyntax {
                     label: .predefined(.declaration),
                     colon: .colonToken(),
                     expression: StringLiteralExprSyntax(content: declaration.description),
+                    trailingTrivia: .newline
+                  )
+                  LabeledExprSyntax(
+                    label: .predefined(.tags),
+                    colon: .colonToken(),
+                    expression: ArrayExprSyntax(
+                      elements: ArrayElementListSyntax {
+                        tags.map { tag in
+                          ArrayElementSyntax(
+                            expression: StringLiteralExprSyntax(
+                              content: tag.rawValue
+                            )
+                          )
+                        }
+                      }
+                    ),
                     trailingTrivia: .newline
                   )
                 },
@@ -107,7 +124,7 @@ struct LoggableSyntax {
 
   enum ExprSyntaxType: Equatable {
     case stringLiteral(String)
-    case declReference(TokenSyntax)
+    case functionCall(TokenSyntax, success: Bool)
     case dictionary([TokenSyntax])
 
     var exprSytnaxProtocol: ExprSyntaxProtocol {
@@ -115,8 +132,19 @@ struct LoggableSyntax {
       case let .stringLiteral(content):
         return StringLiteralExprSyntax(content: content)
 
-      case let .declReference(baseName):
-        return DeclReferenceExprSyntax(baseName: baseName)
+      case let .functionCall(baseName, success):
+        return FunctionCallExprSyntax(
+          calledExpression: MemberAccessExprSyntax(
+            name: success ? .identifier("success") : .identifier("failure")
+          ),
+          leftParen: .leftParenToken(),
+          arguments: LabeledExprListSyntax {
+            LabeledExprSyntax(
+              expression: DeclReferenceExprSyntax(baseName: baseName)
+            )
+          },
+          rightParen: .rightParenToken()
+        )
 
       case let .dictionary(elements):
         return DictionaryExprSyntax(
@@ -143,20 +171,24 @@ struct LoggableSyntax {
     let expression: ExprSyntaxType
   }
 
-  init(for expression: some ExprSyntaxProtocol) {
+  init(
+    for expression: some ExprSyntaxProtocol,
+    in location: String
+  ) {
     self.expression = expression
+    self.location = location
   }
 }
 
 extension LoggableSyntax.ArgumentSyntax {
   static let error = LoggableSyntax.ArgumentSyntax(
     label: .predefined(.error),
-    expression: .declReference(.predefined(.error))
+    expression: .functionCall(.predefined(.error), success: false)
   )
 
   static let result = LoggableSyntax.ArgumentSyntax(
     label: .predefined(.result),
-    expression: .declReference(.predefined(.result))
+    expression: .functionCall(.predefined(.result), success: true)
   )
 
   static func parameters(

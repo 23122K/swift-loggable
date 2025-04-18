@@ -15,7 +15,8 @@ public macro Log(using loggable: any Loggable = .signposter) = #externalMacro(
 @attached(body)
 public macro Log(
   using loggable: any Loggable = .signposter,
-  omit: any Ommitable...
+  omit: any Ommitable... = [],
+  tag: any Taggable... = []
 ) = #externalMacro(
   module: "LoggableMacro",
   type: "LogMacro"
@@ -34,7 +35,7 @@ public macro Omit(_ traits: any Ommitable...) = #externalMacro(
 )
 
 @attached(body)
-public macro Tag(_ tag: any Taggable...) =  #externalMacro(
+public macro Tag(_ traits: any Taggable...) =  #externalMacro(
   module: "LoggableMacro",
   type: "TagMacro"
 )

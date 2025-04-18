@@ -3,49 +3,57 @@ import SwiftParserDiagnostics
 import SwiftSyntax
 import SwiftSyntaxMacros
 
-public struct OmitMacro: BodyMacro, BodyMacroBuilder {
-  typealias Body = [CodeBlockItemSyntax]
-
+public struct OmitMacro: MacroBuilder.Body {
   public static func expansion(
     of node: AttributeSyntax,
-    providingBodyFor declaration: some DeclSyntaxProtocol & WithOptionalCodeBlockSyntax,
-    in context: some MacroExpansionContext
-  ) throws -> [CodeBlockItemSyntax] {
-    guard let function = FunctionSyntax(from: declaration) else { return body() }
+    for function: FunctionSyntax,
+    in context: some MacroExpansionContext,
+    using loggable: LoggableSyntax
+  ) -> [CodeBlockItemSyntax] {
+    // DONE: get attributes from node - done
+    // TODO: get attibutes from context - check wheather context has some attached attributes
+    // ? merge both attributes sources
 
-    if function.attributes.contains(where: \.isLogMacroPresent) {
+    if node.arguments == nil {
       return body()
     }
 
-    context.diagnose(
-      Diagnostic(
-        node: node,
-        message: .omitMacroMustPreceedLogMacro
+    if !function.attributes.contains(where: \.isLogMacroPresent) {
+      context.diagnose(
+        Diagnostic(
+          node: node,
+          message: .omitMacroMustPreceedLogMacro
+        )
       )
-    )
-    return body()
+    }
+    return self.body()
+  }
+}
 
+extension MacroExpansionContext {
+  var isLoggedInContext: Bool {
+    if let declSyntax = self.lexicalContext.first?.as(DeclSyntax.self) {
+      switch declSyntax.as(DeclSyntaxEnum.self) {
+      case let .actorDecl(syntax):
+        return syntax.attributes.contains(where: \.isLogged)
 
-    // if macro is expanded in a context where identifier("Logged") is attached, don't
-    // return diagnostcs
-//    let diagnostic = Diagnostic(
-//      node: node,
-//      message: ._debug(function.attributes.debugDescription)
-//    )
+      case let .classDecl(syntax):
+        return syntax.attributes.contains(where: \.isLogged)
 
-//    switch context.lexicalContext.first?.as(SyntaxEnum.self) {
-//    case let .structDecl(syntax) where syntax.attributes.contains(where: \.isLogged):
-//      context.diagnose(diagnostic)
-//      return body {
-//        CodeBlockItemSyntax(stringLiteral: #"print("Foo")"#)
-//      }
+      case let .structDecl(syntax):
+        return syntax.attributes.contains(where: \.isLogged)
 
-//    default:
-//      context.diagnose(diagnostic)
-//      return body {
-//        CodeBlockItemSyntax(stringLiteral: #"print("Foo")"#)
-//      }
-//    }
+      case let .extensionDecl(syntax):
+        return syntax.attributes.contains(where: \.isLogged)
+
+      case let .enumDecl(syntax):
+        return syntax.attributes.contains(where: \.isLogged)
+
+      default:
+        return false
+      }
+    }
+    return false
   }
 }
 

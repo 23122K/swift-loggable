@@ -6,7 +6,8 @@ extension TokenKind {
     case capture
     case using
     case omit
-    case Redact
+    case tag
+    case Tag
     case Omit
     case Log
     case Logged
@@ -32,8 +33,11 @@ extension TokenKind {
       case .Log:
         return TokenKind.identifier("Log")
 
-      case .Redact:
-        return TokenKind.identifier("Redact")
+      case .Tag:
+        return TokenKind.identifier("Tag")
+
+      case .tag:
+        return TokenKind.identifier("tag")
 
       case .Logged:
         return TokenKind.identifier("Logged")

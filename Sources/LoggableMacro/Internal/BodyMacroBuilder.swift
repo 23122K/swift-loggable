@@ -1,54 +1,116 @@
 import Foundation
+import SwiftSyntaxMacros
 import SwiftDiagnostics
 import SwiftSyntax
 
-protocol BodyMacroBuilder {
-  associatedtype Body
+struct MacroBuilder {
+  protocol Body: BodyMacro {
+    static func expansion(
+      of node: AttributeSyntax,
+      for function: FunctionSyntax,
+      in context: some MacroExpansionContext,
+      using loggable: LoggableSyntax
+    ) -> [CodeBlockItemSyntax]
+  }
+
+  protocol MemberAttribute: MemberAttributeMacro {
+    static func expansion(
+      of node: AttributeSyntax,
+      for function: FunctionDeclSyntax
+    ) -> [AttributeSyntax]
+  }
 }
 
-extension BodyMacroBuilder where Body == [CodeBlockItemSyntax] {
+extension MacroBuilder.Body {
   static func body(
-    @CodeBlockItemSyntaxBuilder _ components: () -> [CodeBlockItemSyntax] = { [] }
+    @SyntaxBuilder<CodeBlockItemSyntax> _ components: () -> [CodeBlockItemSyntax] = { [] }
   ) -> [CodeBlockItemSyntax] {
     components()
+  }
+
+  public static func expansion(
+    of node: AttributeSyntax,
+    providingBodyFor declaration: some DeclSyntaxProtocol & WithOptionalCodeBlockSyntax,
+    in context: some MacroExpansionContext
+  ) throws -> [CodeBlockItemSyntax] {
+    guard let location = context.location(of: node)?.findable else { return self.body() }
+    let loggable = LoggableSyntax(for: node.loggable, in: location)
+    return body {
+      if let function = FunctionSyntax(from: declaration) {
+        self.expansion(
+          of: node,
+          for: function,
+          in: context,
+          using: loggable
+        )
+      }
+    }
+  }
+}
+
+extension MacroBuilder.MemberAttribute {
+  static func attriibutes(
+    @SyntaxBuilder<AttributeSyntax> _ components: () -> [AttributeSyntax] = { [] }
+  ) -> [AttributeSyntax] {
+    components()
+  }
+
+  public static func expansion(
+    of node: AttributeSyntax,
+    attachedTo declaration: some DeclGroupSyntax,
+    providingAttributesFor member: some DeclSyntaxProtocol,
+    in context: some MacroExpansionContext
+  ) throws -> [AttributeSyntax] {
+    return attriibutes {
+      if let functionDeclSyntax = FunctionDeclSyntax(member) {
+        self.expansion(
+          of: node,
+          for: functionDeclSyntax
+        )
+      }
+    }
   }
 }
 
 @resultBuilder
-struct CodeBlockItemSyntaxBuilder {
+struct SyntaxBuilder<T> {
   static func buildBlock(
-    _ components: [CodeBlockItemSyntax]...
-  ) -> [CodeBlockItemSyntax] {
+    _ components: [T]...
+  ) -> [T] {
     components.flatMap { $0 }
   }
 
   static func buildExpression(
-    _ expression: [CodeBlockItemSyntax]
-  ) -> [CodeBlockItemSyntax] {
+    _ expression: [T]
+  ) -> [T] {
     expression
   }
 
   static func buildExpression(
-    _ expression: CodeBlockItemSyntax
-  ) -> [CodeBlockItemSyntax] {
+    _ expression: T
+  ) -> [T] {
     [expression]
   }
 
   static func buildOptional(
-    _ component: [CodeBlockItemSyntax]?
-  ) -> [CodeBlockItemSyntax] {
+    _ component: [T]?
+  ) -> [T] {
     component ?? []
   }
 
   static func buildEither(
-    first component: [CodeBlockItemSyntax]
-  ) -> [CodeBlockItemSyntax] {
+    first component: [T]
+  ) -> [T] {
     component
   }
 
   static func buildEither(
-    second component: [CodeBlockItemSyntax]
-  ) -> [CodeBlockItemSyntax] {
+    second component: [T]
+  ) -> [T] {
     component
+  }
+
+  static func buildArray(_ components: [[T]]) -> [T] {
+    components.flatMap { $0 }
   }
 }

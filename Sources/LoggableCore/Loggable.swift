@@ -1,4 +1,3 @@
-
 public protocol Loggable: Sendable {
   func emit(event: LoggableEvent)
 }
