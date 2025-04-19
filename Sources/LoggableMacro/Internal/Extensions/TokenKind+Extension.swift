@@ -10,11 +10,24 @@ extension TokenKind {
     case Tag
     case Omit
     case Log
+    case OSLog
     case Logged
     case redactableTraits
 
+    case subsystem
+    case category
+
     var identifer: TokenKind {
       switch self {
+      case .subsystem:
+        return TokenKind.identifier("subsystem")
+
+      case .OSLog:
+        return TokenKind.identifier("OSLog")
+
+      case .category:
+        return TokenKind.identifier("category")
+
       case .capture:
         return TokenKind.identifier("capture")
 

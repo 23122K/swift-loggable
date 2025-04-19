@@ -3,10 +3,21 @@ import Loggable
 import OSLog
 import SwiftUI
 
+// Logged
+// Log
+// Omit
+// Tag
+
+// OSLogged
+// OSLog(level:, message:)
+
+@Logged
 struct Foo {
-  @Omit(.parameters)
-  @Tag(.debug)
-  @Log(using: .signposter, omit: .result, tag: .debug)
+//  static let logger = Logger(subsystem: "Xcode", category: "x")
+//  @Omit(.parameters)
+//  @Tag(.debug)
+//  @Tag(.error)
+//  @OSLog(level: .fault)
   static func foo(value: String, int: Int) -> Bool {
     print("foo of intValue: \(value)")
     return true
@@ -20,4 +31,5 @@ struct Foo {
 
 var voo = true
 Foo.foo(value: "Gello", int: .zero)
+
 

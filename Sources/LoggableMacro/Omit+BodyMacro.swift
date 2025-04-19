@@ -3,21 +3,13 @@ import SwiftParserDiagnostics
 import SwiftSyntax
 import SwiftSyntaxMacros
 
-public struct OmitMacro: MacroBuilder.Body {
+public struct OmitMacro: BodyMacro {
   public static func expansion(
     of node: AttributeSyntax,
-    for function: FunctionSyntax,
-    in context: some MacroExpansionContext,
-    using loggable: LoggableSyntax
-  ) -> [CodeBlockItemSyntax] {
-    // DONE: get attributes from node - done
-    // TODO: get attibutes from context - check wheather context has some attached attributes
-    // ? merge both attributes sources
-
-    if node.arguments == nil {
-      return body()
-    }
-
+    providingBodyFor declaration: some DeclSyntaxProtocol & WithOptionalCodeBlockSyntax,
+    in context: some MacroExpansionContext
+  ) throws -> [CodeBlockItemSyntax] {
+    guard let function = FunctionSyntax(from: declaration) else { return self.body() }
     if !function.attributes.contains(where: \.isLogMacroPresent) {
       context.diagnose(
         Diagnostic(
@@ -58,6 +50,14 @@ extension MacroExpansionContext {
 }
 
 extension DiagnosticMessage where Self == LoggableError {
+  static var omitMacroCanOnlyBeUsedWithLogOrLoggableWithinContext: Self {
+    return LoggableError(
+      message: "blah",
+      diagnosticID: .init(domain: "swiftpm.logging.error.omit-macro-must-preceed-log-macro", id: "22"),
+      severity: .error
+    )
+  }
+
   static var omitMacroMustPreceedLogMacro: Self {
     return LoggableError(
       message: "@Omit macro must preceed @Log macro declaration",

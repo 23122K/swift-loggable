@@ -1,23 +1,31 @@
-import LoggableCore
 import SwiftSyntax
-import SwiftDiagnostics
-import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
-public class LogMacro: BodyMacro {
+extension BodyMacro {
+  static func body(
+    @SyntaxBuilder<CodeBlockItemSyntax> _ components: () -> [CodeBlockItemSyntax] = { [] }
+  ) -> [CodeBlockItemSyntax] {
+    components()
+  }
+}
+
+protocol LoggableMacro: BodyMacro {
+  static func loggable(of node: AttributeSyntax, in context: some MacroExpansionContext) -> LoggableSyntax
+  static func initalize(_ loggable: LoggableSyntax) -> CodeBlockItemSyntax
+}
+
+extension LoggableMacro {
   public static func expansion(
     of node: AttributeSyntax,
     providingBodyFor declaration: some DeclSyntaxProtocol & WithOptionalCodeBlockSyntax,
     in context: some MacroExpansionContext
   ) throws -> [CodeBlockItemSyntax] {
-    guard
-      let location = context.location(of: node)?.findable,
-      let function = FunctionSyntax(from: declaration)
+    guard let function = FunctionSyntax(from: declaration)
     else { return self.body() }
-    let loggable = LoggableSyntax(for: node.loggable, in: location)
+    let loggable = self.loggable(of: node, in: context)
 
     return body {
-      loggable.initialize()
+      self.initalize(loggable)
       loggable.event(for: function, tags: function.traits.taggable)
 
       if !function.parameters.isEmpty && !function.traits.ommitable.contains(where: { $0 == .parameters}) {

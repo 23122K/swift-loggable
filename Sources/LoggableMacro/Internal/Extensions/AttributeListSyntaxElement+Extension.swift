@@ -106,7 +106,7 @@ extension AttributeListSyntax {
           }
         )
 
-      case .predefined(.Tag):
+      case .predefined(.Tag), .predefined(.OSLog):
         return .tag(
           arguments.compactMap { argument in
             argument.trait()

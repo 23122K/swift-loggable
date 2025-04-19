@@ -24,7 +24,9 @@ public struct LoggableSyntax {
               )
             ),
             initializer: InitializerClauseSyntax(
-              value: DeclReferenceExprSyntax(baseName: .identifier(".signposter"))
+              value: MemberAccessExprSyntax(
+                declName: self.expression.as(DeclReferenceExprSyntax.self)!
+              )
             )
           )
         )

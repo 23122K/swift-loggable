@@ -1,4 +1,27 @@
 @_exported public import LoggableCore
+public import OSLog
+
+@attached(member, names: named(logger))
+@attached(memberAttribute)
+public macro OSLogged(
+  subsystem: String? = nil,
+  category: String? = nil
+) = #externalMacro(
+  module: "LoggableMacro",
+  type: "OSLogged"
+)
+
+@attached(body)
+public macro OSLog() = #externalMacro(
+  module: "LoggableMacro",
+  type: "OSLog"
+)
+
+@attached(body)
+public macro OSLog(level: OSLogType) = #externalMacro(
+  module: "LoggableMacro",
+  type: "OSLog"
+)
 
 @attached(memberAttribute)
 public macro Logged(using loggable: any Loggable = .signposter) = #externalMacro(

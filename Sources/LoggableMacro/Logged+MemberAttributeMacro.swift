@@ -2,16 +2,23 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
-public struct LoggedMacro: MacroBuilder.MemberAttribute {
-  static func expansion(
+public struct LoggedMacro: MemberAttributeMacro {
+  public static func expansion(
     of node: AttributeSyntax,
-    for function: FunctionDeclSyntax
-  ) -> [SwiftSyntax.AttributeSyntax] {
+    attachedTo declaration: some DeclGroupSyntax,
+    providingAttributesFor member: some DeclSyntaxProtocol,
+    in context: some MacroExpansionContext
+  ) throws -> [AttributeSyntax] {
+
+    if
+      let function = FunctionDeclSyntax(member),
+      function.attributes.contains(where: \.isLogOrOmitWithoutArgument)
+    {
+      return self.attriibutes()
+    }
+
     return attriibutes {
-      if function.attributes.contains(where: \.isLogOrOmitWithoutArgument) {
-        AttributeSyntax.copy(node)
-      }
+      AttributeSyntax.copy(node)
     }
   }
-
 }
