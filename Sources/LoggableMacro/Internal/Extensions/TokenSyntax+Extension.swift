@@ -16,6 +16,7 @@ extension TokenSyntax {
     case failure
     case success
     case loggable
+    case logger
     case Loggable
     case parameters
     case signposter
@@ -29,6 +30,9 @@ extension TokenSyntax {
       switch self {
       case ._:
         return TokenSyntax.identifier("_")
+
+      case .logger:
+        return TokenSyntax.identifier("logger")
 
       case .failure:
         return TokenSyntax.identifier("failure")

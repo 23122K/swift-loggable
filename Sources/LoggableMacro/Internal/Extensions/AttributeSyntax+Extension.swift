@@ -35,7 +35,7 @@ extension AttributeSyntax {
   }
 
   private static func fallback(
-    for declName: DeclReferenceExprSyntax = DeclReferenceExprSyntax(baseName: .predefined(.signposter))
+    for declName: MemberAccessExprSyntax = MemberAccessExprSyntax(name: .predefined(.signposter))
   ) -> ExprSyntax {
     ExprSyntax(declName)
   }

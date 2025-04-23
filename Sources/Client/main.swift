@@ -3,11 +3,11 @@ import Loggable
 import OSLog
 import SwiftUI
 
-@Logged
+@OSLogged
 struct Foo {
 //  @Omit(.result, .parameters)
 //  @Tag(.error)
-//  @Log
+//  @Log(using: .signposter)
   static func foo(value: String, int: Int) -> Bool {
     print("foo of intValue: \(value)")
     return true
