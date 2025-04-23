@@ -9,15 +9,17 @@ public struct OmitMacro: BodyMacro {
     providingBodyFor declaration: some DeclSyntaxProtocol & WithOptionalCodeBlockSyntax,
     in context: some MacroExpansionContext
   ) throws -> [CodeBlockItemSyntax] {
+
+    // TODO: Check if has parameters
+    // parameter: nil/empty -> Can be attached to function as @Log @OSLog will be ommited
+    // parameter: some -> Cant be attached if @Log @OSLog (@Logged...) is not present
     guard let function = FunctionSyntax(from: declaration) else { return self.body() }
-    if !function.attributes.contains(where: \.isLogMacroPresent) {
-      context.diagnose(
-        Diagnostic(
-          node: node,
-          message: .omitMacroMustPreceedLogMacro
-        )
+    context.diagnose(
+      Diagnostic(
+        node: node,
+        message: .omitMacroMustPreceedLogMacro
       )
-    }
+    )
     return self.body()
   }
 }

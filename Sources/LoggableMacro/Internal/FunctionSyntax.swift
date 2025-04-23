@@ -204,7 +204,7 @@ public struct FunctionSyntax {
     let name: TokenSyntax
 
     var isLogMacroPresent: Bool {
-      self.name == .predefined(.Log)
+      self.name == .identifier("OSLog")
     }
   }
 

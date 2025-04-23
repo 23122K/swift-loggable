@@ -46,9 +46,9 @@ extension Taggable where Self == OSLogType {
 extension Logger: Loggable {
   public func emit(event: LoggableEvent) {
     if let stringLiteral = event.tags.first as? StringLiteralType {
-      self.log(level: OSLogType(stringLiteral: stringLiteral), "\(event.location)")
+      self.log(level: OSLogType(stringLiteral: stringLiteral), "\(event.description)")
     } else {
-      self.log(level: event.result.isSuccess ? .info : .error, "\(event.location)")
+      self.log(level: event.result.isSuccess ? .info : .error, "\(event.description)")
     }
   }
 }

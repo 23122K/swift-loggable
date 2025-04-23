@@ -12,13 +12,7 @@ public macro OSLogged(
 )
 
 @attached(body)
-public macro OSLog() = #externalMacro(
-  module: "LoggableMacro",
-  type: "OSLog"
-)
-
-@attached(body)
-public macro OSLog(level: OSLogType) = #externalMacro(
+public macro OSLog(level: OSLogType? = nil) = #externalMacro(
   module: "LoggableMacro",
   type: "OSLog"
 )

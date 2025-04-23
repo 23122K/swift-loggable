@@ -1,9 +1,10 @@
 import Foundation
 import SwiftSyntax
 import SwiftSyntaxMacros
+import SwiftDiagnostics
 import OSLog
 
-public struct OSLogged: MemberMacro {
+public struct OSLogged: MemberMacro, MemberAttributeMacro {
   public static func expansion(
     of node: AttributeSyntax,
     providingMembersOf declaration: some DeclGroupSyntax,
@@ -104,9 +105,7 @@ public struct OSLogged: MemberMacro {
       )
     }
   }
-}
 
-extension OSLogged: MemberAttributeMacro {
   public static func expansion(
     of node: AttributeSyntax,
     attachedTo declaration: some SwiftSyntax.DeclGroupSyntax,
@@ -127,16 +126,5 @@ extension OSLogged: MemberAttributeMacro {
         )
       )
     }
-  }
-  
-
-}
-
-extension MemberMacro {
-  static func members(
-    @SyntaxBuilder<VariableDeclSyntax> _ components: () -> [VariableDeclSyntax] = { [] }
-  ) -> [DeclSyntax] {
-    components()
-      .map(DeclSyntax.init)
   }
 }
