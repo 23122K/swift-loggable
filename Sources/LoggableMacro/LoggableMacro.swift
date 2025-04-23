@@ -4,33 +4,22 @@ import SwiftSyntaxBuilder
 import SwiftDiagnostics
 import LoggableCore
 
-class Exception {
-  var node: AttributeSyntax
-  var context: any MacroExpansionContext
-
-  func raise<Message: DiagnosticMessage>(error message: Message) {
-    context.diagnose(
-      Diagnostic(
-        node: node,
-        message: message
-      )
-    )
-  }
-
-  init(node: AttributeSyntax, context: MacroExpansionContext) {
-    self.node = node
-    self.context = context
-  }
-
-  nonisolated(unsafe) static var exception: Exception? = nil
-}
-
 protocol LoggableMacro: BodyMacro {
-  static func delcaration(of node: AttributeSyntax) -> ExprSyntax
-  static func tags(from declaration: FunctionDeclSyntax) -> ArrayExprSyntax
+  static func initialize(for node: AttributeSyntax) -> ExprSyntax
 }
 
 extension LoggableMacro {
+  public static func initialize(for node: AttributeSyntax) -> ExprSyntax {
+    guard let expression = node.extract(argument: .using, as: ExprSyntax.self) else {
+      return ExprSyntax(
+        MemberAccessExprSyntax(
+          name: .predefined(.signposter)
+        )
+      )
+    }
+    return expression
+  }
+
   public static func expansion(
     of node: AttributeSyntax,
     providingBodyFor declaration: some DeclSyntaxProtocol & WithOptionalCodeBlockSyntax,
@@ -38,26 +27,22 @@ extension LoggableMacro {
   ) throws -> [CodeBlockItemSyntax] {
     guard let function = FunctionSyntax(from: declaration)
     else { return self.body() }
-    Exception.exception = .init(node: node, context: context)
 
     return body {
-      self.initalize(for: node)
-      self.__event(
-        for: node,
-        in: context,
-        of: function
-      )
+      self.hook(for: node)
+      self.event(for: node, in: context, of: function)
 
-      if !function.parameters.isEmpty && !function.traits.ommitable.contains(where: { $0 == .parameters}) {
+      if function.parameters.isEmpty || function.traits.ommitable.contains(.parameters) {
+        self.body()
+      } else {
         self.capture(
-          .parameters(
+          .parameters {
             function.parameters.compactMap { parameter in
-              if !function.traits.ommitable.contains(where: { $0 == .parameter(parameter.name.text) }) {
-                return parameter
-              }
-              return nil
+              return function.traits.ommitable.contains(.parameter(parameter.name.text))
+              ? nil
+              : parameter
             }
-          )
+          }
         )
       }
 
@@ -89,12 +74,16 @@ extension LoggableMacro {
           CodeBlockItemSyntax.rethrow
         }
 
+      case false where function.traits.ommitable.contains(.result):
+        CodeBlockItemSyntax(function.plain)
+        CodeBlockItemSyntax.call(function)
+        self.emit()
+        CodeBlockItemSyntax.return
+
       case false:
         CodeBlockItemSyntax(function.plain)
         CodeBlockItemSyntax.call(function)
-        if !function.traits.ommitable.contains { $0 == .result } {
-          self.capture(.result)
-        }
+        self.capture(.result)
         self.emit()
         CodeBlockItemSyntax.return
       }
@@ -110,21 +99,7 @@ extension LoggableMacro {
     )
   }
 
-  static func taggable(from declaration: FunctionDeclSyntax) -> [TaggableTrait] {
-    declaration
-      .attributes
-      .parsableTraitSyntax()
-      .taggable
-  }
-
-  static func ommitable(from declaration: FunctionDeclSyntax) -> [OmmitableTrait] {
-    declaration
-      .attributes
-      .parsableTraitSyntax()
-      .ommitable
-  }
-
-  static func initalize(
+  static func hook(
     for node: AttributeSyntax
   ) -> CodeBlockItemSyntax {
     return CodeBlockItemSyntax(
@@ -144,7 +119,7 @@ extension LoggableMacro {
               )
             ),
             initializer: InitializerClauseSyntax(
-              value: self.delcaration(of: node)
+              value: self.initialize(for: node)
             )
           )
         )
@@ -152,7 +127,7 @@ extension LoggableMacro {
     )
   }
 
-  static func __event(
+  static func event(
     for node: AttributeSyntax,
     in context: some MacroExpansionContext,
     of declaration: FunctionSyntax
@@ -170,8 +145,19 @@ extension LoggableMacro {
                 ),
                 leftParen: .leftParenToken(),
                 arguments: LabeledExprListSyntax {
+                  if let level = declaration.traits.level {
+                    LabeledExprSyntax(
+                      leadingTrivia: .newline,
+                      label: .identifier("level"),
+                      colon: .colonToken(),
+                      expression: StringLiteralExprSyntax(
+                        content: level.rawValue
+                      ),
+                      trailingComma: .commaToken(),
+                      trailingTrivia: .newline
+                    )
+                  }
                   LabeledExprSyntax(
-                    leadingTrivia: .newline,
                     label: .predefined(.location),
                     colon: .colonToken(),
                     expression: self.location(
@@ -190,7 +176,17 @@ extension LoggableMacro {
                   LabeledExprSyntax(
                     label: .predefined(.tags),
                     colon: .colonToken(),
-                    expression: self.tags(from: declaration.syntax),
+                    expression:  ArrayExprSyntax(
+                      elements: ArrayElementListSyntax {
+                        declaration.traits.taggable.map { tag in
+                          ArrayElementSyntax(
+                            expression: StringLiteralExprSyntax(
+                              content: tag.rawValue
+                            )
+                          )
+                        }
+                      }
+                    ),
                     trailingTrivia: .newline
                   )
                 },

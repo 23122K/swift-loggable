@@ -1,10 +1,9 @@
-import OSLog
-
 public protocol Loggable: Sendable {
   func emit(event: LoggableEvent)
 }
 
 public struct LoggableEvent: CustomStringConvertible {
+  public let level: (any Levelable)?
   public var location: String
   public var declaration: String
   public var parameters: Dictionary<String, Any>
@@ -22,12 +21,14 @@ public struct LoggableEvent: CustomStringConvertible {
   }
 
   public init(
+    level: (any Levelable)? = nil,
     location: String,
     declaration: String,
     parameters: Dictionary<String, Any> = [:],
     result: Result<Any, any Error> = .success(()),
     tags: Array<any Taggable> = []
   ) {
+    self.level = level
     self.location = location
     self.declaration = declaration
     self.parameters = parameters

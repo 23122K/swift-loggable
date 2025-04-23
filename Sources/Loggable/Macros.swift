@@ -1,5 +1,4 @@
 @_exported public import LoggableCore
-public import OSLog
 
 @attached(member, names: named(logger))
 @attached(memberAttribute)
@@ -12,7 +11,11 @@ public macro OSLogged(
 )
 
 @attached(body)
-public macro OSLog(level: OSLogType? = nil) = #externalMacro(
+public macro OSLog(
+  level: (any Levelable)? = nil,
+  omit: any Ommitable... = [],
+  tag: any Taggable... = []
+) = #externalMacro(
   module: "LoggableMacro",
   type: "OSLog"
 )
@@ -32,6 +35,7 @@ public macro Log(using loggable: any Loggable = .signposter) = #externalMacro(
 @attached(body)
 public macro Log(
   using loggable: any Loggable = .signposter,
+  level: (any Levelable)? = nil,
   omit: any Ommitable... = [],
   tag: any Taggable... = []
 ) = #externalMacro(
@@ -39,14 +43,15 @@ public macro Log(
   type: "LogMacro"
 )
 
+
 @attached(body)
-public macro Omit() = #externalMacro(
+public macro Level(_ trait: (any Levelable)? = nil) = #externalMacro(
   module: "LoggableMacro",
-  type: "OmitMacro"
+  type: "LevelMacro"
 )
 
 @attached(body)
-public macro Omit(_ traits: any Ommitable...) = #externalMacro(
+public macro Omit(_ traits: any Ommitable... = []) = #externalMacro(
   module: "LoggableMacro",
   type: "OmitMacro"
 )

@@ -1,4 +1,3 @@
-
 public protocol Taggable: _Trait {
   static func _tag(_: String) -> Self
 }
@@ -9,29 +8,23 @@ public enum TaggableTrait: Taggable {
   public init(stringLiteral value: StringLiteralType) {
     self = ._tag(value)
   }
-}
 
-extension TaggableTrait: RawRepresentable {
-  public init(rawValue: String) {
-    self.init(stringLiteral: rawValue)
-  }
-
-  public var rawValue: String {
+  public var rawValue: StringLiteralType {
     switch self {
     case let ._tag(value):
-      return value
+      return ._tagRawValue(value)
     }
   }
 }
 
 extension String: Taggable {
   public static func _tag(_ value: String) -> String {
-    ._tagRawValue(value)
+    return ._tagRawValue(value)
   }
 }
 
 extension Taggable where Self == StringLiteralType {}
 
 extension String {
-  fileprivate static func _tagRawValue(_ value: String) -> String { #"tag_\(value)"# }
+  fileprivate static func _tagRawValue(_ value: String) -> String { "tag_\(value)" }
 }

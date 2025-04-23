@@ -6,8 +6,8 @@ extension OSLogType: @retroactive ExpressibleByExtendedGraphemeClusterLiteral {}
 extension OSLogType: @retroactive ExpressibleByUnicodeScalarLiteral {}
 extension OSLogType: @retroactive @unchecked Sendable {}
 extension OSLogType: @retroactive Hashable {}
-extension OSLogType: Taggable {
-  public static func _tag(_ value: String) -> OSLogType {
+extension OSLogType: Levelable {
+  public static func _level(_ value: String) -> OSLogType {
     value.osLogType
   }
 
@@ -16,36 +16,17 @@ extension OSLogType: Taggable {
   }
 }
 
-extension Taggable where Self == OSLogType {
-  public static var `default`: Self { .default }
-  public static var debug: Self { .debug }
-  public static var fault: Self { .fault }
-  public static var error: Self { .error }
-  public static var info: Self { .info }
-
-  func implicit() -> OSLogType {
-    switch self {
-    case .debug:
-      return .debug
-
-    case .info:
-      return .info
-
-    case .fault:
-      return .fault
-
-    case .error:
-      return .error
-
-    default:
-      return .default
-    }
-  }
+extension Levelable where Self == OSLogType {
+  public static var `default`: Self { ._level("default") }
+  public static var debug: Self { ._level("debug") }
+  public static var fault: Self { ._level("fault") }
+  public static var error: Self { ._level("error") }
+  public static var info: Self { ._level("info") }
 }
 
 extension Logger: Loggable {
   public func emit(event: LoggableEvent) {
-    if let stringLiteral = event.tags.first as? StringLiteralType {
+    if let stringLiteral = event.level as? StringLiteralType {
       self.log(level: OSLogType(stringLiteral: stringLiteral), "\(event.description)")
     } else {
       self.log(level: event.result.isSuccess ? .info : .error, "\(event.description)")
@@ -54,10 +35,11 @@ extension Logger: Loggable {
 }
 
 extension String {
-  private static let debug = "debug"
-  private static let info = "info"
-  private static let fault = "fault"
-  private static let error = "error"
+  private static let `default` = "level_default"
+  private static let debug = "level_debug"
+  private static let info = "level_info"
+  private static let fault = "level_fault"
+  private static let error = "level_error"
 
   fileprivate var osLogType: OSLogType {
     switch self {
@@ -78,4 +60,3 @@ extension String {
     }
   }
 }
-

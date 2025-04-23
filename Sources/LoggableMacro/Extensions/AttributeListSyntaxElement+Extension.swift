@@ -3,17 +3,48 @@ import LoggableCore
 import SwiftSyntax
 
 enum TraitSyntax {
-  case log(ommitable: [OmmitableTrait], taggable: [TaggableTrait])
-  case tag([TaggableTrait])
+  case Log(
+    level: LevelableTrait?,
+    ommitable: [OmmitableTrait],
+    taggable: [TaggableTrait]
+  )
+
+  case OSLog(
+    level: LevelableTrait?,
+    ommitable: [OmmitableTrait],
+    taggable: [TaggableTrait]
+  )
+
+  case Level(LevelableTrait?)
   case omit([OmmitableTrait])
+  case tag([TaggableTrait])
 }
 
 extension Array where Element == TraitSyntax {
+  var level: LevelableTrait? {
+    for trait in self {
+      switch trait {
+      case let .OSLog(level, _, _):
+        return level
+
+      case let .Log(level, _, _):
+        return level
+
+      case let .Level(level):
+        return level
+
+      default:
+        break
+      }
+    }
+    return nil
+  }
+
   var ommitable: [OmmitableTrait] {
     var result: Set<OmmitableTrait> = []
     for trait in self {
       switch trait {
-      case let .log(traits, _):
+      case let .Log(_, traits, _):
         result = result.union(traits)
 
       case let .omit(traits):
@@ -31,7 +62,7 @@ extension Array where Element == TraitSyntax {
     var result = Set<TaggableTrait>()
     for trait in self {
       switch trait {
-      case let .log(_, traits):
+      case let .Log(_, _, traits):
         result = result.union(traits)
 
       case let .tag(traits):
@@ -96,8 +127,9 @@ extension AttributeListSyntax {
       switch source {
       /// ``@Log`` macro itself does not has any traits, however due to some doubts about how ``BodyMacro``
       /// should be implemented it suports traits that conform to``Ommitable`` and ``Taggable``
-      case .predefined(.Log):
-        return .log(
+      case .predefined(.Log), .predefined(.OSLog):
+        return .Log(
+          level: arguments.first?.trait(label: .level),
           ommitable: arguments.compactMap { argument in
             argument.trait(label: .omit)
           },
@@ -106,11 +138,16 @@ extension AttributeListSyntax {
           }
         )
 
-      case .predefined(.Tag), .predefined(.OSLog):
+      case .predefined(.Tag):
         return .tag(
           arguments.compactMap { argument in
             argument.trait()
           }
+        )
+
+      case .predefined(.Level):
+        return .Level(
+          arguments.first?.trait()
         )
 
       case .predefined(.Omit):
@@ -129,7 +166,6 @@ extension AttributeListSyntax {
 }
 
 extension AttributeListSyntax.Element {
-
   func `is`(_ tokenKind: TokenKind.Predefined) -> Bool {
     guard
       case let .attribute(attribute) = self,

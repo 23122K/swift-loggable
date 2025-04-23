@@ -6,8 +6,9 @@ struct LoggablePlugin: CompilerPlugin {
   let providingMacros: [Macro.Type] = [
     LogMacro.self,
     LoggedMacro.self,
-    OSLogged.self,
     OSLog.self,
+    OSLogged.self,
+    LevelMacro.self,
     OmitMacro.self,
     TagMacro.self
   ]

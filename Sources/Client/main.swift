@@ -3,19 +3,20 @@ import Loggable
 import OSLog
 import SwiftUI
 
-@OSLogged
+@Logged
 struct Foo {
-//  @Omit(.result, .parameters)
-//  @Tag(.error)
-//  @Log(using: .signposter)
+  @Level(.error)
+  @Tag("Biometry")
   static func foo(value: String, int: Int) -> Bool {
     print("foo of intValue: \(value)")
     return true
   }
 }
 
+
+@OSLogged
 extension Foo {
-//  @OSLog(level: .error)
+  @OSLog(level: .error, tag: "OSLOgged tag", "other")
   static func bat() -> Int {
     return .zero
   }

@@ -1,16 +1,6 @@
 import SwiftSyntax
 
 extension AttributeSyntax {
-  var loggable: ExprSyntax {
-    guard case let .argumentList(arguments) = self.arguments
-    else { return Self.fallback() }
-
-    for argument in arguments where argument.label?.tokenKind == .predefined(.using) {
-      return argument.expression
-    }
-    return Self.fallback()
-  }
-
   func extract<E: ExprSyntaxProtocol>(
     argument label: TokenKind.Predefined,
     as type: E.Type
@@ -32,11 +22,5 @@ extension AttributeSyntax {
       )
     )
     return syntax
-  }
-
-  private static func fallback(
-    for declName: MemberAccessExprSyntax = MemberAccessExprSyntax(name: .predefined(.signposter))
-  ) -> ExprSyntax {
-    ExprSyntax(declName)
   }
 }

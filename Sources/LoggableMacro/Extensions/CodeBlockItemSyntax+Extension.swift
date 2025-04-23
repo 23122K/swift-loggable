@@ -22,8 +22,8 @@ extension CodeBlockItemSyntax {
   )
 
   static func `try`(
-  @SyntaxBuilder<CodeBlockItemSyntax> _ doStatements: @escaping () -> [CodeBlockItemSyntax],
-  @SyntaxBuilder<CodeBlockItemSyntax> catch statements: @escaping () -> [CodeBlockItemSyntax]
+  @ResultBuilder<CodeBlockItemSyntax> _ doStatements: @escaping () -> [CodeBlockItemSyntax],
+  @ResultBuilder<CodeBlockItemSyntax> catch statements: @escaping () -> [CodeBlockItemSyntax]
   ) -> CodeBlockItemSyntax {
     CodeBlockItemSyntax(
       DoStmtSyntax(

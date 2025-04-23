@@ -65,11 +65,11 @@ extension LoggableSyntax.ArgumentSyntax {
   )
 
   static func parameters(
-    _ elements: [FunctionSyntax.Signature.Parameter]
+    @ResultBuilder<FunctionSyntax.Signature.Parameter>  _ elements: () -> [FunctionSyntax.Signature.Parameter]
   ) -> LoggableSyntax.ArgumentSyntax {
     LoggableSyntax.ArgumentSyntax(
       label: .predefined(.parameters),
-      expression: .dictionary(elements.map(\.name))
+      expression: .dictionary(elements().map(\.name))
     )
   }
 }

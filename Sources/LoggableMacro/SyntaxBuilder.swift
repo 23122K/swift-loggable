@@ -2,63 +2,59 @@ import SwiftSyntax
 import SwiftSyntaxMacros
 
 @resultBuilder
-struct SyntaxBuilder<Syntax: SyntaxProtocol> {
+struct ResultBuilder<T> {
   static func buildBlock(
-    _ components: [Syntax]...
-  ) -> [Syntax] {
+    _ components: [T]...
+  ) -> [T] {
     components.flatMap { $0 }
   }
 
   static func buildExpression(
-    _ expression: [Syntax]
-  ) -> [Syntax] {
+    _ expression: [T]
+  ) -> [T] {
     expression
   }
 
   static func buildExpression(
-    _ expression: Syntax
-  ) -> [Syntax] {
+    _ expression: T
+  ) -> [T] {
     [expression]
   }
 
   static func buildOptional(
-    _ component: [Syntax]?
-  ) -> [Syntax] {
+    _ component: [T]?
+  ) -> [T] {
     component ?? []
   }
 
   static func buildEither(
-    first component: [Syntax]
-  ) -> [Syntax] {
+    first component: [T]
+  ) -> [T] {
     component
   }
 
   static func buildEither(
-    second component: [Syntax]
-  ) -> [Syntax] {
+    second component: [T]
+  ) -> [T] {
     component
   }
 
-  static func buildArray(_ components: [[Syntax]]) -> [Syntax] {
+  static func buildArray(_ components: [[T]]) -> [T] {
     components.flatMap { $0 }
   }
 }
 
 extension BodyMacro {
   static func body(
-    @SyntaxBuilder<CodeBlockItemSyntax> _ components: () -> [CodeBlockItemSyntax] = { [] }
+    @ResultBuilder<CodeBlockItemSyntax> _ components: () -> [CodeBlockItemSyntax] = { [] }
   ) -> [CodeBlockItemSyntax] {
     components()
   }
 }
 
-extension MemberAttributeMacro {
-
-}
-
 extension MemberMacro {
   static func members(
-    @SyntaxBuilder<VariableDeclSyntax> _ components: () -> [VariableDeclSyntax] = { [] }
+    @ResultBuilder<VariableDeclSyntax> _ components: () -> [VariableDeclSyntax] = { [] }
   ) -> [DeclSyntax] {
     components()
       .map(DeclSyntax.init)
@@ -67,7 +63,7 @@ extension MemberMacro {
 
 extension MemberAttributeMacro {
   static func attriibutes(
-    @SyntaxBuilder<AttributeSyntax> _ components: () -> [AttributeSyntax] = { [] }
+    @ResultBuilder<AttributeSyntax> _ components: () -> [AttributeSyntax] = { [] }
   ) -> [AttributeSyntax] {
     components()
   }
