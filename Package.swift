@@ -67,6 +67,7 @@ let package = Package(
       name: "LoggableMacroTests",
       dependencies: [
         "LoggableMacro",
+        "LoggableCore",
         .product(
           name: "SwiftSyntaxMacrosTestSupport",
           package: "swift-syntax"

@@ -1,16 +1,10 @@
 import SwiftDiagnostics
-import SwiftSyntaxMacros
+import SwiftSyntax
 
-public struct LevelMacro: TraitMacro {
-  public static func message() -> any DiagnosticMessage {
-    Exception()
-  }
-}
-
-extension LevelMacro {
+public struct TagMacro {
   struct Exception: DiagnosticMessage {
     var message: String {
-      "@Level macro that specifies traits must preceed @Log or @OSLog declarations"
+      "@Tag macro that specifies traits must preceed @Log or @OSLog declarations."
     }
 
     var diagnosticID: MessageID {

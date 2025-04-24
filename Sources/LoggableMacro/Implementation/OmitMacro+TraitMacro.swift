@@ -2,7 +2,7 @@ import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxMacros
 
-public struct OmitMacro: TraitMacro {
+extension OmitMacro: TraitMacro {
   public static func message() -> any DiagnosticMessage {
     Exception()
   }
@@ -20,21 +20,5 @@ public struct OmitMacro: TraitMacro {
       )
     }
     return self.body()
-  }
-}
-
-extension OmitMacro {
-  struct Exception: DiagnosticMessage {
-    var message: String {
-      "@Omit macro that specifies traits must preceed @Log or @OSLog declarations"
-    }
-
-    var diagnosticID: MessageID {
-      MessageID(domain: "OmitMacro", id: "1")
-    }
-
-    var severity: DiagnosticSeverity {
-      DiagnosticSeverity.error
-    }
   }
 }

@@ -1,11 +1,12 @@
 import LoggableMacro
+import LoggableCore
 import MacroTesting
 import XCTest
 
 final class LogMacroTests: XCTestCase {
   override func invokeTest() {
     withMacroTesting(
-      record: .never,
+      record: .missing,
       macros: ["Log": LogMacro.self]
     ) {
       super.invokeTest()
@@ -112,6 +113,27 @@ final class LogMacroTests: XCTestCase {
       @Log(using: .foo)
       func foo(bar: String) -> String { 
         print("Foo: \(bar)")
+      }
+      """#
+    } expansion: {
+      #"""
+      @Foo
+      func foo(bar: String) -> String {
+        let loggable: any Loggable = .foo
+        var event = LoggableEvent(location: "TestModule/Test.swift:2:1",
+          declaration: "func foo(bar: String) -> String"
+          , tags: []
+        )
+        event.parameters = [
+          "bar": bar
+        ]
+        func _foo(bar: String) -> String {
+          print("Foo: \(bar)")
+        }
+        let result = _foo(bar: bar)
+        event.result = .success(result)
+        loggable.emit(event: event)
+        return result
       }
       """#
     }
@@ -1195,6 +1217,40 @@ final class LogMacroTests: XCTestCase {
         event.parameters = [
           "elements": elements,
           "predicate": predicate
+        ]
+        func _filterElements(elements: [T], predicate: (T) -> Bool) -> [T] {
+          return elements.filter(predicate)
+        }
+        let result = _filterElements(elements: elements, predicate: predicate)
+        event.result = result
+        Loggable.default.emit(event: event)
+        return result
+      }
+      """
+    }
+  }
+
+  func test_function_withGenericClosureParameterAndTratis_returnsValue() throws {
+    assertMacro {
+      #"""
+      @Tag(.custom)
+      @Omit(.result)
+      @Level(.error)
+      @Log(using: .custom)
+      func filterElements<T>(elements: [T], using predicate: (T) -> Bool) -> [T] {
+        return elements.filter(predicate)
+      }
+      """#
+    } expansion: {
+      """
+      func filterElements<T>(elements: [T], using predicate: (T) -> Bool) -> [T] {
+        var event = Loggable.Event(
+          location: "TestModule/Test.swift:1:1",
+          declaration: "func filterElements<T>(elements: [T], using predicate: (T) -> Bool) -> [T]"
+        )
+        event.parameters = [
+          "elements": elements,
+          "predicate": pre dicate
         ]
         func _filterElements(elements: [T], predicate: (T) -> Bool) -> [T] {
           return elements.filter(predicate)

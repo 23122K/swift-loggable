@@ -7,7 +7,7 @@ public macro OSLogged(
   category: String? = nil
 ) = #externalMacro(
   module: "LoggableMacro",
-  type: "OSLogged"
+  type: "OSLoggedMacro"
 )
 
 @attached(body)
@@ -17,7 +17,7 @@ public macro OSLog(
   tag: any Taggable... = []
 ) = #externalMacro(
   module: "LoggableMacro",
-  type: "OSLog"
+  type: "OSLogMacro"
 )
 
 @attached(memberAttribute)

@@ -6,6 +6,7 @@ extension TokenSyntax {
     case log
     case tags
     case Log
+    case OSLog
     case emit
     case event
     case Event
@@ -17,6 +18,7 @@ extension TokenSyntax {
     case success
     case loggable
     case logger
+    case Logger
     case Loggable
     case parameters
     case signposter
@@ -25,6 +27,8 @@ extension TokenSyntax {
     case LoggableEvent
     case Omit
     case Redact
+    case subsystem
+    case category
 
     var identifier: TokenSyntax {
       switch self {
@@ -33,6 +37,15 @@ extension TokenSyntax {
 
       case .logger:
         return TokenSyntax.identifier("logger")
+
+      case .Logger:
+        return TokenSyntax.identifier("Logger")
+
+      case .subsystem:
+        return TokenSyntax.identifier("subsystem")
+
+      case .category:
+        return TokenSyntax.identifier("category")
 
       case .failure:
         return TokenSyntax.identifier("failure")
@@ -48,6 +61,9 @@ extension TokenSyntax {
 
       case .Log:
         return TokenSyntax.identifier("Log")
+
+      case .OSLog:
+        return TokenSyntax.identifier("OSLog")
 
       case .emit:
         return TokenSyntax.identifier("emit")

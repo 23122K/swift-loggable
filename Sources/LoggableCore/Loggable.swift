@@ -4,11 +4,11 @@ public protocol Loggable: Sendable {
 
 public struct LoggableEvent: CustomStringConvertible {
   public let level: (any Levelable)?
-  public var location: String
-  public var declaration: String
+  public let location: String
+  public let declaration: String
   public var parameters: Dictionary<String, Any>
   public var result: Result<Any, any Error>
-  public var tags: Array<any Taggable>
+  public let tags: Array<any Taggable>
 
   public var description: String {
     """

@@ -7,7 +7,7 @@ extension OSLogType: @retroactive ExpressibleByUnicodeScalarLiteral {}
 extension OSLogType: @retroactive @unchecked Sendable {}
 extension OSLogType: @retroactive Hashable {}
 extension OSLogType: Levelable {
-  public static func _level(_ value: String) -> OSLogType {
+  public static func level(_ value: String) -> OSLogType {
     value.osLogType
   }
 
@@ -17,11 +17,11 @@ extension OSLogType: Levelable {
 }
 
 extension Levelable where Self == OSLogType {
-  public static var `default`: Self { ._level("default") }
-  public static var debug: Self { ._level("debug") }
-  public static var fault: Self { ._level("fault") }
-  public static var error: Self { ._level("error") }
-  public static var info: Self { ._level("info") }
+  public static var `default`: Self { .level("default") }
+  public static var debug: Self { .level("debug") }
+  public static var fault: Self { .level("fault") }
+  public static var error: Self { .level("error") }
+  public static var info: Self { .level("info") }
 }
 
 extension Logger: Loggable {
@@ -54,6 +54,9 @@ extension String {
 
     case .error:
       return .error
+
+    case .default:
+      return .default
 
     default:
       return .default

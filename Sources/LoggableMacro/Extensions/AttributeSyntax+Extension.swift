@@ -1,26 +1,16 @@
 import SwiftSyntax
 
 extension AttributeSyntax {
-  func extract<E: ExprSyntaxProtocol>(
+  func extract<T: ExprSyntaxProtocol>(
     argument label: TokenKind.Predefined,
-    as type: E.Type
-  ) -> E? {
+    as type: T.Type
+  ) -> T? {
     guard case let .argumentList(arguments) = self.arguments
     else { return nil }
 
     for argument in arguments where argument.label?.tokenKind == label.identifer {
-      return E(argument.expression)
+      return T(argument.expression)
     }
     return nil
-  }
-
-  static func copy(_ syntax: AttributeSyntax) -> AttributeSyntax {
-    var syntax = syntax
-    syntax.attributeName = TypeSyntax(
-      IdentifierTypeSyntax(
-        name: .predefined(.Log)
-      )
-    )
-    return syntax
   }
 }

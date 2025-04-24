@@ -1,6 +1,5 @@
 import SwiftSyntax
 import SwiftSyntaxMacros
-import SwiftSyntaxBuilder
 import SwiftDiagnostics
 import LoggableCore
 
@@ -171,6 +170,7 @@ extension LoggableMacro {
                     label: .predefined(.declaration),
                     colon: .colonToken(),
                     expression: StringLiteralExprSyntax(content: declaration.description),
+                    trailingComma: .commaToken(),
                     trailingTrivia: .newline
                   )
                   LabeledExprSyntax(

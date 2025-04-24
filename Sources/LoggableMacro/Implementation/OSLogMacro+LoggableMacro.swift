@@ -1,9 +1,8 @@
 import SwiftSyntax
-import SwiftSyntaxMacros
 import SwiftDiagnostics
 import LoggableCore
 
-public struct OSLog: LoggableMacro {
+extension OSLogMacro: LoggableMacro {
   static func initialize(for node: AttributeSyntax) -> ExprSyntax {
     ExprSyntax(
       MemberAccessExprSyntax(
