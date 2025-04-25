@@ -62,20 +62,20 @@ extension OSLoggedMacro: MemberMacro {
     leftOperand: MemberAccessExprSyntax(
       base: MemberAccessExprSyntax(
         base: DeclReferenceExprSyntax(
-          baseName: .identifier("Bundle")
+          baseName: .predefined(.Bundle)
         ),
         declName: DeclReferenceExprSyntax(
-          baseName: .identifier("main")
+          baseName: .predefined(.main)
         )
       ),
       declName: DeclReferenceExprSyntax(
-        baseName: .identifier("bundleIdentifier")
+        baseName: .predefined(.bundleIdentifier)
       )
     ),
     operator: BinaryOperatorExprSyntax(
-      operator: .identifier("??")
+      operator: .predefined(.doubleQuestionMark)
     ),
-    rightOperand: StringLiteralExprSyntax(content: "")
+    rightOperand: EmptyStringLiteralExprSyntax()
   )
 
   static func _category(
@@ -102,10 +102,10 @@ extension OSLoggedMacro: MemberMacro {
       context.diagnose(
         Diagnostic(
           node: declaration,
-          message: .caseOutsideOfSwitchOrEnum
+          message: Message.OSLoggedMacroNotIsNotSupportedInProtocols
         )
       )
-      return StringLiteralExprSyntax(content: "")
+      return EmptyStringLiteralExprSyntax()
     }
   }
 }

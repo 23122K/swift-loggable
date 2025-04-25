@@ -5,18 +5,18 @@ import SwiftSyntax
 enum TraitSyntax {
   case Log(
     level: LevelableTrait?,
-    ommitable: [OmmitableTrait],
+    ommitable: [OmittableTrait],
     taggable: [TaggableTrait]
   )
 
   case OSLog(
     level: LevelableTrait?,
-    ommitable: [OmmitableTrait],
+    ommitable: [OmittableTrait],
     taggable: [TaggableTrait]
   )
 
   case Level(LevelableTrait?)
-  case omit([OmmitableTrait])
+  case omit([OmittableTrait])
   case tag([TaggableTrait])
 }
 
@@ -40,8 +40,8 @@ extension Array where Element == TraitSyntax {
     return nil
   }
 
-  var ommitable: [OmmitableTrait] {
-    var result: Set<OmmitableTrait> = []
+  var ommitable: [OmittableTrait] {
+    var result: Set<OmittableTrait> = []
     for trait in self {
       switch trait {
       case let .Log(_, traits, _):
@@ -126,7 +126,7 @@ extension AttributeListSyntax {
     self.attached.compactMap { source, arguments in
       switch source {
       /// ``@Log`` macro itself does not has any traits, however due to some doubts about how ``BodyMacro``
-      /// should be implemented it suports traits that conform to``Ommitable`` and ``Taggable``
+      /// should be implemented it suports traits that conform to``Omittable`` and ``Taggable``
       case .predefined(.Log), .predefined(.OSLog):
         return .Log(
           level: arguments.first?.trait(label: .level),

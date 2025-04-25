@@ -1,11 +1,11 @@
 
-public protocol Ommitable: _Trait {
+public protocol Omittable: _Trait { // TODO: Typo
   static func parameter(_: String) -> Self
   static var _parameters: Self { get }
   static var _result: Self { get }
 }
 
-public enum OmmitableTrait: Ommitable {
+public enum OmittableTrait: Omittable {
   case parameter(_ name: String)
   case _result
   case _parameters
@@ -24,12 +24,12 @@ public enum OmmitableTrait: Ommitable {
   }
 }
 
-extension Ommitable where Self == OmmitableTrait {
+extension Omittable where Self == OmittableTrait {
   public static var parameters: Self { ._parameters }
   public static var result: Self { ._result }
 }
 
-extension StringLiteralType: Ommitable {
+extension StringLiteralType: Omittable {
   public static func parameter(_ name: String) -> String {
     .parameterRawValue(name)
   }
@@ -43,7 +43,7 @@ extension StringLiteralType: Ommitable {
   }
 }
 
-extension Ommitable where Self == StringLiteralType {}
+extension Omittable where Self == StringLiteralType {}
 
 extension String {
   fileprivate static func parameterRawValue(_ name: String) -> String { "parameter_\(name)" }

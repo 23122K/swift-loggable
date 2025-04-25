@@ -3,9 +3,7 @@ import SwiftSyntax
 import SwiftSyntaxMacros
 
 extension OmitMacro: TraitMacro {
-  public static func message() -> any DiagnosticMessage {
-    Exception()
-  }
+  static let message: any DiagnosticMessage = Message()
 
   public static func expansion(
     of node: AttributeSyntax,
@@ -15,7 +13,7 @@ extension OmitMacro: TraitMacro {
       context.diagnose(
         Diagnostic(
           node: node,
-          message: self.message()
+          message: self.message
         )
       )
     }

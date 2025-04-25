@@ -2,7 +2,7 @@ import SwiftSyntax
 import SwiftDiagnostics
 
 public struct LevelMacro {
-  struct Exception: DiagnosticMessage {
+  struct Message: DiagnosticMessage {
     var message: String {
       "@Level macro that specifies traits must preceed @Log or @OSLog declarations"
     }

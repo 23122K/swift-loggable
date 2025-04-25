@@ -3,6 +3,7 @@ import SwiftSyntax
 extension TokenSyntax {
   enum Predefined {
     case `_`
+    case doubleQuestionMark
     case log
     case tags
     case Log
@@ -29,11 +30,26 @@ extension TokenSyntax {
     case Redact
     case subsystem
     case category
+    case bundleIdentifier
+    case Bundle
+    case main
 
     var identifier: TokenSyntax {
       switch self {
       case ._:
         return TokenSyntax.identifier("_")
+
+      case .doubleQuestionMark:
+        return TokenSyntax.identifier("??")
+
+      case .bundleIdentifier:
+        return TokenSyntax.identifier("bundleIdentifier")
+
+      case .Bundle:
+        return TokenSyntax.identifier("Bundle")
+
+      case .main:
+        return TokenSyntax.identifier("main")
 
       case .logger:
         return TokenSyntax.identifier("logger")

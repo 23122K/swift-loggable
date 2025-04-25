@@ -13,7 +13,7 @@ public macro OSLogged(
 @attached(body)
 public macro OSLog(
   level: (any Levelable)? = nil,
-  omit: any Ommitable... = [],
+  omit: any Omittable... = [],
   tag: any Taggable... = []
 ) = #externalMacro(
   module: "LoggableMacro",
@@ -36,7 +36,7 @@ public macro Log(using loggable: any Loggable = .signposter) = #externalMacro(
 public macro Log(
   using loggable: any Loggable = .signposter,
   level: (any Levelable)? = nil,
-  omit: any Ommitable... = [],
+  omit: any Omittable... = [],
   tag: any Taggable... = []
 ) = #externalMacro(
   module: "LoggableMacro",
@@ -51,7 +51,7 @@ public macro Level(_ trait: (any Levelable)? = nil) = #externalMacro(
 )
 
 @attached(body)
-public macro Omit(_ traits: any Ommitable... = []) = #externalMacro(
+public macro Omit(_ traits: any Omittable... = []) = #externalMacro(
   module: "LoggableMacro",
   type: "OmitMacro"
 )

@@ -2,8 +2,8 @@ import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxMacros
 
-public protocol TraitMacro: BodyMacro {
-  static func message() -> any DiagnosticMessage
+protocol TraitMacro: BodyMacro {
+  static var message: any DiagnosticMessage { get }
 
   static func expansion(
     of node: AttributeSyntax,
@@ -26,14 +26,14 @@ extension TraitMacro {
     }
   }
 
-  public static func expansion(
+  static func expansion(
     of node: AttributeSyntax,
     in context: some MacroExpansionContext
   ) -> [CodeBlockItemSyntax] {
     context.diagnose(
       Diagnostic(
         node: node,
-        message: self.message()
+        message: self.message
       )
     )
     return self.body()

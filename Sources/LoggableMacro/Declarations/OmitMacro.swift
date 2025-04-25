@@ -2,7 +2,7 @@ import SwiftSyntax
 import SwiftDiagnostics
 
 public struct OmitMacro {
-  struct Exception: DiagnosticMessage {
+  struct Message: DiagnosticMessage {
     var message: String {
       "@Omit macro that specifies traits must preceed @Log or @OSLog declarations"
     }
