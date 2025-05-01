@@ -2,12 +2,12 @@ import LoggableMacro
 import MacroTesting
 import XCTest
 
-final class LoggedMacroTests: XCTestCase {
+final class OSLoggedMacroTests: XCTestCase {
   override func invokeTest() {
     withMacroTesting(
       indentationWidth: .spaces(2),
       record: .missing,
-      macros: ["Logged": LoggedMacro.self]
+      macros: ["OSLogged": OSLoggedMacro.self]
     ) {
       super.invokeTest()
     }
@@ -16,16 +16,16 @@ final class LoggedMacroTests: XCTestCase {
   func test_struct_default_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
-      @Logged
+      @OSLogged
       struct Foo {
         func bar<T>(_ value: T) -> T {
           return value
         }
-
+      
         func quaz() -> (Int) -> Int {
           return { $0 + 1 }
         }
-
+      
         static func quuaz(completion: @escaping () async -> String) {
           Task {
             let data = await completion()
@@ -37,16 +37,16 @@ final class LoggedMacroTests: XCTestCase {
     } expansion: {
       """
       struct Foo {
-        @Log
+        @OSLog
         func bar<T>(_ value: T) -> T {
           return value
         }
-        @Log
+        @OSLog
 
         func quaz() -> (Int) -> Int {
           return { $0 + 1 }
         }
-        @Log
+        @OSLog
 
         static func quuaz(completion: @escaping () async -> String) {
           Task {
@@ -54,15 +54,17 @@ final class LoggedMacroTests: XCTestCase {
             print(data)
           }
         }
+
+        static let logger = Logger(subsystem: "Foo", category: "Foo")
       }
       """
     }
   }
 
-  func test_class_withLoggableAsStaticParameter_noAdditionalAnnotations() throws {
+  func test_class_withCustomSubsystemAndCategory_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
-      @Logged(using: .custom)
+      @OSLogged(subsystem: "OSLoggedMacroTests", category: "class")
       class Foo {
         func bar<T>(_ value: T) -> T {
           return value
@@ -83,16 +85,16 @@ final class LoggedMacroTests: XCTestCase {
     } expansion: {
       """
       class Foo {
-        @Log(using: .custom)
+        @OSLog
         func bar<T>(_ value: T) -> T {
           return value
         }
-        @Log(using: .custom)
+        @OSLog
 
         func quaz() -> (Int) -> Int {
           return { $0 + 1 }
         }
-        @Log(using: .custom)
+        @OSLog
 
         static func quuaz(completion: @escaping () async -> String) {
           Task {
@@ -100,98 +102,8 @@ final class LoggedMacroTests: XCTestCase {
             print(data)
           }
         }
-      }
-      """
-    }
-  }
 
-  func test_class_withLoggableAsInitializer_noAdditionalAnnotations() throws {
-    assertMacro {
-      #"""
-      @Logged(using: Custom())
-      class Foo {
-        func bar<T>(_ value: T) -> T {
-          return value
-        }
-
-        func quaz() -> (Int) -> Int {
-          return { $0 + 1 }
-        }
-
-        static func quuaz(completion: @escaping () async -> String) {
-          Task {
-            let data = await completion()
-            print(data)
-          }
-        }
-      }
-      """#
-    } expansion: {
-      """
-      class Foo {
-        @Log(using: Custom())
-        func bar<T>(_ value: T) -> T {
-          return value
-        }
-        @Log(using: Custom())
-
-        func quaz() -> (Int) -> Int {
-          return { $0 + 1 }
-        }
-        @Log(using: Custom())
-
-        static func quuaz(completion: @escaping () async -> String) {
-          Task {
-            let data = await completion()
-            print(data)
-          }
-        }
-      }
-      """
-    }
-  }
-
-  func test_class_withLoggableAsFunction_noAdditionalAnnotations() throws {
-    assertMacro {
-      #"""
-      @Logged(using: .custom(module: "Foo"))
-      class Foo {
-        func bar<T>(_ value: T) -> T {
-          return value
-        }
-
-        func quaz() -> (Int) -> Int {
-          return { $0 + 1 }
-        }
-
-        static func quuaz(completion: @escaping () async -> String) {
-          Task {
-            let data = await completion()
-            print(data)
-          }
-        }
-      }
-      """#
-    } expansion: {
-      """
-      class Foo {
-        @Log(using: .custom(module: "Foo"))
-        func bar<T>(_ value: T) -> T {
-          return value
-        }
-        @Log(using: .custom(module: "Foo"))
-
-        func quaz() -> (Int) -> Int {
-          return { $0 + 1 }
-        }
-        @Log(using: .custom(module: "Foo"))
-
-        static func quuaz(completion: @escaping () async -> String) {
-          Task {
-            let data = await completion()
-            print(data)
-          }
-        }
+        static let logger = Logger(subsystem: "OSLoggedMacroTests", category: "class")
       }
       """
     }
@@ -200,7 +112,7 @@ final class LoggedMacroTests: XCTestCase {
   func test_actor_default_withOmmitAnnotations() throws {
     assertMacro {
       #"""
-      @Logged
+      @OSLogged
       actor Foo {
         @Omit(.parameters)
         func bar<T>(_ value: T) -> T {
@@ -225,7 +137,7 @@ final class LoggedMacroTests: XCTestCase {
       """
       actor Foo {
         @Omit(.parameters)
-        @Log
+        @OSLog
         func bar<T>(_ value: T) -> T {
           return value
         }
@@ -236,13 +148,15 @@ final class LoggedMacroTests: XCTestCase {
         }
 
         @Omit(.result)
-        @Log
+        @OSLog
         static func quuaz(completion: @escaping () async -> String) {
           Task {
             let data = await completion()
             print(data)
           }
         }
+
+        static let logger = Logger(subsystem: "Foo", category: "Foo")
       }
       """
     }
@@ -251,7 +165,7 @@ final class LoggedMacroTests: XCTestCase {
   func test_enum_default_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
-      @Logged
+      @OSLogged
       enum Foo {
         case bar(Bar)
         case quaz
@@ -268,11 +182,13 @@ final class LoggedMacroTests: XCTestCase {
         case bar(Bar)
         case quaz
         case quuaz
-        @Log
+        @OSLog
 
         static func _bar() -> Foo { 
           Foo.bar(.example)
         }
+
+        static let logger = Logger(subsystem: "Foo", category: "Foo")
       }
       """
     }
@@ -281,7 +197,7 @@ final class LoggedMacroTests: XCTestCase {
   func test_extension_default_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
-      @Logged
+      @OSLogged
       extension Foo {
         mutating func bar() -> Self {
           self.bar = .example
@@ -296,16 +212,18 @@ final class LoggedMacroTests: XCTestCase {
     } expansion: {
       """
       extension Foo {
-        @Log
+        @OSLog
         mutating func bar() -> Self {
           self.bar = .example
           return self
         }
-        @Log
+        @OSLog
 
         static func quaz(quuaz: Quuaz) -> Self { 
           Self(bar: nil, quuaz: quaaz)
         }
+
+        static let logger = Logger(subsystem: "Foo ", category: "Foo ")
       }
       """
     }

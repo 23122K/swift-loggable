@@ -6,6 +6,7 @@ import XCTest
 final class LogMacroTests: XCTestCase {
   override func invokeTest() {
     withMacroTesting(
+      indentationWidth: .spaces(2),
       record: .missing,
       macros: ["Log": LogMacro.self]
     ) {
@@ -13,7 +14,8 @@ final class LogMacroTests: XCTestCase {
     }
   }
 
-  func test_function_withNoParameters_returnsVoid() throws {
+
+  func test_voidFunction_default_noAdditinalAnnotations() throws {
     assertMacro {
       #"""
       @Log
@@ -24,18 +26,19 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func foo() {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func foo()"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+          declaration: "func foo()",
+          tags: []
         )
         print("Foo")
-        Loggable.default.emit(event: event)
+        loggable.emit(event: event)
       }
       """
     }
   }
 
-  func test_function_withNoParameters_returnsVoid_customLogger() throws {
+  func test_voidFunction_lggableAsInitializer_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @Log(using: CustomLogger())
@@ -46,18 +49,19 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func foo() {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func foo()"
+        let loggable: any Loggable = CustomLogger()
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+          declaration: "func foo()",
+          tags: []
         )
         print("Foo")
-        CustomLogger().emit(event: event)
+        loggable.emit(event: event)
       }
       """
     }
   }
 
-  func test_function_withNoParameters_returnsVoid_customStaticLogger() throws {
+  func test_voidFunction_loggableAsStaticParameter_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @Log(using: .custom)
@@ -68,18 +72,19 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func foo() {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func foo()"
+        let loggable: any Loggable = .custom
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+          declaration: "func foo()",
+          tags: []
         )
         print("Foo")
-        Loggable.custom.emit(event: event)
+        loggable.emit(event: event)
       }
       """
     }
   }
 
-  func test_function_withNoParameters_returnsValue() throws {
+  func test_stringFunction_default_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @Log
@@ -90,39 +95,38 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func foo() -> String {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func foo() -> String"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+          declaration: "func foo() -> String",
+          tags: []
         )
         func _foo() -> String {
           return "Foo"
         }
         let result = _foo()
-        event.result = result
-        Loggable.default.emit(event: event)
+        event.result = .success(result)
+        loggable.emit(event: event)
         return result
       }
       """
     }
   }
 
-  func test_function_withParameters_returnsVoid() throws {
+  func test_stringFunctionWithArguments_loggableAndLevelableAsStaticParameters_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
-      @Foo
-      @Log(using: .foo)
+      @Log(using: .foo, level: .debug)
       func foo(bar: String) -> String { 
         print("Foo: \(bar)")
       }
       """#
     } expansion: {
       #"""
-      @Foo
       func foo(bar: String) -> String {
         let loggable: any Loggable = .foo
-        var event = LoggableEvent(location: "TestModule/Test.swift:2:1",
-          declaration: "func foo(bar: String) -> String"
-          , tags: []
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+          declaration: "func foo(bar: String) -> String",
+          tags: []
         )
         event.parameters = [
           "bar": bar
@@ -139,11 +143,10 @@ final class LogMacroTests: XCTestCase {
     }
   }
 
-  func test_function_withParameters_returnsValue() throws {
+  func test_stringFunctionWithArgument_taggableAsStringLiteralType_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
-      @Foo
-      @Log
+      @Log(tag: "example")
       func foo(bar: String) -> String { 
         return "Foo: \(bar)"
       }
@@ -151,9 +154,10 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       #"""
       func foo(bar: String) -> String {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func foo(bar: String) -> String"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+          declaration: "func foo(bar: String) -> String",
+          tags: ["tag_example"]
         )
         event.parameters = [
           "bar": bar
@@ -162,15 +166,15 @@ final class LogMacroTests: XCTestCase {
           return "Foo: \(bar)"
         }
         let result = _foo(bar: bar)
-        event.result = result
-        Loggable.default.emit(event: event)
+        event.result = .success(result)
+        loggable.emit(event: event)
         return result
       }
       """#
     }
   }
 
-  func test_function_withLabeledParameters_returnsTuple() throws {
+  func test_tupleFunctionWithLabeledArguments_default_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @Log
@@ -181,9 +185,10 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       #"""
       func foo(_ bar: String, baz biz: Int) -> (String, Int) {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func foo(_ bar: String, baz biz: Int) -> (String, Int)"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+          declaration: "func foo(_ bar: String, baz biz: Int) -> (String, Int)",
+          tags: []
         )
         event.parameters = [
           "bar": bar,
@@ -193,17 +198,18 @@ final class LogMacroTests: XCTestCase {
           return ("Bar: \(bar)", biz * 2)
         }
         let result = _foo(bar: bar, biz: biz)
-        event.result = result
-        Loggable.default.emit(event: event)
+        event.result = .success(result)
+        loggable.emit(event: event)
         return result
       }
       """#
     }
   }
 
-  func test_mutatingFunction_withNoParameters_returnsVoid() throws {
+  func test_mutatingFunction_default_withLevelAnnotation() throws {
     assertMacro {
       #"""
+      @Level(.debug)
       @Log
       mutating func foo() { 
         self.counter += 1 
@@ -211,22 +217,26 @@ final class LogMacroTests: XCTestCase {
       """#
     } expansion: {
       """
+      @Level(.debug)
       mutating func foo() {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "mutating func foo()"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(
+          level: "level_debug",
+          location: "TestModule/Test.swift:2:1",
+          declaration: "mutating func foo()",
+          tags: []
         )
         self.counter += 1
-        Loggable.default.emit(event: event)
+        loggable.emit(event: event)
       }
       """
     }
   }
 
-  func test_mutatingFunction_withParameters_returnsVoid() throws {
+  func test_mutatingFunctionWithArgument_taggableAndLevelableAsPrameters_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
-      @Log
+      @Log(level: .debug, tag: .common, "example")
       mutating func foo(bar: String) { 
         self.bar = bar
       }
@@ -234,21 +244,24 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       mutating func foo(bar: String) {
-        var event = Loggable.Event(
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(
+          level: "level_debug",
           location: "TestModule/Test.swift:1:1",
-          declaration: "mutating func foo(bar: String)"
+          declaration: "mutating func foo(bar: String)",
+          tags: ["tag_common"]
         )
         event.parameters = [
           "bar": bar
         ]
         self.bar = bar
-        Loggable.default.emit(event: event)
+        loggable.emit(event: event)
       }
       """
     }
   }
 
-  func test_mutatingThrowingFunction_withNoParametres_returnsVoid() throws {
+  func test_mutatingThrowingFunction_default_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @Log
@@ -263,9 +276,10 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       mutating func foo() throws {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "mutating func foo() throws"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+          declaration: "mutating func foo() throws",
+          tags: []
         )
         func _foo() throws {
           if self.counter == 0 {
@@ -277,8 +291,8 @@ final class LogMacroTests: XCTestCase {
         do {
           let _ = try _foo()
         } catch {
-          event.error = error
-          Loggable.default.emit(event: event)
+          event.error = .failure(error)
+          loggable.emit(event: event)
           throw error
         }
       }
@@ -286,9 +300,11 @@ final class LogMacroTests: XCTestCase {
     }
   }
 
-  func test_throwingFunction_noParameters_returnsVoid() throws {
+  func test_throwingFunction_default_withTagAndLevelAnnotations() throws {
     assertMacro {
       #"""
+      @Level(.error)
+      @Tag("example")
       @Log
       func foo() throws {
         throw NSError()
@@ -296,10 +312,15 @@ final class LogMacroTests: XCTestCase {
       """#
     } expansion: {
       """
+      @Level(.error)
+      @Tag("example")
       func foo() throws {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func foo() throws"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(
+          level: "level_error",
+          location: "TestModule/Test.swift:3:1",
+          declaration: "func foo() throws",
+          tags: ["tag_example"]
         )
         func _foo() throws {
           throw NSError()
@@ -307,8 +328,8 @@ final class LogMacroTests: XCTestCase {
         do {
           let _ = try _foo()
         } catch {
-          event.error = error
-          Loggable.default.emit(event: event)
+          event.error = .failure(error)
+          loggable.emit(event: event)
           throw error
         }
       }
@@ -316,7 +337,7 @@ final class LogMacroTests: XCTestCase {
     }
   }
 
-  func test_throwingFunction_noParameters_returnsValue() throws {
+  func test_throwingFunction_default_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @Log
@@ -331,9 +352,10 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func foo() throws -> Int {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func foo() throws -> Int"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+          declaration: "func foo() throws -> Int",
+          tags: []
         )
         func _foo() throws -> Int {
           if Bool.random() {
@@ -344,12 +366,12 @@ final class LogMacroTests: XCTestCase {
         }
         do {
           let result = try _foo()
-          event.result = result
-          Loggable.default.emit(event: event)
+          event.result = .success(result)
+          loggable.emit(event: event)
           return result
         } catch {
-          event.error = error
-          Loggable.default.emit(event: event)
+          event.error = .failure(error)
+          loggable.emit(event: event)
           throw error
         }
       }
@@ -357,9 +379,10 @@ final class LogMacroTests: XCTestCase {
     }
   }
 
-  func test_throwingFunction_withParameters_returnsVoid() throws {
+  func test_throwingFunctionWithArgument_default_withOmitParameterAnnotation() throws {
     assertMacro {
       #"""
+      @Omit("value")
       @Log
       func foo(_ value: Int) throws {
         if Bool.random() {
@@ -372,13 +395,15 @@ final class LogMacroTests: XCTestCase {
       """#
     } expansion: {
       """
+      @Omit("value")
       func foo(_ value: Int) throws {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func foo(_ value: Int) throws"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:2:1",
+          declaration: "func foo(_ value: Int) throws",
+          tags: []
         )
         event.parameters = [
-          "value": value
+          :
         ]
         func _foo(value: Int) throws {
           if Bool.random() {
@@ -391,8 +416,8 @@ final class LogMacroTests: XCTestCase {
         do {
           let _ = try _foo(value: value)
         } catch {
-          event.error = error
-          Loggable.default.emit(event: event)
+          event.error = .failure(error)
+          loggable.emit(event: event)
           throw error
         }
       }
@@ -400,10 +425,10 @@ final class LogMacroTests: XCTestCase {
     }
   }
 
-  func test_throwingFunction_withParameters_returnsTuple() throws {
+  func test_throwingFunctionWithArguments_omittableAsStaticParameter_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
-      @Log
+      @Log(omit: .parameters)
       func foo(_ value: Int, content: String) throws -> (Int, String) {
         if Bool.random() {
           throw NSError(domain: com.foo.test, code: .zero)
@@ -415,14 +440,11 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       #"""
       func foo(_ value: Int, content: String) throws -> (Int, String) {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func foo(_ value: Int, content: String) throws -> (Int, String)"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+          declaration: "func foo(_ value: Int, content: String) throws -> (Int, String)",
+          tags: []
         )
-        event.parameters = [
-          "value": value,
-          "content": content
-        ]
         func _foo(value: Int, content: String) throws -> (Int, String) {
           if Bool.random() {
             throw NSError(domain: com.foo.test, code: .zero)
@@ -432,12 +454,12 @@ final class LogMacroTests: XCTestCase {
         }
         do {
           let result = try _foo(value: value, content: content)
-          event.result = result
-          Loggable.default.emit(event: event)
+          event.result = .success(result)
+          loggable.emit(event: event)
           return result
         } catch {
-          event.error = error
-          Loggable.default.emit(event: event)
+          event.error = .failure(error)
+          loggable.emit(event: event)
           throw error
         }
       }
@@ -445,23 +467,42 @@ final class LogMacroTests: XCTestCase {
     }
   }
 
-  func test_asyncThrowingFunction_noParametres_returnsVoid() throws {
+  func test_asyncThrowingFunction_levelableAsStringLiteralTypeParameter_withTagAnnotation() throws {
     assertMacro {
       #"""
+      @Tag("example")
+      @Log(level: "fault")
       func foo() async throws {
         try await Task.sleep(nanoseconds: 100_000_000)
       }
       """#
     } expansion: {
       """
+      @Tag("example")
       func foo() async throws {
-        try await Task.sleep(nanoseconds: 100_000_000)
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(
+          level: "level_fault",
+          location: "TestModule/Test.swift:2:1",
+          declaration: "func foo() async throws",
+          tags: ["tag_example"]
+        )
+        func _foo() async throws {
+          try await Task.sleep(nanoseconds: 100_000_000)
+        }
+        do {
+          let _ = try await _foo()
+        } catch {
+          event.error = .failure(error)
+          loggable.emit(event: event)
+          throw error
+        }
       }
       """
     }
   }
 
-  func test_function_withEscapingClosure_returnsVoid() throws {
+  func test_functionWithEscapingClosure_default_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @Log
@@ -472,34 +513,40 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func performTask(completion: @escaping () -> Void) {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func performTask(completion: @escaping () -> Void)"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+          declaration: "func performTask(completion: @escaping () -> Void)",
+          tags: []
         )
         event.parameters = [
           "completion": completion
         ]
         completion()
-        Loggable.default.emit(event: event)
+        loggable.emit(event: event)
       }
       """
     }
   }
 
-  func test_function_withAutoclosureParameter_returnsValue() throws {
+  func test_functionWithAutoclosureArgument_omittableAsStaticParameter_withLevelAnnotation() throws {
     assertMacro {
       #"""
-      @Log
+      @Level(.info)
+      @Log(omit: .result)
       func check(condition: @autoclosure () -> Bool) -> Bool {
         return condition()
       }
       """#
     } expansion: {
       """
+      @Level(.info)
       func check(condition: @autoclosure () -> Bool) -> Bool {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func check(condition: @autoclosure () -> Bool) -> Bool"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(
+          level: "level_info",
+          location: "TestModule/Test.swift:2:1",
+          declaration: "func check(condition: @autoclosure () -> Bool) -> Bool",
+          tags: []
         )
         event.parameters = [
           "condition": condition
@@ -508,15 +555,14 @@ final class LogMacroTests: XCTestCase {
           return condition()
         }
         let result = _check(condition: condition())
-        event.result = result
-        Loggable.default.emit(event: event)
+        loggable.emit(event: event)
         return result
       }
       """
     }
   }
 
-  func test_function_withInoutParameter_returnsVoid() throws {
+  func test_functionWithInoutArgument_default_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @Log
@@ -527,68 +573,74 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func update(value: inout Int, with newValue: Int) {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func update(value: inout Int, with newValue: Int)"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+          declaration: "func update(value: inout Int, with newValue: Int)",
+          tags: []
         )
         event.parameters = [
           "value": value,
           "newValue": newValue
         ]
         value = newValue
-        Loggable.default.emit(event: event)
+        loggable.emit(event: event)
       }
       """
     }
   }
 
-  func test_staticFunction_returnsValue() throws {
+  func test_staticFunctionWithArgument_omittableAsStringLiteralType_withOmitResultAnnotation() throws {
     assertMacro {
       #"""
-      @Log
+      @Omit(.result)
+      @Log(omit: "info")
       static func staticMethod(info: String) -> String {
         return "Static: \(info)"
       }
       """#
     } expansion: {
       #"""
+      @Omit(.result)
       static func staticMethod(info: String) -> String {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "static func staticMethod(info: String) -> String"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:2:1",
+          declaration: "static func staticMethod(info: String) -> String",
+          tags: []
         )
         event.parameters = [
-          "info": info
+          :
         ]
         func _staticMethod(info: String) -> String {
           return "Static: \(info)"
         }
         let result = _staticMethod(info: info)
-        event.result = result
-        Loggable.default.emit(event: event)
+        loggable.emit(event: event)
         return result
       }
       """#
     }
   }
 
-  func test_rethrowsFunction_returnsVoid() throws {
+  func test_rethrowsFunctionWithClosureArgument_omittableAsStringLiteralType_withRedundatOmitParameterAnnotation() throws {
     assertMacro {
       #"""
-      @Log
+      @Omit("operation")
+      @Log(omit: "operation")
       func execute(operation: () throws -> Void) rethrows {
         try operation()
       }
       """#
     } expansion: {
       """
+      @Omit("operation")
       func execute(operation: () throws -> Void) rethrows {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func execute(operation: () throws -> Void) rethrows"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:2:1",
+          declaration: "func execute(operation: () throws -> Void) rethrows",
+          tags: []
         )
         event.parameters = [
-          "operation": operation
+          :
         ]
         func _execute(operation: () throws -> Void) rethrows {
           try operation()
@@ -596,8 +648,8 @@ final class LogMacroTests: XCTestCase {
         do {
           let _ = try _execute(operation: operation)
         } catch {
-          event.error = error
-          Loggable.default.emit(event: event)
+          event.error = .failure(error)
+          loggable.emit(event: event)
           throw error
         }
       }
@@ -605,10 +657,10 @@ final class LogMacroTests: XCTestCase {
     }
   }
 
-  func test_function_withClosureParameter_returnsValue() throws {
+  func test_functionWithArguments_allTraits_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
-      @Log
+      @Log(using: .custom, level: .debug, omit: .result, .parameters, tag: .commonTag, "example")
       func transform(value: Int, using transform: (Int) -> String) -> String {
         return transform(value)
       }
@@ -616,9 +668,10 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func transform(value: Int, using transform: (Int) -> String) -> String {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func transform(value: Int, using transform: (Int) -> String) -> String"
+        let loggable: any Loggable = .custom
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+          declaration: "func transform(value: Int, using transform: (Int) -> String) -> String",
+          tags: ["tag_commonTag"]
         )
         event.parameters = [
           "value": value,
@@ -628,17 +681,19 @@ final class LogMacroTests: XCTestCase {
           return transform(value)
         }
         let result = _transform(value: value, transform: transform)
-        event.result = result
-        Loggable.default.emit(event: event)
+        loggable.emit(event: event)
         return result
       }
       """
     }
   }
 
-  func test_genericFunction_returnsValue() throws {
+  func test_genericFunction_default_withAllAnnotations() throws {
     assertMacro {
       #"""
+      @Omit(.result, "value")
+      @Tag(.commonTag, "example")
+      @Level(.info)
       @Log
       func identity<T>(_ value: T) -> T {
         return value
@@ -646,29 +701,35 @@ final class LogMacroTests: XCTestCase {
       """#
     } expansion: {
       """
+      @Omit(.result, "value")
+      @Tag(.commonTag, "example")
+      @Level(.info)
       func identity<T>(_ value: T) -> T {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func identity<T>(_ value: T) -> T"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(
+          level: "level_info",
+          location: "TestModule/Test.swift:4:1",
+          declaration: "func identity<T>(_ value: T) -> T",
+          tags: ["tag_commonTag", "tag_example"]
         )
         event.parameters = [
-          "value": value
+          :
         ]
         func _identity(value: T) -> T {
           return value
         }
         let result = _identity(value: value)
-        event.result = result
-        Loggable.default.emit(event: event)
+        loggable.emit(event: event)
         return result
       }
       """
     }
   }
 
-  func test_genericFunction_withWhereClause_returnsTuple() throws {
+  func test_genericTupleFunctionWithWhereClauseAndArguments_default_withRedundantTagAnnotation() throws {
     assertMacro {
       #"""
+      @Tag(.example, "example")
       @Log
       func combine<T, U>(first: T, second: U) -> (T, U) where T: CustomStringConvertible, U: CustomStringConvertible {
         return (first, second)
@@ -676,10 +737,12 @@ final class LogMacroTests: XCTestCase {
       """#
     } expansion: {
       """
+      @Tag(.example, "example")
       func combine<T, U>(first: T, second: U) -> (T, U) where T: CustomStringConvertible, U: CustomStringConvertible {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func combine<T, U>(first: T, second: U) -> (T, U) where T: CustomStringConvertible, U: CustomStringConvertible"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:2:1",
+          declaration: "func combine<T, U>(first: T, second: U) -> (T, U) where T: CustomStringConvertible, U: CustomStringConvertible",
+          tags: ["tag_example"]
         )
         event.parameters = [
           "first": first,
@@ -689,15 +752,15 @@ final class LogMacroTests: XCTestCase {
           return (first, second)
         }
         let result = _combine(first: first, second: second)
-        event.result = result
-        Loggable.default.emit(event: event)
+        event.result = .success(result)
+        loggable.emit(event: event)
         return result
       }
       """
     }
   }
 
-  func test_function_withDefaultParameters_returnsValue() throws {
+  func test_stringFunctionWithDefaultParameters_default_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @Log
@@ -708,9 +771,10 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       #"""
       func greet(name: String = "Guest") -> String {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: #"func greet(name: String = "Guest") -> String"#
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+          declaration: #"func greet(name: String = "Guest") -> String"#,
+          tags: []
         )
         event.parameters = [
           "name": name
@@ -719,15 +783,15 @@ final class LogMacroTests: XCTestCase {
           return "Hello, \(name)!"
         }
         let result = _greet(name: name)
-        event.result = result
-        Loggable.default.emit(event: event)
+        event.result = .success(result)
+        loggable.emit(event: event)
         return result
       }
       """#
     }
   }
 
-  func test_function_withVariadicParameters_returnsValue() throws {
+  func test_intFunctionWithVariadicParameters_default_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @Log
@@ -738,9 +802,10 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func sum(numbers: Int...) -> Int {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func sum(numbers: Int...) -> Int"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+          declaration: "func sum(numbers: Int...) -> Int",
+          tags: []
         )
         event.parameters = [
           "numbers": numbers
@@ -749,17 +814,18 @@ final class LogMacroTests: XCTestCase {
           return numbers.reduce(0, +)
         }
         let result = _sum(numbers: numbers)
-        event.result = result
-        Loggable.default.emit(event: event)
+        event.result = .success(result)
+        loggable.emit(event: event)
         return result
       }
       """
     }
   }
 
-  func test_function_withMultipleAttributes_returnsValue() throws {
+  func test_functionWithArgument_default_withDiscardableResultAndOmitResultAnnotations() throws {
     assertMacro {
       #"""
+      @Omit(.result)
       @Log
       @discardableResult
       func compute(value: Int) -> Int {
@@ -768,11 +834,13 @@ final class LogMacroTests: XCTestCase {
       """#
     } expansion: {
       """
+      @Omit(.result)
       @discardableResult
       func compute(value: Int) -> Int {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func compute(value: Int) -> Int"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:2:1",
+          declaration: "func compute(value: Int) -> Int",
+          tags: []
         )
         event.parameters = [
           "value": value
@@ -781,15 +849,14 @@ final class LogMacroTests: XCTestCase {
           return value * value
         }
         let result = _compute(value: value)
-        event.result = result
-        Loggable.default.emit(event: event)
+        loggable.emit(event: event)
         return result
       }
       """
     }
   }
 
-  func test_function_returningClosure_returnsValue() throws {
+  func test_intClosureFunction_default_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @Log
@@ -800,9 +867,10 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func makeIncrementer() -> (Int) -> Int {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func makeIncrementer() -> (Int) -> Int"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+          declaration: "func makeIncrementer() -> (Int) -> Int",
+          tags: []
         )
         func _makeIncrementer() -> (Int) -> Int {
           return {
@@ -810,15 +878,15 @@ final class LogMacroTests: XCTestCase {
           }
         }
         let result = _makeIncrementer()
-        event.result = result
-        Loggable.default.emit(event: event)
+        event.result = .success(result)
+        loggable.emit(event: event)
         return result
       }
       """
     }
   }
 
-  func test_function_withAsyncClosureParameter_returnsVoid() throws {
+  func test_functionWithAsyncClosureArgument_default_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @Log
@@ -832,9 +900,10 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func fetchData(completion: @escaping () async -> String) {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func fetchData(completion: @escaping () async -> String)"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+          declaration: "func fetchData(completion: @escaping () async -> String)",
+          tags: []
         )
         event.parameters = [
           "completion": completion
@@ -843,13 +912,13 @@ final class LogMacroTests: XCTestCase {
             let data = await completion()
             print(data)
           }
-        Loggable.default.emit(event: event)
+        loggable.emit(event: event)
       }
       """
     }
   }
 
-  func test_function_withMainActor_returnsVoid() throws {
+  func test_functionWithArgument_default_mainActorAnnotation() throws {
     assertMacro {
       #"""
       @Log
@@ -862,21 +931,22 @@ final class LogMacroTests: XCTestCase {
       """
       @MainActor
       func updateUI(message: String) {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func updateUI(message: String)"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+          declaration: "func updateUI(message: String)",
+          tags: []
         )
         event.parameters = [
           "message": message
         ]
         print(message)
-        Loggable.default.emit(event: event)
+        loggable.emit(event: event)
       }
       """
     }
   }
 
-  func test_genericFunction_withMultipleConstraints_returnsValue() throws {
+  func test_genericFunctionWithMultipleConstraints_default_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @Log
@@ -887,9 +957,10 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func process<T: Equatable, U: Numeric>(first: T, second: U) -> Bool {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func process<T: Equatable, U: Numeric>(first: T, second: U) -> Bool"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+          declaration: "func process<T: Equatable, U: Numeric>(first: T, second: U) -> Bool",
+          tags: []
         )
         event.parameters = [
           "first": first,
@@ -899,15 +970,15 @@ final class LogMacroTests: XCTestCase {
           return true
         }
         let result = _process(first: first, second: second)
-        event.result = result
-        Loggable.default.emit(event: event)
+        event.result = .success(result)
+        loggable.emit(event: event)
         return result
       }
       """
     }
   }
 
-  func test_objcFunction_returnsVoid() throws {
+  func test_function_default_objcAnnotation() throws {
     assertMacro {
       #"""
       @Log
@@ -920,18 +991,19 @@ final class LogMacroTests: XCTestCase {
       """
       @objc
       func performAction() {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func performAction()"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+          declaration: "func performAction()",
+          tags: []
         )
         print("Action performed")
-        Loggable.default.emit(event: event)
+        loggable.emit(event: event)
       }
       """
     }
   }
 
-  func test_function_withNoParametes_returnsOptionalValue() throws {
+  func test_optionalIntFunction_default_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @Log
@@ -942,23 +1014,24 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func getOptionalValue() -> Int? {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func getOptionalValue() -> Int?"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+          declaration: "func getOptionalValue() -> Int?",
+          tags: []
         )
         func _getOptionalValue() -> Int? {
           return nil
         }
         let result = _getOptionalValue()
-        event.result = result
-        Loggable.default.emit(event: event)
+        event.result = .success(result)
+        loggable.emit(event: event)
         return result
       }
       """
     }
   }
 
-  func test_function_withAsyncThrowingClosureParameter_returnsValue() throws {
+  func test_stringFunctionWithAsyncThrowingClosureParameter_default_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @Log
@@ -969,9 +1042,10 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func performAsyncTask(completion: @escaping () async throws -> String) async throws -> String {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func performAsyncTask(completion: @escaping () async throws -> String) async throws -> String"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+          declaration: "func performAsyncTask(completion: @escaping () async throws -> String) async throws -> String",
+          tags: []
         )
         event.parameters = [
           "completion": completion
@@ -981,12 +1055,12 @@ final class LogMacroTests: XCTestCase {
         }
         do {
           let result = try await _performAsyncTask(completion: completion)
-          event.result = result
-          Loggable.default.emit(event: event)
+          event.result = .success(result)
+          loggable.emit(event: event)
           return result
         } catch {
-          event.error = error
-          Loggable.default.emit(event: event)
+          event.error = .failure(error)
+          loggable.emit(event: event)
           throw error
         }
       }
@@ -994,7 +1068,7 @@ final class LogMacroTests: XCTestCase {
     }
   }
 
-  func test_overridingFunction_returnsValue() throws {
+  func test_overridingStringFunction_default_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @Log
@@ -1005,23 +1079,24 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       override func description() -> String {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "override func description() -> String"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+          declaration: "override func description() -> String",
+          tags: []
         )
         func _description() -> String {
           return "Override"
         }
         let result = _description()
-        event.result = result
-        Loggable.default.emit(event: event)
+        event.result = .success(result)
+        loggable.emit(event: event)
         return result
       }
       """
     }
   }
 
-  func test_function_withInoutAndDefaultParameter_returnsVoid() throws {
+  func test_functionWithInoutAndDefaultArgument_default_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @Log
@@ -1032,22 +1107,23 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func updateScore(score: inout Int, increment: Int = 1) {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func updateScore(score: inout Int, increment: Int = 1)"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+          declaration: "func updateScore(score: inout Int, increment: Int = 1)",
+          tags: []
         )
         event.parameters = [
           "score": score,
           "increment": increment
         ]
         score += increment
-        Loggable.default.emit(event: event)
+        loggable.emit(event: event)
       }
       """
     }
   }
 
-  func test_function_withOptionalParameters_returnsValue() throws {
+  func test_functionWithOptionalArgument_default_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @Log
@@ -1058,9 +1134,10 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func optionalTest(value: String?) -> String {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func optionalTest(value: String?) -> String"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+          declaration: "func optionalTest(value: String?) -> String",
+          tags: []
         )
         event.parameters = [
           "value": value
@@ -1069,17 +1146,18 @@ final class LogMacroTests: XCTestCase {
           return value ?? "Default"
         }
         let result = _optionalTest(value: value)
-        event.result = result
-        Loggable.default.emit(event: event)
+        event.result = .success(result)
+        loggable.emit(event: event)
         return result
       }
       """
     }
   }
 
-  func test_genericFunction_withComplexSignature_returnsValue() throws {
+  func test_genericFunctionWithComplexSignature_default_withOmitSecondParameterAnnotation() throws {
     assertMacro {
       #"""
+      @Omit("second")
       @Log
       func merge<T, U>(_ first: [T], with second: [U]) -> [(T, U)]
         where T: Comparable, U: Comparable
@@ -1089,30 +1167,31 @@ final class LogMacroTests: XCTestCase {
       """#
     } expansion: {
       #"""
+      @Omit("second")
       func merge<T, U>(_ first: [T], with second: [U]) -> [(T, U)]
         where T: Comparable, U: Comparable{
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func merge<T, U>(_ first: [T], with second: [U]) -> [(T, U)]\n  where T: Comparable, U: Comparable"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:2:1",
+          declaration: "func merge<T, U>(_ first: [T], with second: [U]) -> [(T, U)]\n  where T: Comparable, U: Comparable",
+          tags: []
         )
         event.parameters = [
-          "first": first,
-          "second": second
+          "first": first
         ]
         func _merge(first: [T], second: [U]) -> [(T, U)]
         {
           return []
         }
         let result = _merge(first: first, second: second)
-        event.result = result
-        Loggable.default.emit(event: event)
+        event.result = .success(result)
+        loggable.emit(event: event)
         return result
       }
       """#
     }
   }
 
-  func test_function_withClosureDefaultValue_returnsVoid() throws {
+  func test_functionWithClosureDefaultValue_default_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @Log
@@ -1123,21 +1202,22 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func perform(action: (() -> Void)? = nil) {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func perform(action: (() -> Void)? = nil)"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+          declaration: "func perform(action: (() -> Void)? = nil)",
+          tags: []
         )
         event.parameters = [
           "action": action
         ]
         action?()
-        Loggable.default.emit(event: event)
+        loggable.emit(event: event)
       }
       """
     }
   }
 
-  func test_staticGenericFunction_returnsValue() throws {
+  func test_staticGenericFunction_default_withDiscardableResultAnnotation() throws {
     assertMacro {
       #"""
       @Log
@@ -1150,9 +1230,10 @@ final class LogMacroTests: XCTestCase {
       """
       @discardableResult
       static func create<T>(value: T) -> [T] {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "static func create<T>(value: T) -> [T]"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+          declaration: "static func create<T>(value: T) -> [T]",
+          tags: []
         )
         event.parameters = [
           "value": value
@@ -1161,15 +1242,15 @@ final class LogMacroTests: XCTestCase {
           return [value]
         }
         let result = _create(value: value)
-        event.result = result
-        Loggable.default.emit(event: event)
+        event.result = .success(result)
+        loggable.emit(event: event)
         return result
       }
       """
     }
   }
 
-  func test_function_withTupleParameter_returnsValue() throws {
+  func test_stringFunctionWithTupleParameter_default_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @Log
@@ -1180,9 +1261,10 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       #"""
       func process(pair: (Int, String)) -> String {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func process(pair: (Int, String)) -> String"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+          declaration: "func process(pair: (Int, String)) -> String",
+          tags: []
         )
         event.parameters = [
           "pair": pair
@@ -1191,15 +1273,15 @@ final class LogMacroTests: XCTestCase {
           return "\(pair.0) - \(pair.1)"
         }
         let result = _process(pair: pair)
-        event.result = result
-        Loggable.default.emit(event: event)
+        event.result = .success(result)
+        loggable.emit(event: event)
         return result
       }
       """#
     }
   }
 
-  func test_function_withGenericClosureParameter_returnsValue() throws {
+  func test_genericFunctionWithGenericClosureParameter_default_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @Log
@@ -1210,9 +1292,10 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func filterElements<T>(elements: [T], using predicate: (T) -> Bool) -> [T] {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func filterElements<T>(elements: [T], using predicate: (T) -> Bool) -> [T]"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+          declaration: "func filterElements<T>(elements: [T], using predicate: (T) -> Bool) -> [T]",
+          tags: []
         )
         event.parameters = [
           "elements": elements,
@@ -1222,21 +1305,18 @@ final class LogMacroTests: XCTestCase {
           return elements.filter(predicate)
         }
         let result = _filterElements(elements: elements, predicate: predicate)
-        event.result = result
-        Loggable.default.emit(event: event)
+        event.result = .success(result)
+        loggable.emit(event: event)
         return result
       }
       """
     }
   }
 
-  func test_function_withGenericClosureParameterAndTratis_returnsValue() throws {
+  func test_genericArrayfunctionWithGenericClosureArgument_default_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
-      @Tag(.custom)
-      @Omit(.result)
-      @Level(.error)
-      @Log(using: .custom)
+      @Log
       func filterElements<T>(elements: [T], using predicate: (T) -> Bool) -> [T] {
         return elements.filter(predicate)
       }
@@ -1244,20 +1324,21 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func filterElements<T>(elements: [T], using predicate: (T) -> Bool) -> [T] {
-        var event = Loggable.Event(
-          location: "TestModule/Test.swift:1:1",
-          declaration: "func filterElements<T>(elements: [T], using predicate: (T) -> Bool) -> [T]"
+        let loggable: any Loggable = .signposter
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+          declaration: "func filterElements<T>(elements: [T], using predicate: (T) -> Bool) -> [T]",
+          tags: []
         )
         event.parameters = [
           "elements": elements,
-          "predicate": pre dicate
+          "predicate": predicate
         ]
         func _filterElements(elements: [T], predicate: (T) -> Bool) -> [T] {
           return elements.filter(predicate)
         }
         let result = _filterElements(elements: elements, predicate: predicate)
-        event.result = result
-        Loggable.default.emit(event: event)
+        event.result = .success(result)
+        loggable.emit(event: event)
         return result
       }
       """

@@ -1,6 +1,7 @@
 # Loggable
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2F23122K%2Fswift-loggable%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/23122K/swift-loggable)
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2F23122K%2Fswift-loggable%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/23122K/swift-loggable)
+
 Loggable is a set of macros that support type-wide and per-function logging with ability to customize how logs are being handled.
 ## Learn More
 This package comes with few macros which can be loosely divided into three groups.
@@ -23,10 +24,7 @@ Can only by attached to functions and must always proceed `@Log` or `@OSLog` mac
 #### `@Level`
 Specifies with what level event should be emitted with. Trait must conform to `Levelable` protocol. As of now only `OSLogType` conforms to this protocol. 
 #### `@Omit`
-Can be used with parameters or without, in the last case  `@Logged` or `@OSLogged` macros will not be expanded. Its parameters must conform to `Omittable` protocol. Currently `Omittable` allows to omit capturing of function:
-* Result
-* Parameter 
-* All parameters
+Can be used with parameters or without, in the last case  `@Logged` or `@OSLogged` macros will not be expanded. Its parameters must conform to `Omittable` protocol. Currently `Omittable` allows to ignore function result, specified parameter or all parameters.
 #### `@Tag` 
 Takes range of parameters that conforms to `Taggable` protocol. Passed parameters are attached to emitted event.
 ## Usage
@@ -126,7 +124,7 @@ struct Foo {
   mutating func qux() { ...} -> Self
 }
 ```
-### @OSLogged and OSLog
+### @OSLogged and @OSLog
 Likewise `@Logged`, simply annotate with `@OSLogged` to log all methods within `Foo` scope.
 ```diff
 + @OSLogged
@@ -263,12 +261,12 @@ extension Foo {
 }
 ```
 ## Installation
-Add the following dependency to your Package.swift
+Add the following dependency to your `Package.swift`
 ```swift
 .package(url: "https://github.com/23122K/swift-loggable.git", branch: "main"),
 ```
-Alternatively, *Project → Package dependencies → + → Search or enter package URL* and paste 
+Alternatively, go to *Project → Package dependencies → + → Search or enter package URL* and paste 
 ```
-https://github.com/23122K/swift-loggable.git`
+https://github.com/23122K/swift-loggable.git
 ```
 In both cases choose dependency rule of your choice

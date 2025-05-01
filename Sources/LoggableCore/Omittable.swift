@@ -1,5 +1,5 @@
 
-public protocol Omittable: _Trait { // TODO: Typo
+public protocol Omittable: _Trait {
   static func parameter(_: String) -> Self
   static var _parameters: Self { get }
   static var _result: Self { get }
@@ -47,6 +47,6 @@ extension Omittable where Self == StringLiteralType {}
 
 extension String {
   fileprivate static func parameterRawValue(_ name: String) -> String { "parameter_\(name)" }
-  fileprivate static let _parametersRawValue = #"_parameters"#
-  fileprivate static let _resultRawValue = #"_result"#
+  fileprivate static let _parametersRawValue = #"parameters"#
+  fileprivate static let _resultRawValue = #"result"#
 }
