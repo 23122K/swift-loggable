@@ -8,7 +8,7 @@ Macros within this package can be loosely divided into four groups
 ### Log macros
 Only supports functions, capturing their signature, source location, parameters, return values, and any errors thrown at runtime. As of now static, throwing, async, and generic functions are supported with standard arguments as well as inout arguments, closures, and @autoclosures.
 > [!Note] 
-> Passing traits directly to `@Log` or @OSLog has the same effect as using dedicated trait macros
+> Passing traits directly to `@Log` or `@OSLog` has the same effect as using dedicated trait macros
 #### `@Log` 
 Accepts an optional `any Loggable` instance along with optional traits. Can be used standalone or within an `@Logged` context - when used inside `@Logged`, it overrides any parameters passed to `@Logged` in that context.
 #### `@OSLog`
