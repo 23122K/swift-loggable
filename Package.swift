@@ -13,10 +13,6 @@ let package = Package(
       name: "Loggable",
       targets: ["Loggable"]
     ),
-    .executable(
-      name: "Client",
-      targets: ["Client"]
-    ),
   ],
   dependencies: [
     .package(
@@ -58,10 +54,6 @@ let package = Package(
           package: "swift-syntax"
         )
       ]
-    ),
-    .executableTarget(
-      name: "Client",
-      dependencies: ["Loggable"]
     ),
     .testTarget(
       name: "LoggableMacroTests",
