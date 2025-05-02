@@ -14,12 +14,10 @@ extension TokenKind {
     case Level
     case OSLog
     case Logged
-    case redactableTraits
-
     case subsystem
     case category
 
-    var identifer: TokenKind {
+    var identifier: TokenKind {
       switch self {
       case .level:
         return TokenKind.identifier("level")
@@ -62,14 +60,11 @@ extension TokenKind {
 
       case .Logged:
         return TokenKind.identifier("Logged")
-
-      case .redactableTraits:
-        return TokenKind.identifier("redactableTraits")
       }
     }
   }
 
   static func predefined(_ token: Predefined) -> TokenKind {
-    token.identifer
+    token.identifier
   }
 }

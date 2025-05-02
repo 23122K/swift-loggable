@@ -15,7 +15,7 @@ extension LoggableAttributeMacro {
     in context: some MacroExpansionContext
   ) throws -> [AttributeSyntax] {
     guard let member = FunctionDeclSyntax(member) else {
-      return self.attriibutes()
+      return self.attributes()
     }
 
     let canExpand = member.attributes.map { attribute in
@@ -24,8 +24,8 @@ extension LoggableAttributeMacro {
     }
 
     return canExpand.contains(true)
-      ? self.attriibutes()
-      : self.attriibutes {
+      ? self.attributes()
+      : self.attributes {
         self.introduce(for: node)
       }
   }

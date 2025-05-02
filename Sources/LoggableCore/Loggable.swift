@@ -1,5 +1,11 @@
+import OSLog
+
 public protocol Loggable: Sendable {
   func emit(event: LoggableEvent)
+}
+
+public protocol OSLogger {
+  static var logger: Logger { get }
 }
 
 public struct LoggableEvent: CustomStringConvertible {

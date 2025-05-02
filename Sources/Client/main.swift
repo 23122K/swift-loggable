@@ -3,9 +3,8 @@ import Loggable
 import OSLog
 import SwiftUI
 
-@OSLogged
 struct Foo {
-  @Omit("result")
+  #osLogger
   static func foo(value: String, result: Int) -> Bool {
     print("foo of intValue: \(value)")
     return true
@@ -13,8 +12,8 @@ struct Foo {
 }
 
 
+
 extension Foo {
-//  @OSLog(level: .error, tag: "OSLOgged tag", "other")
   static func bat() -> Int {
     return .zero
   }

@@ -1,14 +1,12 @@
 import SwiftSyntax
+import SwiftSyntaxMacros
 
-extension AttributeSyntax {
+extension FreestandingMacroExpansionSyntax {
   func extract<T: ExprSyntaxProtocol>(
     argument label: TokenKind.Predefined,
     as type: T.Type
   ) -> T? {
-    guard case let .argumentList(arguments) = self.arguments
-    else { return nil }
-
-    return arguments
+    self.arguments
       .first { argument in argument.label?.tokenKind == label.identifier }?
       .expression
       .as(type)

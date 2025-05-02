@@ -1,11 +1,26 @@
 @_exported public import LoggableCore
+import LoggableMacro
 
-@attached(member, names: named(logger))
-@attached(memberAttribute)
-public macro OSLogged(
+@freestanding(declaration, names: named(logger))
+public macro osLogger(
   subsystem: String? = nil,
   category: String? = nil
 ) = #externalMacro(
+  module: "LoggableMacro",
+  type: "OSLoggerMacro"
+)
+
+@attached(extension, names: named(logger), conformances: OSLogger)
+public macro OSLogger(
+  subsystem: String? = nil,
+  category: String? = nil
+) = #externalMacro(
+  module: "LoggableMacro",
+  type: "OSLoggedMacro"
+)
+
+@attached(memberAttribute)
+public macro OSLogged() = #externalMacro(
   module: "LoggableMacro",
   type: "OSLoggedMacro"
 )

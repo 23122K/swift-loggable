@@ -52,8 +52,8 @@ extension BodyMacro {
   }
 }
 
-extension MemberMacro {
-  static func members(
+extension DeclarationMacro {
+  static func declaration(
     @ResultBuilder<VariableDeclSyntax> _ components: () -> [VariableDeclSyntax] = { [] }
   ) -> [DeclSyntax] {
     components()
@@ -62,9 +62,17 @@ extension MemberMacro {
 }
 
 extension MemberAttributeMacro {
-  static func attriibutes(
+  static func attributes(
     @ResultBuilder<AttributeSyntax> _ components: () -> [AttributeSyntax] = { [] }
   ) -> [AttributeSyntax] {
+    components()
+  }
+}
+
+extension ExtensionMacro {
+  static func conformance(
+    @ResultBuilder<ExtensionDeclSyntax> _ components: () -> [ExtensionDeclSyntax] = { [] }
+  ) -> [ExtensionDeclSyntax] {
     components()
   }
 }

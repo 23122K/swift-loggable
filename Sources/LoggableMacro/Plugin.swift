@@ -7,6 +7,7 @@ struct LoggablePlugin: CompilerPlugin {
     LogMacro.self,
     LoggedMacro.self,
     OSLogMacro.self,
+    OSLoggerMacro.self,
     OSLoggedMacro.self,
     LevelMacro.self,
     OmitMacro.self,

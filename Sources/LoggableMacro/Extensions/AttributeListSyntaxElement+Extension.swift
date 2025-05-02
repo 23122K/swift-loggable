@@ -79,7 +79,7 @@ extension Array where Element == TraitSyntax {
 
 extension LabeledExprListSyntax.Element {
   fileprivate func trait<Trait: _Trait>(label tokenKind: TokenKind.Predefined? = nil) -> Trait? {
-    if let tokenKind, tokenKind.identifer != self.label?.tokenKind { return nil }
+    if let tokenKind, tokenKind.identifier != self.label?.tokenKind { return nil }
 
     switch self.expression.as(ExprSyntaxEnum.self) {
     case let .memberAccessExpr(memberAccessExprSyntax):
