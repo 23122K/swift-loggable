@@ -7,15 +7,18 @@ swift-loggable package is a set of macros that support type-wide and per-functio
 Macros within this package can be loosely divided into four groups
 ### Log macros
 Only supports functions, capturing their signature, source location, parameters, return values, and any errors thrown at runtime. As of now static, throwing, async, and generic functions are supported with standard arguments as well as inout arguments, closures, and @autoclosures.
-> :note: Passing traits directly to `@Log` or @OSLog has the same effect as using dedicated trait macros
+> [!Note] 
+> Passing traits directly to `@Log` or @OSLog has the same effect as using dedicated trait macros
 #### `@Log` 
 Accepts an optional `any Loggable` instance along with optional traits. Can be used standalone or within an `@Logged` context - when used inside `@Logged`, it overrides any parameters passed to `@Logged` in that context.
 #### `@OSLog`
 A specialized version of `@Log` that does not accept an `any Loggable` parameter as it uses [`Logger`](https://developer.apple.com/documentation/os/logger) introduced by `OSLogger` protocol
-> :warning: `@OSLog` must be used within a context annotated with `@OSLogger` or one that conforms to the `OSLogger` protocol
+> [!warning]
+> `@OSLog` must be used within a context annotated with `@OSLogger` or one that conforms to the `OSLogger` protocol
 ### Logged macros
 Type-wide and extension macros that introduces `@Log` or `@OSLog` annotations to all methods within their scope. To omit function from being logged use `@Omit` macro without no parameters.
-> :note: Both `@Logged` and `@OSLogged` cannot be attached to protocols
+> [!Note] 
+> Both `@Logged` and `@OSLogged` cannot be attached to protocols
 #### `@Logged`
 Takes `any Loggable` instance as a parameter. If provided, it is applied to all functions within its scope, unless explicitly opted out. By default, it uses `OSSignposter` with the` OSLog.default` instance.
 #### `@OSLogged`
@@ -26,10 +29,12 @@ Both macros internally rely on the [Logger](https://developer.apple.com/document
 Adds conformance to `OSLogger` protocol and introduces a static instance of [`Logger`](https://developer.apple.com/documentation/os/logger) to attached context.
 #### `#osLogger`
 Creates a static instance of [`Logger`](https://developer.apple.com/documentation/os/logger) in the invoked context, without adding conformance to `OSLogger` protocol.
-> :note: `#osLogger` can only be declared on a type as it introduces static property 
+> [!Note] 
+> `#osLogger` can only be declared on a type as it introduces static property 
 ### Trait macros
 Can only by attached to functions and must always proceed `@Log` or `@OSLog` macros applied explicitly or implicitly by `@Logged` or `@OSLogged`.
-> :note: The only exception from this rule is `@Omit` with not parameters
+> [!Note] 
+> The only exception from this rule is `@Omit` with not parameters
 #### `@Level`
 Overrides level of which event is emitted. By default `@Log` and `@OSLog` level is set to [`.info`](https://developer.apple.com/documentation/os/oslogtype/info) when function succeeds or [`.error`](https://developer.apple.com/documentation/os/oslogtype/error) when error is thrown. [`OSLogType`](https://developer.apple.com/documentation/os/oslogtype) conforms to this protocol. 
 #### `@Omit`
@@ -59,7 +64,8 @@ To log every method within `Foo`, simply annotate it with `@Logged`
 struct Foo { ... }
 ```
 The code will be expanded as follows:
-> :note: Methods within extension of `Foo` will not be affected
+> [!Note] 
+> Methods within extension of `Foo` will not be affected
 ```diff
 @Logged
 struct Foo { 
@@ -176,7 +182,8 @@ extension Foo {
   static func quux() -> Self { ... }
 }
 ```
-> :note: Methods within extension of `Foo` will not be affected
+> [!Note] 
+> Methods within extension of `Foo` will not be affected
 
 Subsystem or a category can be overridden by explicitly passing it as a parameter to `@OSLogger`. Order of `@OSLogger` and `@OSLogged` does not matter, they are expanded independently. Final code after expansion looks as follows:
 ```diff
@@ -257,7 +264,8 @@ extension Foo {
   static func quux(privateKey: Data) -> Self { ... }
 }
 ```
-> :warning: `Omittable` internally uses `result` and `parameters` keywords, passing them as `String` into `@Omit()` or eg. `@Log(omit:)`, will not ignore a parameter named `result`, but will instead omit the actual function result from being captured.
+> [!warning]
+> `Omittable` internally uses `result` and `parameters` keywords, passing them as `String` into `@Omit()` or eg. `@Log(omit:)`, will not ignore a parameter named `result`, but will instead omit the actual function result from being captured.
 ##### Taggable
 ```swift
 extension Taggable where Self == TaggableTrait { 
