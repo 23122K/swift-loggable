@@ -36,16 +36,30 @@ let package = Package(
           name: "SwiftCompilerPlugin",
           package: "swift-syntax"
         ),
+        "LoggableCore",
       ]
     ),
     .target(
       name: "Loggable",
-      dependencies: ["LoggableMacro"]
+      dependencies: [
+        "LoggableMacro",
+        "LoggableCore",
+      ]
+    ),
+    .target(
+      name: "LoggableCore",
+      dependencies: [
+        .product(
+          name: "SwiftSyntaxMacros",
+          package: "swift-syntax"
+        )
+      ]
     ),
     .testTarget(
       name: "LoggableMacroTests",
       dependencies: [
         "LoggableMacro",
+        "LoggableCore",
         .product(
           name: "SwiftSyntaxMacrosTestSupport",
           package: "swift-syntax"

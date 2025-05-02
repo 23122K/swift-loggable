@@ -16,14 +16,14 @@ extension CodeBlockItemSyntax {
   static let rethrow = CodeBlockItemSyntax(
     ThrowStmtSyntax(
       expression: DeclReferenceExprSyntax(
-        baseName: .error
+        baseName: .predefined(.error)
       )
     )
   )
 
   static func `try`(
-    @CodeBlockItemSyntaxBuilder _ doStatements: @escaping () -> [CodeBlockItemSyntax],
-    @CodeBlockItemSyntaxBuilder catch statements: @escaping () -> [CodeBlockItemSyntax]
+  @ResultBuilder<CodeBlockItemSyntax> _ doStatements: @escaping () -> [CodeBlockItemSyntax],
+  @ResultBuilder<CodeBlockItemSyntax> catch statements: @escaping () -> [CodeBlockItemSyntax]
   ) -> CodeBlockItemSyntax {
     CodeBlockItemSyntax(
       DoStmtSyntax(
@@ -50,9 +50,11 @@ extension CodeBlockItemSyntax {
             bindings: PatternBindingListSyntax(
               arrayLiteral: PatternBindingSyntax(
                 pattern: IdentifierPatternSyntax(
-                  identifier: function.isVoid
-                    ? .identifier("_")
-                    : .result
+                  identifier: .predefined(
+                    function.isVoid
+                      ? ._
+                      : .result
+                  )
                 ),
                 initializer: function.initializer
               )
@@ -68,7 +70,7 @@ extension CodeBlockItemSyntax {
       StmtSyntax(
         ReturnStmtSyntax(
           expression: DeclReferenceExprSyntax(
-            baseName: .result
+            baseName: .predefined(.result)
           )
         )
       )

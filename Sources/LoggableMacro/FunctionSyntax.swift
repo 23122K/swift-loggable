@@ -1,10 +1,13 @@
+import LoggableCore
 import SwiftSyntax
 
 @dynamicMemberLookup
-struct FunctionSyntax {
+public struct FunctionSyntax {
   let syntax: FunctionDeclSyntax
+  let attributes: [Attribute]
   let signature: Signature
-  
+  let traits: [TraitSyntax]
+
   /// Returns the original body of the called function as an array of `CodeBlockItemSyntax`.
   /// If the function body is missing, an empty array is returned.
   var body: [CodeBlockItemSyntax] {
@@ -132,7 +135,7 @@ struct FunctionSyntax {
         return attributedType.attributes.contains { attribute in
           guard case let .attribute(syntax) = attribute else { return false }
           guard let name = syntax.attributeName.as(IdentifierTypeSyntax.self) else { return false }
-          return name.name.tokenKind == .autoclosure
+          return name.name.tokenKind == .predefined(.autoclosure)
         }
       }
 
@@ -196,14 +199,38 @@ struct FunctionSyntax {
     }
   }
 
+  struct Attribute {
+    let syntax: AttributeSyntax
+    let name: TokenSyntax
+
+    var isLogMacroPresent: Bool {
+      self.name == .identifier("OSLog")
+    }
+  }
+
   init(_ syntax: FunctionDeclSyntax) {
     self.syntax = syntax
     self.signature = Signature(syntax: syntax.signature)
+    self.attributes = syntax.attributes.compactMap(\.asFunctionSyntaxAttribute)
+    self.traits = syntax.attributes.parsableTraitSyntax()
   }
 
   init?(from syntax: some DeclSyntaxProtocol) {
     guard let syntax = syntax.as(FunctionDeclSyntax.self)
     else { return nil }
     self.init(syntax)
+  }
+}
+
+extension AttributeListSyntax.Element {
+  var asFunctionSyntaxAttribute: FunctionSyntax.Attribute? {
+    guard
+      case let .attribute(syntax) = self,
+      let identifier = IdentifierTypeSyntax(syntax.attributeName)
+    else { return nil }
+    return FunctionSyntax.Attribute(
+      syntax: syntax,
+      name: identifier.name
+    )
   }
 }
