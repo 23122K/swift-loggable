@@ -4,7 +4,7 @@ import SwiftSyntaxMacros
 import SwiftDiagnostics
 
 extension OSLoggerMacro: DeclarationMacro {
-  static func expansion(
+  public static func expansion(
     of node: some FreestandingMacroExpansionSyntax,
     in context: some MacroExpansionContext
   ) throws -> [DeclSyntax] {

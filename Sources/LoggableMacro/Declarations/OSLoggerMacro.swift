@@ -2,7 +2,7 @@ import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftDiagnostics
 
-struct OSLoggerMacro {
+public struct OSLoggerMacro {
   struct Fallback {
     let subsystem: InfixOperatorExprSyntax
     let category: StringLiteralExprSyntax

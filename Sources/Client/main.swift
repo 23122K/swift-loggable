@@ -3,16 +3,16 @@ import Loggable
 import OSLog
 import SwiftUI
 
+@OSLogger
+@OSLogged
 struct Foo {
-  #osLogger
   static func foo(value: String, result: Int) -> Bool {
     print("foo of intValue: \(value)")
     return true
   }
 }
 
-
-
+@OSLogged
 extension Foo {
   static func bat() -> Int {
     return .zero

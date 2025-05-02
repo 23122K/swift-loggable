@@ -54,8 +54,6 @@ final class OSLoggedMacroTests: XCTestCase {
             print(data)
           }
         }
-
-        static let logger = Logger(subsystem: "Foo", category: "Foo")
       }
       """
     }
@@ -102,8 +100,6 @@ final class OSLoggedMacroTests: XCTestCase {
             print(data)
           }
         }
-
-        static let logger = Logger(subsystem: "OSLoggedMacroTests", category: "class")
       }
       """
     }
@@ -155,8 +151,6 @@ final class OSLoggedMacroTests: XCTestCase {
             print(data)
           }
         }
-
-        static let logger = Logger(subsystem: "Foo", category: "Foo")
       }
       """
     }
@@ -187,8 +181,6 @@ final class OSLoggedMacroTests: XCTestCase {
         static func _bar() -> Foo { 
           Foo.bar(.example)
         }
-
-        static let logger = Logger(subsystem: "Foo", category: "Foo")
       }
       """
     }
@@ -222,8 +214,6 @@ final class OSLoggedMacroTests: XCTestCase {
         static func quaz(quuaz: Quuaz) -> Self { 
           Self(bar: nil, quuaz: quaaz)
         }
-
-        static let logger = Logger(subsystem: "Foo ", category: "Foo ")
       }
       """
     }

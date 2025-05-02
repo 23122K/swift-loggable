@@ -16,7 +16,7 @@ public macro OSLogger(
   category: String? = nil
 ) = #externalMacro(
   module: "LoggableMacro",
-  type: "OSLoggedMacro"
+  type: "OSLoggerMacro"
 )
 
 @attached(memberAttribute)
