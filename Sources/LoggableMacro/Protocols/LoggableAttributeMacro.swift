@@ -1,6 +1,6 @@
+import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxMacros
-import SwiftDiagnostics
 
 protocol LoggableAttributeMacro: MemberAttributeMacro {
   static func introduce(for node: AttributeSyntax) -> AttributeSyntax
@@ -33,7 +33,7 @@ extension LoggableAttributeMacro {
 
 struct DebugException: DiagnosticMessage {
   var message: String
-  
+
   var diagnosticID: SwiftDiagnostics.MessageID { .init(domain: "d", id: "1") }
 
   var severity: SwiftDiagnostics.DiagnosticSeverity { .error }

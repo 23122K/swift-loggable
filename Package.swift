@@ -40,14 +40,14 @@ let package = Package(
           name: "SwiftCompilerPlugin",
           package: "swift-syntax"
         ),
-        "LoggableCore"
+        "LoggableCore",
       ]
     ),
     .target(
       name: "Loggable",
       dependencies: [
         "LoggableMacro",
-        "LoggableCore"
+        "LoggableCore",
       ]
     ),
     .target(

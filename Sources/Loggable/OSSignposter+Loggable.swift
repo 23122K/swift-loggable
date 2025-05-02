@@ -1,5 +1,5 @@
-import OSLog
 import LoggableCore
+import OSLog
 
 extension OSSignposter: Loggable {
   public func emit(event: LoggableEvent) {

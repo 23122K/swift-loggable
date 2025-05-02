@@ -1,7 +1,7 @@
+import LoggableCore
+import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxMacros
-import SwiftDiagnostics
-import LoggableCore
 
 protocol LoggableMacro: BodyMacro {
   static func initialize(for node: AttributeSyntax) -> ExprSyntax
@@ -38,8 +38,8 @@ extension LoggableMacro {
           .parameters {
             function.parameters.compactMap { parameter in
               return function.traits.ommitable.contains(.parameter(parameter.name.text))
-              ? nil
-              : parameter
+                ? nil
+                : parameter
             }
           }
         )
@@ -112,7 +112,7 @@ extension LoggableMacro {
             typeAnnotation: TypeAnnotationSyntax(
               type: SomeOrAnyTypeSyntax(
                 someOrAnySpecifier: .keyword(.any),
-                constraint:IdentifierTypeSyntax(
+                constraint: IdentifierTypeSyntax(
                   name: .predefined(.Loggable)
                 )
               )
@@ -176,7 +176,7 @@ extension LoggableMacro {
                   LabeledExprSyntax(
                     label: .predefined(.tags),
                     colon: .colonToken(),
-                    expression:  ArrayExprSyntax(
+                    expression: ArrayExprSyntax(
                       elements: ArrayElementListSyntax {
                         declaration.traits.taggable.map { tag in
                           ArrayElementSyntax(
@@ -213,7 +213,7 @@ extension LoggableMacro {
   }
 
   static func emit() -> CodeBlockItemSyntax {
-    CodeBlockItemSyntax (
+    CodeBlockItemSyntax(
       FunctionCallExprSyntax(
         calledExpression: MemberAccessExprSyntax(
           base: DeclReferenceExprSyntax(

@@ -1,7 +1,7 @@
 import Foundation
+import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxMacros
-import SwiftDiagnostics
 
 extension OSLoggerMacro: ExtensionMacro {
   public static func expansion(

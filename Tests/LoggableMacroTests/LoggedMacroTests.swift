@@ -256,7 +256,7 @@ final class LoggedMacroTests: XCTestCase {
         case bar(Bar)
         case quaz
         case quuaz
-      
+
         static func _bar() -> Foo { 
           Foo.bar(.example)
         }

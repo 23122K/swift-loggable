@@ -12,9 +12,9 @@ public struct LoggableEvent: CustomStringConvertible {
   public let level: (any Levelable)?
   public let location: String
   public let declaration: String
-  public var parameters: Dictionary<String, Any>
+  public var parameters: [String: Any]
   public var result: Result<Any, any Error>
-  public let tags: Array<any Taggable>
+  public let tags: [any Taggable]
 
   public var description: String {
     """
@@ -30,9 +30,9 @@ public struct LoggableEvent: CustomStringConvertible {
     level: (any Levelable)? = nil,
     location: String,
     declaration: String,
-    parameters: Dictionary<String, Any> = [:],
+    parameters: [String: Any] = [:],
     result: Result<Any, any Error> = .success(()),
-    tags: Array<any Taggable> = []
+    tags: [any Taggable] = []
   ) {
     self.level = level
     self.location = location

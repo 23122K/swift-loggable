@@ -21,11 +21,11 @@ final class OSLoggedMacroTests: XCTestCase {
         func bar<T>(_ value: T) -> T {
           return value
         }
-      
+
         func quaz() -> (Int) -> Int {
           return { $0 + 1 }
         }
-      
+
         static func quuaz(completion: @escaping () async -> String) {
           Task {
             let data = await completion()
@@ -164,7 +164,7 @@ final class OSLoggedMacroTests: XCTestCase {
         case bar(Bar)
         case quaz
         case quuaz
-      
+
         static func _bar() -> Foo { 
           Foo.bar(.example)
         }

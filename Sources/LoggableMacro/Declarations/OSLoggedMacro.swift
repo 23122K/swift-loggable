@@ -1,5 +1,5 @@
-import SwiftSyntax
-import SwiftDiagnostics
 import OSLog
+import SwiftDiagnostics
+import SwiftSyntax
 
 public struct OSLoggedMacro {}

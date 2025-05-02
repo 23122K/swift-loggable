@@ -1,6 +1,6 @@
-import XCTest
-import MacroTesting
 import LoggableMacro
+import MacroTesting
+import XCTest
 
 final class OSLoggerTests: XCTestCase {
   override func invokeTest() {

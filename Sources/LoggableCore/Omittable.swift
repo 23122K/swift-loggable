@@ -1,4 +1,3 @@
-
 public protocol Omittable: _Trait {
   static func parameter(_: String) -> Self
   static var _parameters: Self { get }

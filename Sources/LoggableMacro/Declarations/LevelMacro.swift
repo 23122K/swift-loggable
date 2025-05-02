@@ -1,5 +1,5 @@
-import SwiftSyntax
 import SwiftDiagnostics
+import SwiftSyntax
 
 public struct LevelMacro {
   struct Message: DiagnosticMessage {

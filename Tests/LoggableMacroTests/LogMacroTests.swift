@@ -1,5 +1,5 @@
-import LoggableMacro
 import LoggableCore
+import LoggableMacro
 import MacroTesting
 import XCTest
 
@@ -13,7 +13,6 @@ final class LogMacroTests: XCTestCase {
       super.invokeTest()
     }
   }
-
 
   func test_voidFunction_default_noAdditinalAnnotations() throws {
     assertMacro {
@@ -112,7 +111,10 @@ final class LogMacroTests: XCTestCase {
     }
   }
 
-  func test_stringFunctionWithArguments_loggableAndLevelableAsStaticParameters_noAdditionalAnnotations() throws {
+  func
+    test_stringFunctionWithArguments_loggableAndLevelableAsStaticParameters_noAdditionalAnnotations()
+    throws
+  {
     assertMacro {
       #"""
       @Log(using: .foo, level: .debug)
@@ -143,7 +145,8 @@ final class LogMacroTests: XCTestCase {
     }
   }
 
-  func test_stringFunctionWithArgument_taggableAsStringLiteralType_noAdditionalAnnotations() throws {
+  func test_stringFunctionWithArgument_taggableAsStringLiteralType_noAdditionalAnnotations() throws
+  {
     assertMacro {
       #"""
       @Log(tag: "example")
@@ -233,7 +236,9 @@ final class LogMacroTests: XCTestCase {
     }
   }
 
-  func test_mutatingFunctionWithArgument_taggableAndLevelableAsPrameters_noAdditionalAnnotations() throws {
+  func test_mutatingFunctionWithArgument_taggableAndLevelableAsPrameters_noAdditionalAnnotations()
+    throws
+  {
     assertMacro {
       #"""
       @Log(level: .debug, tag: .common, "example")
@@ -425,7 +430,9 @@ final class LogMacroTests: XCTestCase {
     }
   }
 
-  func test_throwingFunctionWithArguments_omittableAsStaticParameter_noAdditionalAnnotations() throws {
+  func test_throwingFunctionWithArguments_omittableAsStaticParameter_noAdditionalAnnotations()
+    throws
+  {
     assertMacro {
       #"""
       @Log(omit: .parameters)
@@ -528,7 +535,8 @@ final class LogMacroTests: XCTestCase {
     }
   }
 
-  func test_functionWithAutoclosureArgument_omittableAsStaticParameter_withLevelAnnotation() throws {
+  func test_functionWithAutoclosureArgument_omittableAsStaticParameter_withLevelAnnotation() throws
+  {
     assertMacro {
       #"""
       @Level(.info)
@@ -589,7 +597,9 @@ final class LogMacroTests: XCTestCase {
     }
   }
 
-  func test_staticFunctionWithArgument_omittableAsStringLiteralType_withOmitResultAnnotation() throws {
+  func test_staticFunctionWithArgument_omittableAsStringLiteralType_withOmitResultAnnotation()
+    throws
+  {
     assertMacro {
       #"""
       @Omit(.result)
@@ -621,7 +631,10 @@ final class LogMacroTests: XCTestCase {
     }
   }
 
-  func test_rethrowsFunctionWithClosureArgument_omittableAsStringLiteralType_withRedundatOmitParameterAnnotation() throws {
+  func
+    test_rethrowsFunctionWithClosureArgument_omittableAsStringLiteralType_withRedundatOmitParameterAnnotation()
+    throws
+  {
     assertMacro {
       #"""
       @Omit("operation")
@@ -692,7 +705,8 @@ final class LogMacroTests: XCTestCase {
     assertMacro {
       #"""
       @Omit(.result, "value")
-      @Tag(.commonTag, "example")
+      @Tag("example")
+      @Tag(.commonTag)
       @Level(.info)
       @Log
       func identity<T>(_ value: T) -> T {
@@ -702,13 +716,14 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       @Omit(.result, "value")
-      @Tag(.commonTag, "example")
+      @Tag("example")
+      @Tag(.commonTag)
       @Level(.info)
       func identity<T>(_ value: T) -> T {
         let loggable: any Loggable = .signposter
         var event = LoggableEvent(
           level: "level_info",
-          location: "TestModule/Test.swift:4:1",
+          location: "TestModule/Test.swift:5:1",
           declaration: "func identity<T>(_ value: T) -> T",
           tags: ["tag_commonTag", "tag_example"]
         )
@@ -726,7 +741,9 @@ final class LogMacroTests: XCTestCase {
     }
   }
 
-  func test_genericTupleFunctionWithWhereClauseAndArguments_default_withRedundantTagAnnotation() throws {
+  func test_genericTupleFunctionWithWhereClauseAndArguments_default_withRedundantTagAnnotation()
+    throws
+  {
     assertMacro {
       #"""
       @Tag(.example, "example")
@@ -1031,7 +1048,8 @@ final class LogMacroTests: XCTestCase {
     }
   }
 
-  func test_stringFunctionWithAsyncThrowingClosureParameter_default_noAdditionalAnnotations() throws {
+  func test_stringFunctionWithAsyncThrowingClosureParameter_default_noAdditionalAnnotations() throws
+  {
     assertMacro {
       #"""
       @Log
@@ -1313,7 +1331,8 @@ final class LogMacroTests: XCTestCase {
     }
   }
 
-  func test_genericArrayfunctionWithGenericClosureArgument_default_noAdditionalAnnotations() throws {
+  func test_genericArrayfunctionWithGenericClosureArgument_default_noAdditionalAnnotations() throws
+  {
     assertMacro {
       #"""
       @Log

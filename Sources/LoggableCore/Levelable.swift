@@ -12,7 +12,7 @@ public enum LevelableTrait: Levelable {
   public var rawValue: StringLiteralType {
     switch self {
     case let .level(value):
-      return.levelRawValue(value)
+      return .levelRawValue(value)
     }
   }
 }

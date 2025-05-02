@@ -22,5 +22,3 @@ extension Foo {
 var voo = true
 Foo.foo(value: "Gello", result: .zero)
 Foo.bat()
-
-

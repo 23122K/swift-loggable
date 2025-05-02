@@ -1,6 +1,6 @@
-import SwiftSyntax
-import SwiftDiagnostics
 import LoggableCore
+import SwiftDiagnostics
+import SwiftSyntax
 
 extension OSLogMacro: LoggableMacro {
   static func initialize(for node: AttributeSyntax) -> ExprSyntax {
