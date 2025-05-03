@@ -90,11 +90,11 @@ extension LoggableMacro {
   }
 
   static func location(
-    of node: AttributeSyntax,
+    of function: FunctionSyntax,
     in context: some MacroExpansionContext
   ) -> StringLiteralExprSyntax {
     StringLiteralExprSyntax(
-      content: context.location(of: node)?.findable ?? ""
+      content: context.location(of: function.syntax)?.findable ?? ""
     )
   }
 
@@ -160,7 +160,7 @@ extension LoggableMacro {
                     label: .predefined(.location),
                     colon: .colonToken(),
                     expression: self.location(
-                      of: node,
+                      of: declaration,
                       in: context
                     ),
                     trailingComma: .commaToken(),
