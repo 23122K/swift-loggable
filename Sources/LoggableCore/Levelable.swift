@@ -1,4 +1,4 @@
-public protocol Levelable: _Trait {
+public protocol Levelable: Trait {
   static func level(_: String) -> Self
 }
 

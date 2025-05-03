@@ -35,20 +35,20 @@ public macro OSLog(
 )
 
 @attached(memberAttribute)
-public macro Logged(using loggable: any Loggable = .signposter) = #externalMacro(
+public macro Logged(using loggable: any Loggable = .logger) = #externalMacro(
   module: "LoggableMacro",
   type: "LoggedMacro"
 )
 
 @attached(body)
-public macro Log(using loggable: any Loggable = .signposter) = #externalMacro(
+public macro Log(using loggable: any Loggable = .logger) = #externalMacro(
   module: "LoggableMacro",
   type: "LogMacro"
 )
 
 @attached(body)
 public macro Log(
-  using loggable: any Loggable = .signposter,
+  using loggable: any Loggable = .logger,
   level: (any Levelable)? = nil,
   omit: any Omittable... = [],
   tag: any Taggable... = []

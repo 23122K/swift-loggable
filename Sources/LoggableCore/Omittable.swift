@@ -1,4 +1,4 @@
-public protocol Omittable: _Trait {
+public protocol Omittable: Trait {
   static func parameter(_: String) -> Self
   static var _parameters: Self { get }
   static var _result: Self { get }
