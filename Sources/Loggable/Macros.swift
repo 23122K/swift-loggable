@@ -1,5 +1,4 @@
 @_exported public import LoggableCore
-import LoggableMacro
 
 @freestanding(declaration, names: named(logger))
 public macro osLogger(
