@@ -12,7 +12,7 @@ extension LoggableMacro {
     guard let expression = node.extract(argument: .using, as: ExprSyntax.self) else {
       return ExprSyntax(
         MemberAccessExprSyntax(
-          name: .predefined(.signposter)
+          name: .predefined(.logger)
         )
       )
     }

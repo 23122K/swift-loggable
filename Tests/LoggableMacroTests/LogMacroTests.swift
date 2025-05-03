@@ -25,7 +25,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func foo() {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "func foo()",
           tags: []
@@ -94,7 +94,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func foo() -> String {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "func foo() -> String",
           tags: []
@@ -157,7 +157,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       #"""
       func foo(bar: String) -> String {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "func foo(bar: String) -> String",
           tags: ["tag_example"]
@@ -188,7 +188,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       #"""
       func foo(_ bar: String, baz biz: Int) -> (String, Int) {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "func foo(_ bar: String, baz biz: Int) -> (String, Int)",
           tags: []
@@ -222,10 +222,10 @@ final class LogMacroTests: XCTestCase {
       """
       @Level(.debug)
       mutating func foo() {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(
           level: "level_debug",
-          location: "TestModule/Test.swift:2:1",
+          location: "TestModule/Test.swift:1:1",
           declaration: "mutating func foo()",
           tags: []
         )
@@ -249,7 +249,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       mutating func foo(bar: String) {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(
           level: "level_debug",
           location: "TestModule/Test.swift:1:1",
@@ -281,7 +281,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       mutating func foo() throws {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "mutating func foo() throws",
           tags: []
@@ -320,10 +320,10 @@ final class LogMacroTests: XCTestCase {
       @Level(.error)
       @Tag("example")
       func foo() throws {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(
           level: "level_error",
-          location: "TestModule/Test.swift:3:1",
+          location: "TestModule/Test.swift:1:1",
           declaration: "func foo() throws",
           tags: ["tag_example"]
         )
@@ -357,7 +357,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func foo() throws -> Int {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "func foo() throws -> Int",
           tags: []
@@ -402,8 +402,8 @@ final class LogMacroTests: XCTestCase {
       """
       @Omit("value")
       func foo(_ value: Int) throws {
-        let loggable: any Loggable = .signposter
-        var event = LoggableEvent(location: "TestModule/Test.swift:2:1",
+        let loggable: any Loggable = .logger
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "func foo(_ value: Int) throws",
           tags: []
         )
@@ -447,7 +447,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       #"""
       func foo(_ value: Int, content: String) throws -> (Int, String) {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "func foo(_ value: Int, content: String) throws -> (Int, String)",
           tags: []
@@ -487,10 +487,10 @@ final class LogMacroTests: XCTestCase {
       """
       @Tag("example")
       func foo() async throws {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(
           level: "level_fault",
-          location: "TestModule/Test.swift:2:1",
+          location: "TestModule/Test.swift:1:1",
           declaration: "func foo() async throws",
           tags: ["tag_example"]
         )
@@ -520,7 +520,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func performTask(completion: @escaping () -> Void) {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "func performTask(completion: @escaping () -> Void)",
           tags: []
@@ -549,10 +549,10 @@ final class LogMacroTests: XCTestCase {
       """
       @Level(.info)
       func check(condition: @autoclosure () -> Bool) -> Bool {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(
           level: "level_info",
-          location: "TestModule/Test.swift:2:1",
+          location: "TestModule/Test.swift:1:1",
           declaration: "func check(condition: @autoclosure () -> Bool) -> Bool",
           tags: []
         )
@@ -581,7 +581,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func update(value: inout Int, with newValue: Int) {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "func update(value: inout Int, with newValue: Int)",
           tags: []
@@ -612,8 +612,8 @@ final class LogMacroTests: XCTestCase {
       #"""
       @Omit(.result)
       static func staticMethod(info: String) -> String {
-        let loggable: any Loggable = .signposter
-        var event = LoggableEvent(location: "TestModule/Test.swift:2:1",
+        let loggable: any Loggable = .logger
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "static func staticMethod(info: String) -> String",
           tags: []
         )
@@ -647,8 +647,8 @@ final class LogMacroTests: XCTestCase {
       """
       @Omit("operation")
       func execute(operation: () throws -> Void) rethrows {
-        let loggable: any Loggable = .signposter
-        var event = LoggableEvent(location: "TestModule/Test.swift:2:1",
+        let loggable: any Loggable = .logger
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "func execute(operation: () throws -> Void) rethrows",
           tags: []
         )
@@ -721,7 +721,7 @@ final class LogMacroTests: XCTestCase {
 //      @Tag(.commonTag)
 //      @Level(.info)
 //      func identity<T>(_ value: T) -> T {
-//        let loggable: any Loggable = .signposter
+//        let loggable: any Loggable = .logger
 //        var event = LoggableEvent(
 //          level: "level_info",
 //          location: "TestModule/Test.swift:5:1",
@@ -757,8 +757,8 @@ final class LogMacroTests: XCTestCase {
       """
       @Tag(.example, "example")
       func combine<T, U>(first: T, second: U) -> (T, U) where T: CustomStringConvertible, U: CustomStringConvertible {
-        let loggable: any Loggable = .signposter
-        var event = LoggableEvent(location: "TestModule/Test.swift:2:1",
+        let loggable: any Loggable = .logger
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "func combine<T, U>(first: T, second: U) -> (T, U) where T: CustomStringConvertible, U: CustomStringConvertible",
           tags: ["tag_example"]
         )
@@ -789,7 +789,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       #"""
       func greet(name: String = "Guest") -> String {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: #"func greet(name: String = "Guest") -> String"#,
           tags: []
@@ -820,7 +820,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func sum(numbers: Int...) -> Int {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "func sum(numbers: Int...) -> Int",
           tags: []
@@ -855,8 +855,8 @@ final class LogMacroTests: XCTestCase {
       @Omit(.result)
       @discardableResult
       func compute(value: Int) -> Int {
-        let loggable: any Loggable = .signposter
-        var event = LoggableEvent(location: "TestModule/Test.swift:2:1",
+        let loggable: any Loggable = .logger
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "func compute(value: Int) -> Int",
           tags: []
         )
@@ -885,7 +885,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func makeIncrementer() -> (Int) -> Int {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "func makeIncrementer() -> (Int) -> Int",
           tags: []
@@ -918,7 +918,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func fetchData(completion: @escaping () async -> String) {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "func fetchData(completion: @escaping () async -> String)",
           tags: []
@@ -949,7 +949,7 @@ final class LogMacroTests: XCTestCase {
       """
       @MainActor
       func updateUI(message: String) {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "func updateUI(message: String)",
           tags: []
@@ -975,7 +975,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func process<T: Equatable, U: Numeric>(first: T, second: U) -> Bool {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "func process<T: Equatable, U: Numeric>(first: T, second: U) -> Bool",
           tags: []
@@ -1009,7 +1009,7 @@ final class LogMacroTests: XCTestCase {
       """
       @objc
       func performAction() {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "func performAction()",
           tags: []
@@ -1032,7 +1032,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func getOptionalValue() -> Int? {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "func getOptionalValue() -> Int?",
           tags: []
@@ -1061,7 +1061,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func performAsyncTask(completion: @escaping () async throws -> String) async throws -> String {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "func performAsyncTask(completion: @escaping () async throws -> String) async throws -> String",
           tags: []
@@ -1098,7 +1098,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       override func description() -> String {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "override func description() -> String",
           tags: []
@@ -1126,7 +1126,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func updateScore(score: inout Int, increment: Int = 1) {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "func updateScore(score: inout Int, increment: Int = 1)",
           tags: []
@@ -1153,7 +1153,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func optionalTest(value: String?) -> String {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "func optionalTest(value: String?) -> String",
           tags: []
@@ -1189,8 +1189,8 @@ final class LogMacroTests: XCTestCase {
       @Omit("second")
       func merge<T, U>(_ first: [T], with second: [U]) -> [(T, U)]
         where T: Comparable, U: Comparable{
-        let loggable: any Loggable = .signposter
-        var event = LoggableEvent(location: "TestModule/Test.swift:2:1",
+        let loggable: any Loggable = .logger
+        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "func merge<T, U>(_ first: [T], with second: [U]) -> [(T, U)]\n  where T: Comparable, U: Comparable",
           tags: []
         )
@@ -1221,7 +1221,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func perform(action: (() -> Void)? = nil) {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "func perform(action: (() -> Void)? = nil)",
           tags: []
@@ -1249,7 +1249,7 @@ final class LogMacroTests: XCTestCase {
       """
       @discardableResult
       static func create<T>(value: T) -> [T] {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "static func create<T>(value: T) -> [T]",
           tags: []
@@ -1280,7 +1280,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       #"""
       func process(pair: (Int, String)) -> String {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "func process(pair: (Int, String)) -> String",
           tags: []
@@ -1311,7 +1311,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func filterElements<T>(elements: [T], using predicate: (T) -> Bool) -> [T] {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "func filterElements<T>(elements: [T], using predicate: (T) -> Bool) -> [T]",
           tags: []
@@ -1344,7 +1344,7 @@ final class LogMacroTests: XCTestCase {
     } expansion: {
       """
       func filterElements<T>(elements: [T], using predicate: (T) -> Bool) -> [T] {
-        let loggable: any Loggable = .signposter
+        let loggable: any Loggable = .logger
         var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
           declaration: "func filterElements<T>(elements: [T], using predicate: (T) -> Bool) -> [T]",
           tags: []

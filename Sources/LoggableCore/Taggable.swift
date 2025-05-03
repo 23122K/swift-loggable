@@ -1,4 +1,4 @@
-public protocol Taggable: _Trait {
+public protocol Taggable: Trait {
   static func tag(_: String) -> Self
 }
 

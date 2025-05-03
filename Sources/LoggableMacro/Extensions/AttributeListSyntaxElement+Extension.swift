@@ -78,24 +78,24 @@ extension Array where Element == TraitSyntax {
 }
 
 extension LabeledExprListSyntax.Element {
-  fileprivate func trait<Trait: _Trait>(label tokenKind: TokenKind.Predefined? = nil) -> Trait? {
+  fileprivate func trait<T: Trait>(label tokenKind: TokenKind.Predefined? = nil) -> T? {
     if let tokenKind, tokenKind.identifier != self.label?.tokenKind { return nil }
 
     switch self.expression.as(ExprSyntaxEnum.self) {
     case let .memberAccessExpr(memberAccessExprSyntax):
-      return Trait(stringLiteral: memberAccessExprSyntax.declName.baseName.text as! Trait.StringLiteralType)
+      return T(stringLiteral: memberAccessExprSyntax.declName.baseName.text as! T.StringLiteralType)
 
     case let .stringLiteralExpr(stringLiteralExprSyntax):
       guard case let .stringSegment(stringLiteral) = stringLiteralExprSyntax.segments.first
       else { return nil }
-      return Trait(stringLiteral: stringLiteral.content.text as! Trait.StringLiteralType)
+      return T(stringLiteral: stringLiteral.content.text as! T.StringLiteralType)
 
     case let .functionCallExpr(functionCallExprSyntax):
       guard let expression = functionCallExprSyntax.arguments.first?.expression.as(ExprSyntaxEnum.self),
             case let .stringLiteralExpr(stringLiteralExprSyntax) = expression,
             case let .stringSegment(stringLiteral) = stringLiteralExprSyntax.segments.first
       else { return nil }
-      return Trait(stringLiteral: stringLiteral.content.text as! Trait.StringLiteralType)
+      return T(stringLiteral: stringLiteral.content.text as! T.StringLiteralType)
 
     default:
       return nil

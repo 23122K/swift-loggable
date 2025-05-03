@@ -20,11 +20,11 @@ Type-wide and extension macros that introduces `@Log` or `@OSLog` annotations to
 > [!Note] 
 > Both `@Logged` and `@OSLogged` cannot be attached to protocols
 #### `@Logged`
-Takes `any Loggable` instance as a parameter. If provided, it is applied to all functions within its scope, unless explicitly opted out. By default, it uses `OSSignposter` with the` OSLog.default` instance.
+Takes `any Loggable` instance as a parameter. If provided, it is applied to all functions within its scope, unless explicitly opted out. By default, it uses [`Logger`](https://developer.apple.com/documentation/os/logger) with default subsystem.
 #### `@OSLogged`
 Specialized implementation of `@Logged` macro that marks all functions within its scope with `@OSLog`. Does not take any parameters. 
 ### Logger macro
-Both macros internally rely on the [Logger](https://developer.apple.com/documentation/os/logger). Each macro allows for overriding the subsystem and category through parameters, with the default subsystem set to the bundle identifier and the default category set to the declaration name.
+Both macros internally rely on the [`Logger`](https://developer.apple.com/documentation/os/logger). Each macro allows for overriding the subsystem and category through parameters, with the default subsystem set to the bundle identifier and the default category set to the declaration name.
 #### `@OSLogger`
 Adds conformance to `OSLogger` protocol and introduces a static instance of [`Logger`](https://developer.apple.com/documentation/os/logger) to attached context.
 #### `#osLogger`
@@ -88,7 +88,7 @@ To log a method inside an extension, you can either annotate it with `@Logged`, 
 extension Foo { 
 +   @Log
   static func quux() -> Self {
-+  let loggable: any Loggable = .signposter
++  let loggable: any Loggable = .logger
 +  var event = LoggableEvent(
 +    location: "Module/Foo.swift:13:37",
 +    declaration: "mutating func quux() -> Self",
@@ -218,8 +218,8 @@ This is how the code will be expanded:
 ```diff
 extension: Bar: OSLogger { 
 +  static let logger = Logger(
-+    subsystem: "Example"
-+    category: "Readme"
++    subsystem: "Module"
++    category: "Bar"
 +  )
 }
 ```

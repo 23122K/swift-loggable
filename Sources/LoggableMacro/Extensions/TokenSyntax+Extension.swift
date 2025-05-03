@@ -22,7 +22,6 @@ extension TokenSyntax {
     case Logger
     case Loggable
     case parameters
-    case signposter
     case declaration
     case Conformance
     case LoggableEvent
@@ -110,9 +109,6 @@ extension TokenSyntax {
 
       case .parameters:
         return TokenSyntax.identifier("parameters")
-
-      case .signposter:
-        return TokenSyntax.identifier("signposter")
 
       case .declaration:
         return TokenSyntax.identifier("declaration")
