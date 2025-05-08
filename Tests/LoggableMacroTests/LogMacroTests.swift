@@ -296,7 +296,7 @@ final class LogMacroTests: XCTestCase {
         do {
           let _ = try _foo()
         } catch {
-          event.error = .failure(error)
+          event.result = .failure(error)
           loggable.emit(event: event)
           throw error
         }
@@ -333,7 +333,7 @@ final class LogMacroTests: XCTestCase {
         do {
           let _ = try _foo()
         } catch {
-          event.error = .failure(error)
+          event.result = .failure(error)
           loggable.emit(event: event)
           throw error
         }
@@ -375,7 +375,7 @@ final class LogMacroTests: XCTestCase {
           loggable.emit(event: event)
           return result
         } catch {
-          event.error = .failure(error)
+          event.result = .failure(error)
           loggable.emit(event: event)
           throw error
         }
@@ -421,7 +421,7 @@ final class LogMacroTests: XCTestCase {
         do {
           let _ = try _foo(value: value)
         } catch {
-          event.error = .failure(error)
+          event.result = .failure(error)
           loggable.emit(event: event)
           throw error
         }
@@ -465,7 +465,7 @@ final class LogMacroTests: XCTestCase {
           loggable.emit(event: event)
           return result
         } catch {
-          event.error = .failure(error)
+          event.result = .failure(error)
           loggable.emit(event: event)
           throw error
         }
@@ -500,7 +500,7 @@ final class LogMacroTests: XCTestCase {
         do {
           let _ = try await _foo()
         } catch {
-          event.error = .failure(error)
+          event.result = .failure(error)
           loggable.emit(event: event)
           throw error
         }
@@ -661,7 +661,7 @@ final class LogMacroTests: XCTestCase {
         do {
           let _ = try _execute(operation: operation)
         } catch {
-          event.error = .failure(error)
+          event.result = .failure(error)
           loggable.emit(event: event)
           throw error
         }
@@ -1078,7 +1078,7 @@ final class LogMacroTests: XCTestCase {
           loggable.emit(event: event)
           return result
         } catch {
-          event.error = .failure(error)
+          event.result = .failure(error)
           loggable.emit(event: event)
           throw error
         }
