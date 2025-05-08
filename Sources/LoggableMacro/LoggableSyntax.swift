@@ -55,7 +55,7 @@ public struct LoggableSyntax {
 
 extension LoggableSyntax.ArgumentSyntax {
   static let error = LoggableSyntax.ArgumentSyntax(
-    label: .predefined(.error),
+    label: .predefined(.result),
     expression: .functionCall(.predefined(.error), success: false)
   )
 
