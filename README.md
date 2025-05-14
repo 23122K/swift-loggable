@@ -26,7 +26,7 @@ Specialized implementation of `@Logged` macro that marks all functions within it
 ### Logger macro
 Both macros internally rely on the [`Logger`](https://developer.apple.com/documentation/os/logger). Each macro allows for overriding the subsystem and category through parameters, with the default subsystem set to the bundle identifier and the default category set to the declaration name.
 #### `@OSLogger`
-Adds conformance to `OSLogger` protocol and introduces a static instance of [`Logger`](https://developer.apple.com/documentation/os/logger) to attached context.
+Adds conformance to `OSLogger` protocol and introduces a static instance of [`Logger`](https://developer.apple.com/documentation/os/logger) to attached context. The control modifier is inherited from attached context. To override it, use `@OSLogger(access:)` overload. 
 #### `#osLogger`
 Creates a static instance of [`Logger`](https://developer.apple.com/documentation/os/logger) in the invoked context, without adding conformance to `OSLogger` protocol.
 > [!Note] 
@@ -69,13 +69,13 @@ The code will be expanded as follows:
 ```diff
 @Logged
 struct Foo { 
-+  @Log
++ @Log
   func bar(...) async throws { ... }
   
-+  @Log
++ @Log
   static func baz(...) -> Baz { ... }
 
-+  @Log
++ @Log
   mutating func qux() { ...} -> Self
 }
 
@@ -86,7 +86,7 @@ extension Foo {
 To log a method inside an extension, you can either annotate it with `@Logged`, as shown earlier, or use `@Log`. Functions annotated with `@Log` expand to something like this:
 ```diff
 extension Foo { 
-+   @Log
++ @Log
   static func quux() -> Self {
 +  let loggable: any Loggable = .logger
 +  var event = LoggableEvent(
@@ -121,7 +121,7 @@ extension Loggable where Self == NSLogger {
 Now, it can be passed as a parameter to either `@Log` or `@Logged` as follows:
 ```diff
 extension Foo {
-+  @Log(using: .nsLogger)
++ @Log(using: .nsLogger)
   static func quux() -> Self { ... }
 }
 ```
@@ -129,13 +129,13 @@ When `.nsLogger` or any other type that conforms to `Loggable` protocol is passe
 ```diff
 @Logged(using: .nsLogger)
 struct Foo { 
-+   @Log(using: .nsLogger)
++ @Log(using: .nsLogger)
   func bar(...) async throws { ... }
   
-+  @Log(using: .nsLogger)
++ @Log(using: .nsLogger)
   static func baz(...) -> Baz { ... }
 
-+  @Log(using: .nsLogger)
++ @Log(using: .nsLogger)
   mutating func qux() { ...} -> Self
 }
 ```
@@ -145,19 +145,19 @@ Unlike the `@Logged` macro, to apply `@OSLog` to functions within a scope, the s
 + @OSLogger
 struct Foo { ... }
 ```
-After expansion, static instance of `logger` has been introduced to scope as well conformance to `OSLogger`.
+After expansion, static instance of `logger` has been introduced to scope as well conformance to `_OSLogger` protocol.
 ```diff
 @OSLogger
 struct Foo { ... }
 
-+ extension Foo: OSLogger { 
-+  static let logger = Logger(
-+    subsystem: "Module"
-+    category: "Foo"
-+  )
++ extension Foo: _OSLogger { 
++   static let logger = Logger(
++     subsystem: "Module"
++     category: "Foo"
++   )
 + }
 ```
-Once conformed to the OSLogger protocol, we can add @OSLogged, which will apply @OSLog to each method within the scope.
+Once conformed to the OSLogger protocol, we can add `@OSLogged`, which will apply `@OSLog` to each method within the scope.
 ```diff
 @OSLogger
 + @OSLogged
@@ -168,13 +168,13 @@ Similarly to `@Logged`, it expands like this:
 @OSLogger
 @OSLogged
 struct Foo { 
-+  @OSLog
++ @OSLog
   func bar(...) async throws { ... }
-  
-+  @OSLog
+
++ @OSLog
   static func baz(...) -> Baz { ... }
 
-+  @OSLog
++ @OSLog
   mutating func qux() { ...} -> Self
 }
 
@@ -190,37 +190,54 @@ Subsystem or a category can be overridden by explicitly passing it as a paramete
 @OSLogger(subsystem: "Example", category: "Readme")
 @OSLogged
 struct Foo { 
-+  @OSLog
++ @OSLog
   func bar(...) async throws { ... }
-  
-+  @OSLog
+
++ @OSLog
   static func baz(...) -> Baz { ... }
 
-+  @OSLog
++ @OSLog
   mutating func qux() { ...} -> Self
 }
 
-+ extension Foo: OSLogger { 
-+  static let logger = Logger(
-+    subsystem: "Example"
-+    category: "Readme"
-+  )
++ extension Foo: _OSLogger { 
++   nonisolated static let logger = Logger(
++     subsystem: Bundle.main.bundleIdentifier ?? ""
++     category: "Readme"
++   )
++ }
+```
+Logger inherits declaration access level by default. To restrict its visibility, explicitly pass `_AccessLevelModifier` as a parameter, as shown below:
+```diff
++ @OSLogger(access: .interal)
+@OSLogged
+public struct Foo<T> where T: Equatable { 
+  // ...
+}
+
++ extension Foo: _OSLogger { 
++   nonisolated static var logger: Logger {
++     Logger(
++       subsystem: Bundle.main.bundleIdentifier ?? ""
++       category: "Readme"
++     )
++   }
 + }
 ```
 ### `#osLogger`
 In cases where `@OSLogger` cannot be directly used on a type, you can create an extension for the desired type, add conformance to the `OSLogger` protocol, and invoke the `#osLogger` macro, like this:
 ```diff
 + extension Bar: OSLogger {
-+  #osLogger
++   #osLogger
 }
 ```
 This is how the code will be expanded:
 ```diff
 extension: Bar: OSLogger { 
-+  static let logger = Logger(
-+    subsystem: "Module"
-+    category: "Bar"
-+  )
++ static let logger = Logger(
++   subsystem: "Example"
++   category: "Readme"
++ )
 }
 ```
 ### @Omit, @Tag and @Level
