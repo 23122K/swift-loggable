@@ -5,6 +5,7 @@ extension TokenKind {
     case autoclosure
     case capture
     case using
+    case access
     case omit
     case tag
     case Tag
@@ -19,6 +20,9 @@ extension TokenKind {
 
     var identifier: TokenKind {
       switch self {
+      case .access:
+        return TokenKind.identifier("access")
+
       case .level:
         return TokenKind.identifier("level")
 

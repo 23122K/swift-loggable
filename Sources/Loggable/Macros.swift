@@ -1,4 +1,10 @@
 @_exported public import LoggableCore
+#if canImport(OSLog)
+@_exported public import OSLog
+#endif
+#if canImport(Foundation)
+@_exported public import class Foundation.Bundle
+#endif
 
 @freestanding(declaration, names: named(logger))
 public macro osLogger(
@@ -9,8 +15,9 @@ public macro osLogger(
   type: "OSLoggerMacro"
 )
 
-@attached(extension, names: named(logger), conformances: OSLogger)
+@attached(extension, names: named(logger), conformances: _OSLogger)
 public macro OSLogger(
+  access level: _AccessLevelModifier? = nil,
   subsystem: String? = nil,
   category: String? = nil
 ) = #externalMacro(
