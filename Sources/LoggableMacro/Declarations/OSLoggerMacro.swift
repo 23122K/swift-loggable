@@ -66,6 +66,27 @@ public struct OSLoggerMacro {
     rightOperand: EmptyStringLiteralExprSyntax()
   )
 
+  static func _accessModifier(_ declaration: some DeclGroupSyntax) -> TokenSyntax {
+    let declarationAccessModifier = declaration.modifiers
+      .map(\.name)
+      .first(where: \.isAccessModifier)?
+      .tokenKind
+
+    return switch declarationAccessModifier {
+    case .keyword(.open):
+      TokenSyntax.keyword(.public)
+
+    case .keyword(.final):
+      TokenSyntax.keyword(.internal)
+
+    case let .keyword(value):
+      TokenSyntax.keyword(value)
+
+    default:
+      TokenSyntax.keyword(.internal)
+    }
+  }
+
   private static func __category(_ declrataion: DeclSyntax) -> StringLiteralExprSyntax {
     switch declrataion.as(DeclSyntaxEnum.self) {
     case let .actorDecl(syntax):

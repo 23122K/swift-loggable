@@ -131,4 +131,18 @@ extension TokenSyntax {
   static func predefined(_ token: Predefined) -> TokenSyntax {
     token.identifier
   }
+
+  var isAccessModifier: Bool {
+    Self.accessLevels.contains(self.tokenKind)
+  }
+
+  private static let accessLevels = [
+    TokenKind.keyword(.open),
+    TokenKind.keyword(.final),
+    TokenKind.keyword(.public),
+    TokenKind.keyword(.package),
+    TokenKind.keyword(.internal),
+    TokenKind.keyword(.fileprivate),
+    TokenKind.keyword(.private),
+  ]
 }

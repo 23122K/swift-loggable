@@ -1,10 +1,12 @@
-import OSLog
+#if canImport(OSLog)
+@_exported public import OSLog
+#endif
 
 public protocol Loggable: Sendable {
   func emit(event: LoggableEvent)
 }
 
-public protocol OSLogger {
+public protocol _OSLogger {
   static var logger: Logger { get }
 }
 

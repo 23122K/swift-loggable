@@ -1,5 +1,7 @@
 import LoggableCore
-import OSLog
+#if canImport(OSLog)
+@_exported public import OSLog
+#endif
 
 extension Logger: Loggable {
   public func emit(event: LoggableEvent) {

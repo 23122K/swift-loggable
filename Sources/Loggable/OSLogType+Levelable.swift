@@ -1,4 +1,6 @@
-import OSLog
+#if canImport(OSLog)
+import struct OSLog.OSLogType
+#endif
 
 extension OSLogType: @retroactive ExpressibleByStringLiteral {}
 extension OSLogType: @retroactive ExpressibleByExtendedGraphemeClusterLiteral {}
