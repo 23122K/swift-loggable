@@ -31,20 +31,6 @@ extension LoggableMacro {
       self.hook(for: node)
       self.event(for: node, in: context, of: function)
 
-      if function.parameters.isEmpty || function.traits.ommitable.contains(.parameters) {
-        self.body()
-      } else {
-        self.capture(
-          .parameters {
-            function.parameters.compactMap { parameter in
-              return function.traits.ommitable.contains(.parameter(parameter.name.text))
-                ? nil
-                : parameter
-            }
-          }
-        )
-      }
-
       switch function.isThrowing {
       case false where function.isVoid:
         function.body
@@ -133,7 +119,7 @@ extension LoggableMacro {
   ) -> CodeBlockItemSyntax {
     CodeBlockItemSyntax(
       VariableDeclSyntax(
-        bindingSpecifier: .keyword(.var),
+        bindingSpecifier: TokenSyntax.keyword(declaration.isVoid ? .let : .var),
         bindings: PatternBindingListSyntax(
           arrayLiteral: PatternBindingSyntax(
             pattern: IdentifierPatternSyntax(identifier: .predefined(.event)),
@@ -144,19 +130,22 @@ extension LoggableMacro {
                 ),
                 leftParen: .leftParenToken(),
                 arguments: LabeledExprListSyntax {
+                  // MARK: - level: (any Levelable)?
                   if let level = declaration.traits.level {
                     LabeledExprSyntax(
                       leadingTrivia: .newline,
-                      label: .identifier("level"),
+                      label: .predefined(.level),
                       colon: .colonToken(),
                       expression: StringLiteralExprSyntax(
                         content: level.rawValue
                       ),
-                      trailingComma: .commaToken(),
-                      trailingTrivia: .newline
+                      trailingComma: .commaToken()
                     )
                   }
+                  
+                  // MARK: - location: String
                   LabeledExprSyntax(
+                    leadingTrivia: .newline,
                     label: .predefined(.location),
                     colon: .colonToken(),
                     expression: self.location(
@@ -166,6 +155,8 @@ extension LoggableMacro {
                     trailingComma: .commaToken(),
                     trailingTrivia: .newline
                   )
+                  
+                  // MARK: - declaration: String
                   LabeledExprSyntax(
                     label: .predefined(.declaration),
                     colon: .colonToken(),
@@ -173,6 +164,39 @@ extension LoggableMacro {
                     trailingComma: .commaToken(),
                     trailingTrivia: .newline
                   )
+                  
+                  // MARK: - parameters: [String: Any]
+                  if !declaration.traits.ommitable.contains(.parameters) {
+                    LabeledExprSyntax(
+                      label: .predefined(.parameters),
+                      colon: .colonToken(),
+                      expression: DictionaryExprSyntax(
+                        leftSquare: .leftSquareToken(
+                          trailingTrivia: declaration.parameters.isEmpty ? [] : .newline
+                        ),
+                        rightSquare: .rightSquareToken(
+                          leadingTrivia: declaration.parameters.isEmpty ? [] : .newline
+                        )
+                      ) {
+                        DictionaryElementListSyntax {
+                          declaration.parameters.compactMap { parameter in
+                            DictionaryElementSyntax(
+                              key: StringLiteralExprSyntax(content: parameter.name.text),
+                              value: DeclReferenceExprSyntax(baseName: parameter.name.trimmed),
+                              trailingComma: .commaToken(
+                                presence: declaration.parameters.last == parameter ? .missing : .present
+                              ),
+                              trailingTrivia: .newline
+                            )
+                          }
+                        }
+                      },
+                      trailingComma: .commaToken(),
+                      trailingTrivia: .newline
+                    )
+                  }
+                  
+                  // MARK: - Tags
                   LabeledExprSyntax(
                     label: .predefined(.tags),
                     colon: .colonToken(),
@@ -199,15 +223,26 @@ extension LoggableMacro {
     )
   }
 
-  static func capture(_ argument: LoggableSyntax.ArgumentSyntax) -> CodeBlockItemSyntax {
+  static func capture(_ baseName: TokenSyntax.Predefined) -> CodeBlockItemSyntax {
     CodeBlockItemSyntax(
       InfixOperatorExprSyntax(
         leftOperand: MemberAccessExprSyntax(
           base: DeclReferenceExprSyntax(baseName: .predefined(.event)),
-          name: argument.label
+          name: TokenSyntax.predefined(.result)
         ),
         operator: AssignmentExprSyntax(),
-        rightOperand: argument.expression.exprSytnaxProtocol
+        rightOperand: FunctionCallExprSyntax(
+          calledExpression: MemberAccessExprSyntax(
+            name: TokenSyntax.predefined(baseName == .result ? .success : .failure)
+          ),
+          leftParen: .leftParenToken(),
+          arguments: LabeledExprListSyntax {
+            LabeledExprSyntax(
+              expression: DeclReferenceExprSyntax(baseName: baseName.identifier)
+            )
+          },
+          rightParen: .rightParenToken()
+        )
       )
     )
   }
