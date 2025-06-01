@@ -26,7 +26,24 @@ extension LoggableMacro {
   ) throws -> [CodeBlockItemSyntax] {
     guard let function = FunctionSyntax(from: declaration)
     else { return self.body() }
-
+    
+    let tagTraits = function.syntax.attributes.extractTraits(for: .tag)
+    let omitTraits = function.syntax.attributes.extractTraits(for: .omit)
+    let levelTrait = function.syntax.attributes.extractTraits(for: .level)
+    
+    context.diagnose(
+      Diagnostic(
+        node: node,
+        message: .debug(
+          """
+            let tagTraits = \(function.syntax.attributes.extractTraits(for: .tag))
+            let omitTraits = \(function.syntax.attributes.extractTraits(for: .omit))
+            let levelTrait = \(function.syntax.attributes.extractTraits(for: .level))
+          """
+        )
+      )
+    )
+  
     return body {
       self.hook(for: node)
       self.event(for: node, in: context, of: function)
@@ -59,7 +76,7 @@ extension LoggableMacro {
           CodeBlockItemSyntax.rethrow
         }
 
-      case false where function.traits.ommitable.contains(.result):
+        case false where omitTraits.contains(where: \.parametersTrait):
         CodeBlockItemSyntax(function.plain)
         CodeBlockItemSyntax.call(function)
         self.emit()
@@ -115,7 +132,9 @@ extension LoggableMacro {
   static func event(
     for node: AttributeSyntax,
     in context: some MacroExpansionContext,
-    of declaration: FunctionSyntax
+    of declaration: FunctionSyntax,
+    levelTrait: any ExprSyntaxProtocol,
+    taggableTraits: [any ExprSyntaxProtocol]
   ) -> CodeBlockItemSyntax {
     CodeBlockItemSyntax(
       VariableDeclSyntax(
@@ -131,13 +150,13 @@ extension LoggableMacro {
                 leftParen: .leftParenToken(),
                 arguments: LabeledExprListSyntax {
                   // MARK: - level: (any Levelable)?
-                  if let level = declaration.traits.level {
+                  if let level = levelTrait as? StringLiteralExprSyntax {
                     LabeledExprSyntax(
                       leadingTrivia: .newline,
                       label: .predefined(.level),
                       colon: .colonToken(),
                       expression: StringLiteralExprSyntax(
-                        content: level.rawValue
+                        content: level.segments
                       ),
                       trailingComma: .commaToken()
                     )
@@ -202,12 +221,8 @@ extension LoggableMacro {
                     colon: .colonToken(),
                     expression: ArrayExprSyntax(
                       elements: ArrayElementListSyntax {
-                        declaration.traits.taggable.map { tag in
-                          ArrayElementSyntax(
-                            expression: StringLiteralExprSyntax(
-                              content: tag.rawValue
-                            )
-                          )
+                        declaration.rawExprSyntaxTraits.map { tagTraitExpr in
+                          ArrayElementSyntax(expression: tagTraitExpr)
                         }
                       }
                     ),
