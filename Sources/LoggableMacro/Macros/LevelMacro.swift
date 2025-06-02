@@ -16,3 +16,7 @@ public struct LevelMacro {
     }
   }
 }
+
+extension LevelMacro: TraitMacro {
+  static let message: any DiagnosticMessage = Message()
+}

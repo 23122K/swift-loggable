@@ -1,5 +1,7 @@
 import SwiftSyntax
 
+public struct LoggedMacro {}
+
 extension LoggedMacro: LoggableAttributeMacro {
   static func ignore(_ attribute: AttributeSyntax) -> Bool {
     guard let identifierType = IdentifierTypeSyntax(attribute.attributeName) else {

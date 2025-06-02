@@ -1,5 +1,7 @@
+import SwiftDiagnostics
 import SwiftSyntax
-import SwiftSyntaxMacros
+
+public struct OSLoggedMacro {}
 
 extension OSLoggedMacro: LoggableAttributeMacro {
   static func ignore(_ attribute: AttributeSyntax) -> Bool {
