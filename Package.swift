@@ -23,6 +23,10 @@ let package = Package(
       url: "https://github.com/pointfreeco/swift-macro-testing.git",
       from: "0.6.3"
     ),
+    .package(
+      url: "https://github.com/swiftlang/swift-docc-plugin",
+      from: "1.0.0"
+    ),
   ],
   targets: [
     .macro(

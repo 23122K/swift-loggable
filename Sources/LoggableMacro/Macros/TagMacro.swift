@@ -16,3 +16,7 @@ public struct TagMacro {
     }
   }
 }
+
+extension TagMacro: TraitMacro {
+  static let message: any DiagnosticMessage = Message()
+}
