@@ -1,4 +1,3 @@
-import OSLog
 import SwiftDiagnostics
 import SwiftSyntax
 

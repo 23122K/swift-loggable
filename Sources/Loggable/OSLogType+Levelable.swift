@@ -8,49 +8,51 @@ extension OSLogType: @retroactive ExpressibleByUnicodeScalarLiteral {}
 extension OSLogType: @retroactive @unchecked Sendable {}
 extension OSLogType: @retroactive Hashable {}
 extension OSLogType: Levelable {
-  public static func level(_ value: String) -> OSLogType {
-    value.osLogType
+  public static func level(_ value: UInt8) -> OSLogType {
+    OSLogType(value)
   }
 
   public init(stringLiteral value: StringLiteralType) {
-    self = value.osLogType
+    switch value {
+      case "debug":
+        self = OSLogType.debug
+        
+      case "default":
+        self = OSLogType.default
+        
+      case "fault":
+        self = OSLogType.fault
+        
+      case "error":
+        self = OSLogType.error
+        
+      case "info":
+        self = OSLogType.info
+        
+      default:
+        self = OSLogType.default
+    }
   }
 }
 
 extension Levelable where Self == OSLogType {
-  public static var `default`: Self { .level("default") }
-  public static var debug: Self { .level("debug") }
-  public static var fault: Self { .level("fault") }
-  public static var error: Self { .level("error") }
-  public static var info: Self { .level("info") }
-}
-
-extension String {
-  private static let `default` = "level_default"
-  private static let debug = "level_debug"
-  private static let info = "level_info"
-  private static let fault = "level_fault"
-  private static let error = "level_error"
-
-  fileprivate var osLogType: OSLogType {
-    switch self {
-    case .debug:
-      return .debug
-
-    case .info:
-      return .info
-
-    case .fault:
-      return .fault
-
-    case .error:
-      return .error
-
-    case .default:
-      return .default
-
-    default:
-      return .default
-    }
+  public static var `default`: Self {
+    OSLogType.default
+  }
+  
+  public static var debug: Self {
+    OSLogType.debug
+  }
+  
+  public static var fault: Self {
+    OSLogType.fault
+  }
+  
+  public static var error: Self {
+    OSLogType.error
+  }
+  
+  public static var info: Self {
+    OSLogType.info
   }
 }

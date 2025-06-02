@@ -14,11 +14,11 @@ struct DebugDiagnostic: DiagnosticMessage {
 
 extension DiagnosticMessage where Self == DebugDiagnostic {
   static func debug(
-    _ message: String,
+    _ message: Any,
     severity: DiagnosticSeverity = .error
   ) -> Self {
     DebugDiagnostic(
-      message: message,
+      message: String(reflecting: message),
       severity: severity
     )
   }

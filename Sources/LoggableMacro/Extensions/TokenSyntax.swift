@@ -5,6 +5,7 @@ extension TokenSyntax {
     case `_`
     case doubleQuestionMark
     case log
+    case level
     case tags
     case Log
     case OSLog
@@ -37,6 +38,9 @@ extension TokenSyntax {
       switch self {
       case ._:
         return TokenSyntax.identifier("_")
+          
+        case .level:
+          return TokenSyntax.identifier("level")
 
       case .doubleQuestionMark:
         return TokenSyntax.identifier("??")

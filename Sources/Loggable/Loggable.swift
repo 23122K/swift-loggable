@@ -6,11 +6,11 @@ public protocol Loggable: Sendable {
   func emit(event: LoggableEvent)
 }
 
-public protocol _OSLogger {
+public protocol OSLogger {
   static var logger: Logger { get }
 }
 
-public struct LoggableEvent: CustomStringConvertible {
+public struct LoggableEvent: CustomStringConvertible, CustomDebugStringConvertible {
   public let level: (any Levelable)?
   public let location: String
   public let declaration: String
@@ -20,6 +20,17 @@ public struct LoggableEvent: CustomStringConvertible {
 
   public var description: String {
     """
+    location: \(location)
+    declaration: \(declaration)
+    parameters: \(parameters)
+    result: \(result)
+    tags: \(tags)
+    """
+  }
+  
+  public var debugDescription: String {
+    """
+    level: \(level)
     location: \(location)
     declaration: \(declaration)
     parameters: \(parameters)

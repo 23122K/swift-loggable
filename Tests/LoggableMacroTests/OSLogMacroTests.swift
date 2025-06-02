@@ -7,7 +7,7 @@ final class OSLogMacroTests: XCTestCase {
     withMacroTesting(
       indentationWidth: .spaces(2),
       record: .missing,
-      macros: ["OSLog": OSLogMacro.self]
+      macros: [OSLogMacro.self]
     ) {
       super.invokeTest()
     }
@@ -25,8 +25,10 @@ final class OSLogMacroTests: XCTestCase {
       """
       func foo() {
         let loggable: any Loggable = Self.logger
-        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+        let event = LoggableEvent(
+          location: "TestModule/Test.swift:1:1",
           declaration: "func foo()",
+          parameters: [:],
           tags: []
         )
         print("Foo")
@@ -48,13 +50,14 @@ final class OSLogMacroTests: XCTestCase {
       """
       func sum(numbers: Int...) -> Int {
         let loggable: any Loggable = Self.logger
-        var event = LoggableEvent(location: "TestModule/Test.swift:1:1",
+        var event = LoggableEvent(
+          location: "TestModule/Test.swift:1:1",
           declaration: "func sum(numbers: Int...) -> Int",
-          tags: ["tag_example"]
+          parameters: [
+            "numbers": numbers
+          ],
+          tags: ["example"]
         )
-        event.parameters = [
-          "numbers": numbers
-        ]
         func _sum(numbers: Int...) -> Int {
           return numbers.reduce(0, +)
         }
@@ -80,15 +83,11 @@ final class OSLogMacroTests: XCTestCase {
       func transform(value: Int, using transform: (Int) -> String) -> String {
         let loggable: any Loggable = Self.logger
         var event = LoggableEvent(
-          level: "level_debug",
+          level: .debug,
           location: "TestModule/Test.swift:1:1",
           declaration: "func transform(value: Int, using transform: (Int) -> String) -> String",
-          tags: ["tag_commonTag"]
+          tags: [.commonTag, "example"]
         )
-        event.parameters = [
-          "value": value,
-          "transform": transform
-        ]
         func _transform(value: Int, transform: (Int) -> String) -> String {
           return transform(value)
         }

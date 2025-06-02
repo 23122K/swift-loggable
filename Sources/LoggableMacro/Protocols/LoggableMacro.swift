@@ -1,4 +1,3 @@
-import LoggableCore
 import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxMacros
@@ -18,7 +17,7 @@ extension LoggableMacro {
     }
     return expression
   }
-
+  
   public static func expansion(
     of node: AttributeSyntax,
     providingBodyFor declaration: some DeclSyntaxProtocol & WithOptionalCodeBlockSyntax,
@@ -26,65 +25,58 @@ extension LoggableMacro {
   ) throws -> [CodeBlockItemSyntax] {
     guard let function = FunctionSyntax(from: declaration)
     else { return self.body() }
-
+    
+    let tagTraits = function.syntax.attributes.extractTraits(for: .tag)
+    let omitTraits = function.syntax.attributes.extractTraits(for: .omit)
+    let levelTrait = function.syntax.attributes.extractTraits(for: .level).first
+    
     return body {
       self.hook(for: node)
-      self.event(for: node, in: context, of: function)
-
-      if function.parameters.isEmpty || function.traits.ommitable.contains(.parameters) {
-        self.body()
-      } else {
-        self.capture(
-          .parameters {
-            function.parameters.compactMap { parameter in
-              return function.traits.ommitable.contains(.parameter(parameter.name.text))
-                ? nil
-                : parameter
-            }
-          }
-        )
-      }
-
+      self.event(
+        for: node,
+        in: context,
+        of: function,
+        levelTrait: levelTrait,
+        taggableTraits: tagTraits,
+        omittableTraits: omitTraits
+      )
+      
       switch function.isThrowing {
-      case false where function.isVoid:
-        function.body
-        self.emit()
-
-      case true where function.isVoid:
-        CodeBlockItemSyntax(function.plain)
-        CodeBlockItemSyntax.try {
-          CodeBlockItemSyntax.call(function)
-        } catch: {
-          self.capture(.error)
+        case false where function.isVoid:
+          function.body
           self.emit()
-          CodeBlockItemSyntax.rethrow
-        }
-
-      case true:
-        CodeBlockItemSyntax(function.plain)
-        CodeBlockItemSyntax.try {
+          
+        case true where function.isVoid:
+          CodeBlockItemSyntax(function.plain)
+          CodeBlockItemSyntax.try {
+            CodeBlockItemSyntax.call(function)
+          } catch: {
+            self.capture(.error)
+            self.emit()
+            CodeBlockItemSyntax.rethrow
+          }
+          
+        case true:
+          CodeBlockItemSyntax(function.plain)
+          CodeBlockItemSyntax.try {
+            CodeBlockItemSyntax.call(function)
+            self.capture(.result)
+            self.emit()
+            CodeBlockItemSyntax.return
+          } catch: {
+            self.capture(.error)
+            self.emit()
+            CodeBlockItemSyntax.rethrow
+          }
+          
+        case false:
+          CodeBlockItemSyntax(function.plain)
           CodeBlockItemSyntax.call(function)
-          self.capture(.result)
+          if !omitTraits.contains(where: \.isOmitResult) {
+            self.capture(.result)
+          }
           self.emit()
           CodeBlockItemSyntax.return
-        } catch: {
-          self.capture(.error)
-          self.emit()
-          CodeBlockItemSyntax.rethrow
-        }
-
-      case false where function.traits.ommitable.contains(.result):
-        CodeBlockItemSyntax(function.plain)
-        CodeBlockItemSyntax.call(function)
-        self.emit()
-        CodeBlockItemSyntax.return
-
-      case false:
-        CodeBlockItemSyntax(function.plain)
-        CodeBlockItemSyntax.call(function)
-        self.capture(.result)
-        self.emit()
-        CodeBlockItemSyntax.return
       }
     }
   }
@@ -129,11 +121,14 @@ extension LoggableMacro {
   static func event(
     for node: AttributeSyntax,
     in context: some MacroExpansionContext,
-    of declaration: FunctionSyntax
+    of declaration: FunctionSyntax,
+    levelTrait: (any ExprSyntaxProtocol)?,
+    taggableTraits: [any ExprSyntaxProtocol],
+    omittableTraits: [any ExprSyntaxProtocol]
   ) -> CodeBlockItemSyntax {
     CodeBlockItemSyntax(
       VariableDeclSyntax(
-        bindingSpecifier: .keyword(.var),
+        bindingSpecifier: TokenSyntax.keyword(declaration.isVoid ? .let : .var),
         bindings: PatternBindingListSyntax(
           arrayLiteral: PatternBindingSyntax(
             pattern: IdentifierPatternSyntax(identifier: .predefined(.event)),
@@ -144,19 +139,20 @@ extension LoggableMacro {
                 ),
                 leftParen: .leftParenToken(),
                 arguments: LabeledExprListSyntax {
-                  if let level = declaration.traits.level {
+                  // MARK: - level: (any Levelable)?
+                  if let level = levelTrait {
                     LabeledExprSyntax(
                       leadingTrivia: .newline,
-                      label: .identifier("level"),
+                      label: .predefined(.level),
                       colon: .colonToken(),
-                      expression: StringLiteralExprSyntax(
-                        content: level.rawValue
-                      ),
-                      trailingComma: .commaToken(),
-                      trailingTrivia: .newline
+                      expression: level,
+                      trailingComma: .commaToken()
                     )
                   }
+                  
+                  // MARK: - location: String
                   LabeledExprSyntax(
+                    leadingTrivia: .newline,
                     label: .predefined(.location),
                     colon: .colonToken(),
                     expression: self.location(
@@ -166,6 +162,8 @@ extension LoggableMacro {
                     trailingComma: .commaToken(),
                     trailingTrivia: .newline
                   )
+                  
+                  // MARK: - declaration: String
                   LabeledExprSyntax(
                     label: .predefined(.declaration),
                     colon: .colonToken(),
@@ -173,17 +171,46 @@ extension LoggableMacro {
                     trailingComma: .commaToken(),
                     trailingTrivia: .newline
                   )
+                  
+                  // MARK: - parameters: [String: Any]
+                  if !omittableTraits.contains(where: \.isOmitParameters) {
+                    LabeledExprSyntax(
+                      label: .predefined(.parameters),
+                      colon: .colonToken(),
+                      expression: DictionaryExprSyntax(
+                        leftSquare: .leftSquareToken(
+                          trailingTrivia: declaration.parameters.isEmpty ? [] : .newline
+                        ),
+                        rightSquare: .rightSquareToken(
+                          leadingTrivia: declaration.parameters.isEmpty ? [] : .newline
+                        )
+                      ) {
+                        DictionaryElementListSyntax {
+                          declaration.parameters.compactMap { parameter in
+                            DictionaryElementSyntax(
+                              key: StringLiteralExprSyntax(content: parameter.name.text),
+                              value: DeclReferenceExprSyntax(baseName: parameter.name.trimmed),
+                              trailingComma: .commaToken(
+                                presence: declaration.parameters.last == parameter ? .missing : .present
+                              ),
+                              trailingTrivia: .newline
+                            )
+                          }
+                        }
+                      },
+                      trailingComma: .commaToken(),
+                      trailingTrivia: .newline
+                    )
+                  }
+                  
+                  // MARK: - Tags
                   LabeledExprSyntax(
                     label: .predefined(.tags),
                     colon: .colonToken(),
                     expression: ArrayExprSyntax(
                       elements: ArrayElementListSyntax {
-                        declaration.traits.taggable.map { tag in
-                          ArrayElementSyntax(
-                            expression: StringLiteralExprSyntax(
-                              content: tag.rawValue
-                            )
-                          )
+                        taggableTraits.map { trait in
+                          ArrayElementSyntax(expression: trait)
                         }
                       }
                     ),
@@ -199,15 +226,26 @@ extension LoggableMacro {
     )
   }
 
-  static func capture(_ argument: LoggableSyntax.ArgumentSyntax) -> CodeBlockItemSyntax {
+  static func capture(_ baseName: TokenSyntax.Predefined) -> CodeBlockItemSyntax {
     CodeBlockItemSyntax(
       InfixOperatorExprSyntax(
         leftOperand: MemberAccessExprSyntax(
           base: DeclReferenceExprSyntax(baseName: .predefined(.event)),
-          name: argument.label
+          name: TokenSyntax.predefined(.result)
         ),
         operator: AssignmentExprSyntax(),
-        rightOperand: argument.expression.exprSytnaxProtocol
+        rightOperand: FunctionCallExprSyntax(
+          calledExpression: MemberAccessExprSyntax(
+            name: TokenSyntax.predefined(baseName == .result ? .success : .failure)
+          ),
+          leftParen: .leftParenToken(),
+          arguments: LabeledExprListSyntax {
+            LabeledExprSyntax(
+              expression: DeclReferenceExprSyntax(baseName: baseName.identifier)
+            )
+          },
+          rightParen: .rightParenToken()
+        )
       )
     )
   }
