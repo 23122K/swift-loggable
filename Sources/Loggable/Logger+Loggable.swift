@@ -1,4 +1,3 @@
-import LoggableCore
 #if canImport(OSLog)
 @_exported public import OSLog
 #endif
@@ -8,7 +7,7 @@ extension Logger: Loggable {
     if let level = event.level as? OSLogType {
       self.log(level: level, "\(String(describing: event))")
     } else {
-      self.log(level: event.result.isSuccess ? .info : .error, "\(event.description)")
+      self.log(level: event.result.isSuccess ? .info : .error, "\(String(describing: event))")
     }
   }
 }

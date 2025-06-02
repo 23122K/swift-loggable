@@ -1,4 +1,3 @@
-@_exported public import LoggableCore
 #if canImport(OSLog)
 @_exported public import OSLog
 #endif

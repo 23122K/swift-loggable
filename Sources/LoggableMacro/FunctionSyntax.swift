@@ -1,4 +1,3 @@
-import LoggableCore
 import SwiftSyntax
 
 @dynamicMemberLookup

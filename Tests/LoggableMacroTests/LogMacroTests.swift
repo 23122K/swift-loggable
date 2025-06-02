@@ -1,4 +1,3 @@
-import LoggableCore
 import LoggableMacro
 import MacroTesting
 import XCTest

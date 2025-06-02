@@ -1,4 +1,4 @@
-public protocol Levelable: Trait {
+public protocol Levelable: __Trait {
   associatedtype RawValue
   
   static func level(_: RawValue) -> Self
@@ -6,12 +6,8 @@ public protocol Levelable: Trait {
 
 extension String: Levelable {
   public static func level(_ value: String) -> String {
-    return .levelRawValue(value)
+    value
   }
 }
 
 extension Levelable where Self == StringLiteralType {}
-
-extension String {
-  fileprivate static func levelRawValue(_ value: String) -> String { "level_\(value)" }
-}

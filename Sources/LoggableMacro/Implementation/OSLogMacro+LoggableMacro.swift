@@ -1,4 +1,3 @@
-import LoggableCore
 import SwiftDiagnostics
 import SwiftSyntax
 

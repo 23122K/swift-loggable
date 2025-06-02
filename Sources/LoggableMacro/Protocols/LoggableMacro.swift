@@ -1,4 +1,3 @@
-import LoggableCore
 import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxMacros
@@ -73,7 +72,7 @@ extension LoggableMacro {
         case false:
           CodeBlockItemSyntax(function.plain)
           CodeBlockItemSyntax.call(function)
-          if !omitTraits.contains(where: \.isOmitResultTrait) {
+          if !omitTraits.contains(where: \.isOmitResult) {
             self.capture(.result)
           }
           self.emit()
@@ -174,7 +173,7 @@ extension LoggableMacro {
                   )
                   
                   // MARK: - parameters: [String: Any]
-                  if !omittableTraits.contains(where: \.parametersTrait) {
+                  if !omittableTraits.contains(where: \.isOmitParameters) {
                     LabeledExprSyntax(
                       label: .predefined(.parameters),
                       colon: .colonToken(),

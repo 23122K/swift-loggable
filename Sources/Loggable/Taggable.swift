@@ -1,4 +1,4 @@
-public protocol Taggable: Trait {
+public protocol Taggable: __Trait {
   associatedtype RawValue
   
   static func tag(_: RawValue) -> Self
@@ -6,7 +6,7 @@ public protocol Taggable: Trait {
 
 extension String: Taggable {
   public static func tag(_ value: String) -> String {
-    return value
+    value
   }
 }
 
