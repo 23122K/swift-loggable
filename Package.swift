@@ -13,12 +13,6 @@ let package = Package(
       name: "Loggable",
       targets: ["Loggable"]
     ),
-    .executable(
-      name: "LoggableClient",
-      targets: [
-        "LoggableClient"
-      ]
-    )
   ],
   dependencies: [
     .package(
@@ -48,12 +42,6 @@ let package = Package(
       name: "Loggable",
       dependencies: [
         "LoggableMacro"
-      ]
-    ),
-    .executableTarget(
-      name: "LoggableClient",
-      dependencies: [
-        "Loggable"
       ]
     ),
     .testTarget(
