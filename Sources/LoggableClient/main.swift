@@ -1,29 +1,34 @@
 import Loggable
 
-
-extension TaggableTrait {
-  static let foo = Self.tag("my private tag")
-}
-
-extension Taggable where Self == TaggableTrait {
-  static var foo: Self {
-    TaggableTrait.foo
+enum Tags: Taggable {
+  case tag(String)
+  
+  init(stringLiteral value: StringLiteralType) {
+    self = .tag(value)
   }
 }
+
+extension Taggable where Self == Tags {
+  static var foo: Self {
+    self.tag("frajer")
+  }
+}
+
 
 let tags: [any Taggable] = [
   "WIP",
   .foo,
-  TaggableTrait.tag("shit")
+  Tags.tag("shit")
 ]
 
 @Logged
 struct Foo {
-//  @Level(.debug)
   @Tag("bar", .foo)
-  @Log(level: .debug, omit: .parameters, .result, "qux")
-  static func foo(value: String) -> Void {
+  @Omit(.parameters)
+  @Level(.error)
+  static func foo(value: String) -> String {
     print("Executed \(value)")
+    return value
   }
 }
 

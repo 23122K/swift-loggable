@@ -15,9 +15,9 @@ public macro osLogger(
   type: "OSLoggerMacro"
 )
 
-@attached(extension, names: named(logger), conformances: _OSLogger)
+@attached(extension, names: named(logger), conformances: OSLogger)
 public macro OSLogger(
-  access level: _AccessLevelModifier? = nil,
+  access level: __AccessLevel? = nil,
   subsystem: String? = nil,
   category: String? = nil
 ) = #externalMacro(
@@ -63,7 +63,6 @@ public macro Log(
   module: "LoggableMacro",
   type: "LogMacro"
 )
-
 
 @attached(body)
 public macro Level(_ trait: (any Levelable)? = nil) = #externalMacro(

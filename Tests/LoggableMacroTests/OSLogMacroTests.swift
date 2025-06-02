@@ -56,7 +56,7 @@ final class OSLogMacroTests: XCTestCase {
           parameters: [
             "numbers": numbers
           ],
-          tags: ["tag_example"]
+          tags: ["example"]
         )
         func _sum(numbers: Int...) -> Int {
           return numbers.reduce(0, +)
@@ -83,14 +83,10 @@ final class OSLogMacroTests: XCTestCase {
       func transform(value: Int, using transform: (Int) -> String) -> String {
         let loggable: any Loggable = Self.logger
         var event = LoggableEvent(
-          level: "level_debug",
+          level: .debug,
           location: "TestModule/Test.swift:1:1",
           declaration: "func transform(value: Int, using transform: (Int) -> String) -> String",
-          parameters: [
-            "value": value,
-            "transform": transform
-          ],
-          tags: ["tag_commonTag"]
+          tags: [.commonTag, "example"]
         )
         func _transform(value: Int, transform: (Int) -> String) -> String {
           return transform(value)

@@ -1,20 +1,7 @@
 public protocol Levelable: Trait {
-  static func level(_: String) -> Self
-}
-
-public enum LevelableTrait: Levelable {
-  case level(String)
-
-  public init(stringLiteral value: StringLiteralType) {
-    self = .level(value)
-  }
-
-  public var rawValue: StringLiteralType {
-    switch self {
-    case let .level(value):
-      return .levelRawValue(value)
-    }
-  }
+  associatedtype RawValue
+  
+  static func level(_: RawValue) -> Self
 }
 
 extension String: Levelable {

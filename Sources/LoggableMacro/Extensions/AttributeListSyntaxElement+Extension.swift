@@ -12,80 +12,15 @@ extension ExprSyntaxProtocol {
       return false
     }
   }
-}
-
-enum TraitSyntax {
-  case Log(
-    level: LevelableTrait?,
-    ommitable: [OmittableTrait],
-    taggable: [TaggableTrait]
-  )
-
-  case OSLog(
-    level: LevelableTrait?,
-    ommitable: [OmittableTrait],
-    taggable: [TaggableTrait]
-  )
-
-  case Level(LevelableTrait?)
-  case omit([OmittableTrait])
-  case tag([TaggableTrait])
-}
-
-extension Array where Element == TraitSyntax {
-  var level: LevelableTrait? {
-    for trait in self {
-      switch trait {
-      case let .OSLog(level, _, _):
-        return level
-
-      case let .Log(level, _, _):
-        return level
-
-      case let .Level(level):
-        return level
-
-      default:
-        break
-      }
+  
+  var isOmitResultTrait: Bool {
+    switch ExprSyntax(fromProtocol: self).as(ExprSyntaxEnum.self) {
+    case let .memberAccessExpr(memberAccessExprSyntax):
+      return memberAccessExprSyntax.declName.baseName.text == "result"
+      
+    default:
+      return false
     }
-    return nil
-  }
-
-  var ommitable: [OmittableTrait] {
-    var result: Set<OmittableTrait> = []
-    for trait in self {
-      switch trait {
-      case let .Log(_, traits, _):
-        result = result.union(traits)
-
-      case let .omit(traits):
-        result = result.union(traits)
-
-      default:
-        break
-      }
-    }
-
-    return result.sorted { $0.hashValue < $1.hashValue }
-  }
-
-  var taggable: [TaggableTrait] {
-    var result = Set<TaggableTrait>()
-    for trait in self {
-      switch trait {
-      case let .Log(_, _, traits):
-        result = result.union(traits)
-
-      case let .tag(traits):
-        result = result.union(traits)
-
-      default:
-        break
-      }
-    }
-
-    return result.sorted { $0.hashValue < $1.hashValue }
   }
 }
 

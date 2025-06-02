@@ -135,6 +135,7 @@ final class LogMacroTests: XCTestCase {
       func foo(bar: String) -> String {
         let loggable: any Loggable = .foo
         var event = LoggableEvent(
+          level: .debug,
           location: "TestModule/Test.swift:1:1",
           declaration: "func foo(bar: String) -> String",
           parameters: [
@@ -173,7 +174,7 @@ final class LogMacroTests: XCTestCase {
           parameters: [
             "bar": bar
           ],
-          tags: ["tag_example"]
+          tags: ["example"]
         )
         func _foo(bar: String) -> String {
           return "Foo: \(bar)"
@@ -235,7 +236,7 @@ final class LogMacroTests: XCTestCase {
       mutating func foo() {
         let loggable: any Loggable = .logger
         let event = LoggableEvent(
-          level: "level_debug",
+          level: .debug,
           location: "TestModule/Test.swift:1:1",
           declaration: "mutating func foo()",
           parameters: [:],
@@ -263,13 +264,13 @@ final class LogMacroTests: XCTestCase {
       mutating func foo(bar: String) {
         let loggable: any Loggable = .logger
         let event = LoggableEvent(
-          level: "level_debug",
+          level: .debug,
           location: "TestModule/Test.swift:1:1",
           declaration: "mutating func foo(bar: String)",
           parameters: [
             "bar": bar
           ],
-          tags: ["tag_common"]
+          tags: [.common, "example"]
         )
         self.bar = bar
         loggable.emit(event: event)
@@ -336,11 +337,11 @@ final class LogMacroTests: XCTestCase {
       func foo() throws {
         let loggable: any Loggable = .logger
         let event = LoggableEvent(
-          level: "level_error",
+          level: .error,
           location: "TestModule/Test.swift:1:1",
           declaration: "func foo() throws",
           parameters: [:],
-          tags: ["tag_example"]
+          tags: ["example"]
         )
         func _foo() throws {
           throw NSError()
@@ -508,11 +509,11 @@ final class LogMacroTests: XCTestCase {
       func foo() async throws {
         let loggable: any Loggable = .logger
         let event = LoggableEvent(
-          level: "level_fault",
+          level: "fault",
           location: "TestModule/Test.swift:1:1",
           declaration: "func foo() async throws",
           parameters: [:],
-          tags: ["tag_example"]
+          tags: ["example"]
         )
         func _foo() async throws {
           try await Task.sleep(nanoseconds: 100_000_000)
@@ -572,7 +573,7 @@ final class LogMacroTests: XCTestCase {
       func check(condition: @autoclosure () -> Bool) -> Bool {
         let loggable: any Loggable = .logger
         var event = LoggableEvent(
-          level: "level_info",
+          level: .info,
           location: "TestModule/Test.swift:1:1",
           declaration: "func check(condition: @autoclosure () -> Bool) -> Bool",
           parameters: [
@@ -707,13 +708,10 @@ final class LogMacroTests: XCTestCase {
       func transform(value: Int, using transform: (Int) -> String) -> String {
         let loggable: any Loggable = .custom
         var event = LoggableEvent(
+          level: .debug,
           location: "TestModule/Test.swift:1:1",
           declaration: "func transform(value: Int, using transform: (Int) -> String) -> String",
-          parameters: [
-            "value": value,
-            "transform": transform
-          ],
-          tags: ["tag_commonTag"]
+          tags: [.commonTag, "example"]
         )
         func _transform(value: Int, transform: (Int) -> String) -> String {
           return transform(value)
@@ -790,7 +788,7 @@ final class LogMacroTests: XCTestCase {
             "first": first,
             "second": second
           ],
-          tags: ["tag_example"]
+          tags: [.example, "example"]
         )
         func _combine(first: T, second: U) -> (T, U) {
           return (first, second)

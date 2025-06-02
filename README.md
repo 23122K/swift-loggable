@@ -145,12 +145,12 @@ Unlike the `@Logged` macro, to apply `@OSLog` to functions within a scope, the s
 + @OSLogger
 struct Foo { ... }
 ```
-After expansion, static instance of `logger` has been introduced to scope as well conformance to `_OSLogger` protocol.
+After expansion, static instance of `logger` has been introduced to scope as well conformance to `OSLogger` protocol.
 ```diff
 @OSLogger
 struct Foo { ... }
 
-+ extension Foo: _OSLogger { 
++ extension Foo: OSLogger { 
 +   static let logger = Logger(
 +     subsystem: "Module"
 +     category: "Foo"
@@ -200,7 +200,7 @@ struct Foo {
   mutating func qux() { ...} -> Self
 }
 
-+ extension Foo: _OSLogger { 
++ extension Foo: OSLogger { 
 +   nonisolated static let logger = Logger(
 +     subsystem: Bundle.main.bundleIdentifier ?? ""
 +     category: "Readme"
@@ -215,7 +215,7 @@ public struct Foo<T> where T: Equatable {
   // ...
 }
 
-+ extension Foo: _OSLogger { 
++ extension Foo: OSLogger { 
 +   nonisolated static var logger: Logger {
 +     Logger(
 +       subsystem: Bundle.main.bundleIdentifier ?? ""
