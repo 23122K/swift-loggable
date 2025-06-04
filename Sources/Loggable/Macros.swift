@@ -16,7 +16,7 @@ public macro osLogger(
 
 @attached(extension, names: named(logger), conformances: OSLogger)
 public macro OSLogger(
-  access level: __AccessLevel? = nil,
+  access level: __AccessLevelModifier? = nil,
   subsystem: String? = nil,
   category: String? = nil
 ) = #externalMacro(
