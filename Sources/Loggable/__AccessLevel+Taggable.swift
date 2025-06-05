@@ -4,6 +4,7 @@
 ///   See https://docs.swift.org/swift-book/documentation/the-swift-programming-language/accesscontrol/
 ///   for additional information.
 /// }
+@_documentation(visibility: public)
 public enum __AccessLevelModifier: Taggable {
   /// A string literal representation of access level keyword.
   case tag(StringLiteralType)

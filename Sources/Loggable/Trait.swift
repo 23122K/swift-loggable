@@ -1,4 +1,2 @@
-/// Specifies what all trait protocols must conform to.
-///
-///  - Warning: Do not conform to this typealias directly.
+/// A typealias for protocols that all trait protocols must conform.
 public typealias __Trait = Sendable & Hashable & ExpressibleByStringLiteral
