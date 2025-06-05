@@ -4,21 +4,40 @@ import SwiftSyntax
 extension ExprSyntaxProtocol {
   var isOmitParameters: Bool {
     switch ExprSyntax(fromProtocol: self).as(ExprSyntaxEnum.self) {
-    case let .memberAccessExpr(memberAccessExprSyntax):
-      return memberAccessExprSyntax.declName.baseName.text == "parameters"
-      
-    default:
-      return false
+      case let .memberAccessExpr(memberAccessExprSyntax):
+        return memberAccessExprSyntax.declName.baseName.text == "parameters"
+        
+      case let .stringLiteralExpr(stringLiteralExprSynta):
+        return stringLiteralExprSynta.isEqual(to: "__parameters")
+        
+      default:
+        return false
     }
   }
   
   var isOmitResult: Bool {
     switch ExprSyntax(fromProtocol: self).as(ExprSyntaxEnum.self) {
-    case let .memberAccessExpr(memberAccessExprSyntax):
-      return memberAccessExprSyntax.declName.baseName.text == "result"
-      
-    default:
-      return false
+      case let .memberAccessExpr(memberAccessExprSyntax):
+        return memberAccessExprSyntax.declName.baseName.text == "result"
+        
+      case let .stringLiteralExpr(stringLiteralExprSyntax):
+        return stringLiteralExprSyntax.isEqual(to: "__result")
+        
+      default:
+        return false
+    }
+  }
+}
+
+extension StringLiteralExprSyntax {
+  fileprivate func isEqual(to text: String) -> Bool {
+    switch self.segments.first {
+      case let .stringSegment(stringSegmentSyntax):
+        return stringSegmentSyntax.content.trimmedDescription == text
+        
+        
+      default:
+        return false
     }
   }
 }
