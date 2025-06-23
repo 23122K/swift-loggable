@@ -17,7 +17,7 @@ extension LoggableMacro {
     }
     return expression
   }
-  
+
   public static func expansion(
     of node: AttributeSyntax,
     providingBodyFor declaration: some DeclSyntaxProtocol & WithOptionalCodeBlockSyntax,
@@ -25,11 +25,11 @@ extension LoggableMacro {
   ) throws -> [CodeBlockItemSyntax] {
     guard let function = FunctionSyntax(from: declaration)
     else { return self.body() }
-    
+
     let tagTraits = function.syntax.attributes.extractTraits(for: .tag)
     let omitTraits = function.syntax.attributes.extractTraits(for: .omit)
     let levelTrait = function.syntax.attributes.extractTraits(for: .level).first
-    
+
     return body {
       self.hook(for: node)
       self.event(
@@ -40,12 +40,12 @@ extension LoggableMacro {
         taggableTraits: tagTraits,
         omittableTraits: omitTraits
       )
-      
+
       switch function.isThrowing {
         case false where function.isVoid:
           function.body
           self.emit()
-          
+
         case true where function.isVoid:
           CodeBlockItemSyntax(function.plain)
           CodeBlockItemSyntax.try {
@@ -55,7 +55,7 @@ extension LoggableMacro {
             self.emit()
             CodeBlockItemSyntax.rethrow
           }
-          
+
         case true:
           CodeBlockItemSyntax(function.plain)
           CodeBlockItemSyntax.try {
@@ -68,7 +68,7 @@ extension LoggableMacro {
             self.emit()
             CodeBlockItemSyntax.rethrow
           }
-          
+
         case false:
           CodeBlockItemSyntax(function.plain)
           CodeBlockItemSyntax.call(function)
@@ -153,7 +153,7 @@ extension LoggableMacro {
                       trailingComma: .commaToken()
                     )
                   }
-                  
+
                   // MARK: - location: String
                   LabeledExprSyntax(
                     leadingTrivia: .newline,
@@ -166,7 +166,7 @@ extension LoggableMacro {
                     trailingComma: .commaToken(),
                     trailingTrivia: .newline
                   )
-                  
+
                   // MARK: - declaration: String
                   LabeledExprSyntax(
                     label: .predefined(.declaration),
@@ -175,7 +175,7 @@ extension LoggableMacro {
                     trailingComma: .commaToken(),
                     trailingTrivia: .newline
                   )
-                  
+
                   // MARK: - parameters: [String: Any]
                   if !omittableTraits.contains(where: \.isOmitParameters) {
                     LabeledExprSyntax(
@@ -206,7 +206,7 @@ extension LoggableMacro {
                       trailingTrivia: .newline
                     )
                   }
-                  
+
                   // MARK: - Tags
                   LabeledExprSyntax(
                     label: .predefined(.tags),

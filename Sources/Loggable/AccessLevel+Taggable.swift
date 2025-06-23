@@ -4,14 +4,13 @@
 ///   See https://docs.swift.org/swift-book/documentation/the-swift-programming-language/accesscontrol/
 ///   for additional information.
 /// }
-@_documentation(visibility: public)
-public enum __AccessLevelModifier: Taggable {
+public enum AccessLevelModifier: Taggable {
   /// A string literal representation of access level keyword.
   case tag(StringLiteralType)
   
   /// Initialize an instance of this type that represents Swift access level.
   ///
-  /// Currently, `__AccessLevelModifier` is only extracted
+  /// Currently, `AccessLevelModifier` is only extracted
   /// as a `MemberAccessExprSyntax`.
   /// When declaring a new instance, ensure that both the tag’s associated value
   /// and its property name matches matches the keyword.
@@ -20,28 +19,28 @@ public enum __AccessLevelModifier: Taggable {
   ///   keyword (e.g. "public", "private").
   @_spi(Experimental)
   public init(stringLiteral value: StringLiteralType) {
-    self = __AccessLevelModifier.tag(value)
+    self = AccessLevelModifier.tag(value)
   }
 }
 
-extension Taggable where Self == __AccessLevelModifier {
+extension Taggable where Self == AccessLevelModifier {
   /// A `public` access level modifier.
-  public static var `public`: __AccessLevelModifier {
-    __AccessLevelModifier(stringLiteral: "public")
+  public static var `public`: AccessLevelModifier {
+    AccessLevelModifier(stringLiteral: "public")
   }
   
   /// An `internal` access level modifier.
-  public static var `internal`: __AccessLevelModifier {
-    __AccessLevelModifier(stringLiteral: "internal")
+  public static var `internal`: AccessLevelModifier {
+    AccessLevelModifier(stringLiteral: "internal")
   }
   
   /// A `fileprivate` access level modifier.
-  public static var `fileprivate`: __AccessLevelModifier {
-    __AccessLevelModifier(stringLiteral: "fileprivate")
+  public static var `fileprivate`: AccessLevelModifier {
+    AccessLevelModifier(stringLiteral: "fileprivate")
   }
   
   /// A `private` access level modifier.
-  public static var `private`: __AccessLevelModifier {
-    __AccessLevelModifier(stringLiteral: "private")
+  public static var `private`: AccessLevelModifier {
+    AccessLevelModifier(stringLiteral: "private")
   }
 }
