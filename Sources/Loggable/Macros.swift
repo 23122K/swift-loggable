@@ -110,7 +110,7 @@ public macro OSLog(
 /// When  `loggable` parameter is specified, introdcued``Log(using:)``
 /// macros will use it. In order to override implicit parameter, we must explicity
 /// mar method with ``Log(using:)``
-/// ```swifit
+/// ```swift
 /// @Logged
 /// struct Foo {
 ///   @Log(using: .example)
@@ -124,7 +124,7 @@ public macro OSLog(
 /// }
 /// ```
 ///
-/// To omit methods from being anottated, mark method with ``Omit(_:)``
+/// To omit methods from being anottated, mark method with ``Omit()``
 /// ```swift
 /// @Logged
 /// enum Foo {
