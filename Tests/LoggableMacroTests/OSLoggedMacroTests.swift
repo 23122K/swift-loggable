@@ -1,19 +1,17 @@
 import LoggableMacro
 import MacroTesting
-import XCTest
+import Testing
 
-final class OSLoggedMacroTests: XCTestCase {
-  override func invokeTest() {
-    withMacroTesting(
-      indentationWidth: .spaces(2),
-      record: .missing,
-      macros: ["OSLogged": OSLoggedMacro.self]
-    ) {
-      super.invokeTest()
-    }
-  }
-
-  func test_struct_default_noAdditionalAnnotations() throws {
+@Suite(
+  .macros(
+    [OSLoggedMacro.self],
+    indentationWidth: .spaces(2),
+    record: .missing
+  )
+)
+struct OSLoggedMacroTests {
+  @Test
+  func struct_default_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @OSLogged
@@ -59,7 +57,8 @@ final class OSLoggedMacroTests: XCTestCase {
     }
   }
 
-  func test_class_withCustomSubsystemAndCategory_noAdditionalAnnotations() throws {
+  @Test
+  func class_withCustomSubsystemAndCategory_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @OSLogged(subsystem: "OSLoggedMacroTests", category: "class")
@@ -105,7 +104,8 @@ final class OSLoggedMacroTests: XCTestCase {
     }
   }
 
-  func test_actor_default_withOmmitAnnotations() throws {
+  @Test
+  func actor_default_withOmmitAnnotations() throws {
     assertMacro {
       #"""
       @OSLogged
@@ -156,7 +156,8 @@ final class OSLoggedMacroTests: XCTestCase {
     }
   }
 
-  func test_enum_default_noAdditionalAnnotations() throws {
+  @Test
+  func enum_default_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @OSLogged
@@ -186,7 +187,8 @@ final class OSLoggedMacroTests: XCTestCase {
     }
   }
 
-  func test_extension_default_noAdditionalAnnotations() throws {
+  @Test
+  func extension_default_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @OSLogged
