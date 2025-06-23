@@ -294,7 +294,7 @@ final class LogMacroTests: XCTestCase {
       """
       mutating func foo() throws {
         let loggable: any Loggable = .logger
-        let event = LoggableEvent(
+        var event = LoggableEvent(
           location: "TestModule/Test.swift:1:1",
           declaration: "mutating func foo() throws",
           parameters: [:],
@@ -335,7 +335,7 @@ final class LogMacroTests: XCTestCase {
       @Tag("example")
       func foo() throws {
         let loggable: any Loggable = .logger
-        let event = LoggableEvent(
+        var event = LoggableEvent(
           level: .error,
           location: "TestModule/Test.swift:1:1",
           declaration: "func foo() throws",
@@ -420,7 +420,7 @@ final class LogMacroTests: XCTestCase {
       @Omit("value")
       func foo(_ value: Int) throws {
         let loggable: any Loggable = .logger
-        let event = LoggableEvent(
+        var event = LoggableEvent(
           location: "TestModule/Test.swift:1:1",
           declaration: "func foo(_ value: Int) throws",
           parameters: [
@@ -507,7 +507,7 @@ final class LogMacroTests: XCTestCase {
       @Tag("example")
       func foo() async throws {
         let loggable: any Loggable = .logger
-        let event = LoggableEvent(
+        var event = LoggableEvent(
           level: "fault",
           location: "TestModule/Test.swift:1:1",
           declaration: "func foo() async throws",
@@ -671,7 +671,7 @@ final class LogMacroTests: XCTestCase {
       @Omit("operation")
       func execute(operation: () throws -> Void) rethrows {
         let loggable: any Loggable = .logger
-        let event = LoggableEvent(
+        var event = LoggableEvent(
           location: "TestModule/Test.swift:1:1",
           declaration: "func execute(operation: () throws -> Void) rethrows",
           parameters: [

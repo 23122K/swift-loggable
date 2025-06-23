@@ -128,7 +128,9 @@ extension LoggableMacro {
   ) -> CodeBlockItemSyntax {
     CodeBlockItemSyntax(
       VariableDeclSyntax(
-        bindingSpecifier: TokenSyntax.keyword(declaration.isVoid ? .let : .var),
+        bindingSpecifier: TokenSyntax.keyword(
+          (declaration.isVoid && !declaration.isThrowing) ? .let : .var
+        ),
         bindings: PatternBindingListSyntax(
           arrayLiteral: PatternBindingSyntax(
             pattern: IdentifierPatternSyntax(identifier: .predefined(.event)),
