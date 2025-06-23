@@ -21,7 +21,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-macro-testing.git",
-      from: "0.5.2"
+      from: "0.6.3"
     ),
   ],
   targets: [

@@ -1,19 +1,17 @@
 import LoggableMacro
 import MacroTesting
-import XCTest
+import Testing
 
-final class OSLoggerTests: XCTestCase {
-  override func invokeTest() {
-    withMacroTesting(
-      indentationWidth: .spaces(2),
-      record: .missing,
-      macros: [OSLoggerMacro.self]
-    ) {
-      super.invokeTest()
-    }
-  }
-
-  func test_class_default_openAccessModifier() {
+@Suite(
+  .macros(
+    [OSLoggerMacro.self],
+    indentationWidth: .spaces(2),
+    record: .missing
+  )
+)
+struct OSLoggerTests {
+  @Test
+  func class_default_openAccessModifier() {
     assertMacro {
       """
       @OSLogger
@@ -33,7 +31,8 @@ final class OSLoggerTests: XCTestCase {
     }
   }
 
-  func test_class_default_finalAccessModifer() {
+  @Test
+  func class_default_finalAccessModifer() {
     assertMacro {
       """
       @OSLogger
@@ -53,7 +52,8 @@ final class OSLoggerTests: XCTestCase {
     }
   }
 
-  func test_struct_default_privateAccessModifer() {
+  @Test
+  func struct_default_privateAccessModifer() {
     assertMacro {
       """
       @OSLogger
@@ -73,7 +73,8 @@ final class OSLoggerTests: XCTestCase {
     }
   }
 
-  func test_enum_default_filePrivateAccessModifer() {
+  @Test
+  func enum_default_filePrivateAccessModifer() {
     assertMacro {
       """
       @OSLogger
@@ -93,7 +94,8 @@ final class OSLoggerTests: XCTestCase {
     }
   }
 
-  func test_extension_default_privateAccessModifer() {
+  @Test
+  func extension_default_privateAccessModifer() {
     assertMacro {
       """
       @OSLogger
@@ -113,7 +115,8 @@ final class OSLoggerTests: XCTestCase {
     }
   }
 
-  func test_actor_default_internalAccessModifier() {
+  @Test
+  func actor_default_internalAccessModifier() {
     assertMacro {
       """
       @OSLogger
@@ -133,7 +136,8 @@ final class OSLoggerTests: XCTestCase {
     }
   }
 
-  func test_mainActorStruct_withCustomAccessLevel_internalAccessModifier() {
+  @Test
+  func mainActorStruct_withCustomAccessLevel_internalAccessModifier() {
     assertMacro {
       """
       @MainActor
@@ -155,7 +159,8 @@ final class OSLoggerTests: XCTestCase {
     }
   }
 
-  func test_genericEnum_withCustomSubsystemAndCategory_privateAccessModifier() {
+  @Test
+  func genericEnum_withCustomSubsystemAndCategory_privateAccessModifier() {
     assertMacro {
       """
       @OSLogger(subsystem: "OSLogerMacroTests", category: "enum")
@@ -177,7 +182,8 @@ final class OSLoggerTests: XCTestCase {
     }
   }
 
-  func test_genericExtension_withCustomAccessLevel_privateAccessModifier() {
+  @Test
+  func genericExtension_withCustomAccessLevel_privateAccessModifier() {
     assertMacro {
       """
       @OSLogger(access: .public)

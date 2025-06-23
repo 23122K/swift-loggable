@@ -1,19 +1,17 @@
 import LoggableMacro
 import MacroTesting
-import XCTest
+import Testing
 
-final class LoggedMacroTests: XCTestCase {
-  override func invokeTest() {
-    withMacroTesting(
-      indentationWidth: .spaces(2),
-      record: .missing,
-      macros: ["Logged": LoggedMacro.self]
-    ) {
-      super.invokeTest()
-    }
-  }
-
-  func test_struct_default_noAdditionalAnnotations() throws {
+@Suite(
+  .macros(
+    [LoggedMacro.self],
+    indentationWidth: .spaces(2),
+    record: .missing
+  )
+)
+struct LoggedMacroTests {
+  @Test
+  func struct_default_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @Logged
@@ -59,7 +57,8 @@ final class LoggedMacroTests: XCTestCase {
     }
   }
 
-  func test_class_withLoggableAsStaticParameter_noAdditionalAnnotations() throws {
+  @Test
+  func class_withLoggableAsStaticParameter_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @Logged(using: .custom)
@@ -105,7 +104,8 @@ final class LoggedMacroTests: XCTestCase {
     }
   }
 
-  func test_class_withLoggableAsInitializer_noAdditionalAnnotations() throws {
+  @Test
+  func class_withLoggableAsInitializer_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @Logged(using: Custom())
@@ -151,7 +151,8 @@ final class LoggedMacroTests: XCTestCase {
     }
   }
 
-  func test_class_withLoggableAsFunction_noAdditionalAnnotations() throws {
+  @Test
+  func class_withLoggableAsFunction_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @Logged(using: .custom(module: "Foo"))
@@ -197,7 +198,8 @@ final class LoggedMacroTests: XCTestCase {
     }
   }
 
-  func test_actor_default_withOmmitAnnotations() throws {
+  @Test
+  func actor_default_withOmmitAnnotations() throws {
     assertMacro {
       #"""
       @Logged
@@ -248,7 +250,8 @@ final class LoggedMacroTests: XCTestCase {
     }
   }
 
-  func test_enum_default_noAdditionalAnnotations() throws {
+  @Test
+  func enum_default_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @Logged
@@ -278,7 +281,8 @@ final class LoggedMacroTests: XCTestCase {
     }
   }
 
-  func test_extension_default_noAdditionalAnnotations() throws {
+  @Test
+  func extension_default_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @Logged

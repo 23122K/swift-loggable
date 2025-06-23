@@ -1,19 +1,17 @@
 import LoggableMacro
 import MacroTesting
-import XCTest
+import Testing
 
-final class OSLogMacroTests: XCTestCase {
-  override func invokeTest() {
-    withMacroTesting(
-      indentationWidth: .spaces(2),
-      record: .missing,
-      macros: [OSLogMacro.self]
-    ) {
-      super.invokeTest()
-    }
-  }
-
-  func test_function_default_noAdditionalAnnotations() throws {
+@Suite(
+  .macros(
+    [OSLogMacro.self],
+    indentationWidth: .spaces(2),
+    record: .missing
+  )
+)
+struct OSLogMacroTests {
+  @Test
+  func function_default_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @OSLog
@@ -38,7 +36,8 @@ final class OSLogMacroTests: XCTestCase {
     }
   }
 
-  func test_intFunctionWithVariadicParameters_taggableAsStringLiteralType_noAdditionalAnnotations() throws {
+  @Test
+  func intFunctionWithVariadicParameters_taggableAsStringLiteralType_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @OSLog(tag: "example")
@@ -70,7 +69,8 @@ final class OSLogMacroTests: XCTestCase {
     }
   }
 
-  func test_functionWithArguments_allTraits_noAdditionalAnnotations() throws {
+  @Test
+  func functionWithArguments_allTraits_noAdditionalAnnotations() throws {
     assertMacro {
       #"""
       @OSLog(level: .debug, omit: .result, .parameters, tag: .commonTag, "example")
@@ -82,7 +82,7 @@ final class OSLogMacroTests: XCTestCase {
       """
       func transform(value: Int, using transform: (Int) -> String) -> String {
         let loggable: any Loggable = Self.logger
-        var event = LoggableEvent(
+        let event = LoggableEvent(
           level: .debug,
           location: "TestModule/Test.swift:1:1",
           declaration: "func transform(value: Int, using transform: (Int) -> String) -> String",
