@@ -1,4 +1,5 @@
 # Loggable
+[![CI](https://github.com/23122K/swift-loggable/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/23122K/swift-loggable/actions/workflows/ci.yaml)
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2F23122K%2Fswift-loggable%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/23122K/swift-loggable)
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2F23122K%2Fswift-loggable%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/23122K/swift-loggable)
 
