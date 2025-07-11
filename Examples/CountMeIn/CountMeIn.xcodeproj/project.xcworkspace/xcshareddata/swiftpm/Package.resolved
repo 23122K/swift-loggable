@@ -1,0 +1,24 @@
+{
+  "originHash" : "45144b41d1eab384f87eaf7b5b724f82a8cfe865b1f64e127d30e656d57a76b4",
+  "pins" : [
+    {
+      "identity" : "swift-loggable",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/23122K/swift-loggable",
+      "state" : {
+        "revision" : "713bc7617c52c937c80f23315820e02bf3c3070a",
+        "version" : "0.2.4"
+      }
+    },
+    {
+      "identity" : "swift-syntax",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swiftlang/swift-syntax.git",
+      "state" : {
+        "revision" : "0687f71944021d616d34d922343dcef086855920",
+        "version" : "600.0.1"
+      }
+    }
+  ],
+  "version" : 3
+}

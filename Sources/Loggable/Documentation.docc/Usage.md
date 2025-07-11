@@ -1,6 +1,6 @@
 # Getting started
 
-Learn how incorporate `@Logged` and `@Log` macros into your project.
+Learn how to incorporate the `@Logged` and `@Log` macros into your project, how they work, and much more.
 
 ## Overview
 
