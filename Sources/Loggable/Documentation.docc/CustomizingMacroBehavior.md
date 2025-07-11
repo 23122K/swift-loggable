@@ -1,6 +1,6 @@
-# Getting started
+# Customizing macro behavior 
 
-Get started with few simple steps.
+Customize macro behavior to suit your requirements.
 
 ## Overview
 

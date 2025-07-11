@@ -3,19 +3,20 @@
 A set of macros that support type-wide and per-function logging with ability to customize how logs are handled.
 
 ## Overview
-There are many situations where logging additional information can be helpful. However, they are mostly ignored as they come with a lot of boilerplate. This is especially cumbersome in bidirectional architectures. Loggable aims to remove that gap providing macros that can:
+There are many situations where logging additional information is helpful. However most of them are neglected as they reqire some boilerplate, this is especially present in bidirectional architectures. Loggable aims to simplify this  by providing macros that can:
 
 * **Annotate all methods within type or extension**
 
-Do not waste time marking each method individualy, simply mark declaration with desired logger and let the magic happen.
+There is no need to annotate each method individually - simply apply the desired annotation to the declaration, and let the magic happen. Standalone functions can also be annotated.
 
 * **Customize how logs are handled**
 
 All macros include the ability to add tags to logged functions, suppress their output or parameters, or ecent exclude the functions entirely from emmiting an event.
 
-* **OSLog support**
+* **Leverage OSLog support**
 
-Loggable provides macros that leverage Apple’s OS framework, forget about creating [`Logger`](https://developer.apple.com/documentation/os/logger) instance, providing it with subsystem, category just to having to log each function individually.
+Loggable provides macros that leverage Apple's OSLog framework, eliminating the need to manually create a [`Logger`](https://developer.apple.com/documentation/os/logger) instance, configure subsystems and categories, or log each function individually.
+
 
 **On top of that**, Loggable does not bind you into any proprietary logging system - use the logger of you choice without compromising on convinence that comes with macros.
 
@@ -23,8 +24,10 @@ Loggable provides macros that leverage Apple’s OS framework, forget about crea
 
 ### Essentials
 
-- <doc:GettingStarted>
-
+- <doc:Usage>
+- <doc:CreatingCustomLoggableInstance>
+- <doc:LeverageOSLog>
+- <doc:CustomizingMacroBehavior>
 ### Logged and Log macros
 
 - ``Logged(using:)``

@@ -19,21 +19,21 @@ public protocol Loggable: Sendable {
 public struct LoggableEvent: CustomStringConvertible, CustomDebugStringConvertible {
   /// The logging level associated with the event.
   public let level: (any Levelable)?
-  
+
   /// The source location of the invoked function.
   public let location: String
-  
+
   /// A representation of a function's name and return
   /// type, excluding parameters and body.
   public let declaration: String
-  
+
   /// A set of arguments passed to a function, associated
   /// with their parameter labels.
   public var parameters: [String: Any]
-  
+
   /// The result of the function.
   public var result: Result<Any, any Error>
-  
+
   /// The collection of tags associated with the event.
   public let tags: [any Taggable]
 
@@ -46,7 +46,7 @@ public struct LoggableEvent: CustomStringConvertible, CustomDebugStringConvertib
     tags: \(tags)
     """
   }
-  
+
   public var debugDescription: String {
     """
     level: \(String(describing: level))
@@ -90,7 +90,7 @@ public struct LoggableEvent: CustomStringConvertible, CustomDebugStringConvertib
 public struct LoggableLogger: Loggable {
   /// The logger instance used for logging.
   let logger: Logger
-  
+
   /// Logs captured event metadata to the default subsystem.
   ///
   /// The event’s logging level is inherited from the function result unless explicitly specified:
@@ -103,7 +103,7 @@ public struct LoggableLogger: Loggable {
       self.logger.log(level: event.result.isSuccess ? .info : .error, "\(String(describing: event))")
     }
   }
-  
+
   @_spi(Experimental)
   /// Creates a new instance of this type to serve as the default handler
   /// for emitted events.
