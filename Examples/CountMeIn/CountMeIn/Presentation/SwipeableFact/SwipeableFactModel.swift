@@ -2,10 +2,9 @@ import Foundation
 import Observation
 import Loggable
 
-@OSLogged
-@OSLogger
 @MainActor
 @Observable
+@Logged(using: .sentry)
 class SwipeableFactModel {
   let storageClient: StorageClient
   var apiClient: ApiClient
@@ -14,7 +13,8 @@ class SwipeableFactModel {
   var factKind: Fact.Kind
   var destination: Destination?
   
-  func getRandomFact() async {
+  @Level(.sentryDebug)
+  func getRandomFact() async throws {
     do {
       self.fact = .loading
       let url: URL = .fact(for: self.factKind)
@@ -23,13 +23,14 @@ class SwipeableFactModel {
       )
     } catch {
       self.fact = .failure
+      throw error
     }
   }
  
   func onSwipeToRight(_ fact: sending Fact) async throws {
     fact.isFavorite = true
     try self.storageClient.save(fact)
-    await getRandomFact()
+    try await getRandomFact()
   }
   
   func factKindSelected(_ kind: Fact.Kind) async throws {

@@ -97,11 +97,7 @@ public struct LoggableLogger: Loggable {
   /// - ``OSLogType.info`` for successful function executions.
   /// - ``OSLogType.error`` for functions that throw errors.
   public func emit(event: LoggableEvent) {
-    if let level = event.level as? OSLogType {
-      self.logger.log(level: level, "\(String(describing: event))")
-    } else {
-      self.logger.log(level: event.result.isSuccess ? .info : .error, "\(String(describing: event))")
-    }
+    self.logger.emit(event: event)
   }
 
   @_spi(Experimental)
@@ -122,6 +118,16 @@ public struct LoggableLogger: Loggable {
 extension Loggable where Self == LoggableLogger {
   /// A default loggable instance. Logs to default subsystem.
   public static var logger: Self { LoggableLogger() }
+}
+
+extension Logger: Loggable {
+  public func emit(event: LoggableEvent) {
+    if let level = event.level as? OSLogType {
+      self.log(level: level, "\(String(describing: event))")
+    } else {
+      self.log(level: event.result.isSuccess ? .info : .error, "\(String(describing: event))")
+    }
+  }
 }
 
 extension Result {

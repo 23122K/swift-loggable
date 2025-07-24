@@ -1,13 +1,22 @@
 {
-  "originHash" : "45144b41d1eab384f87eaf7b5b724f82a8cfe865b1f64e127d30e656d57a76b4",
+  "originHash" : "a53dde868d1ef7cefc9c09969d67d5e5409233f473620bfecb8dda5b4ea6e958",
   "pins" : [
     {
-      "identity" : "swift-loggable",
+      "identity" : "sentry-cocoa",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/23122K/swift-loggable",
+      "location" : "https://github.com/getsentry/sentry-cocoa.git",
       "state" : {
-        "revision" : "713bc7617c52c937c80f23315820e02bf3c3070a",
-        "version" : "0.2.4"
+        "revision" : "ca92efeb24b10052cd2a79e5205f42c5a16770ec",
+        "version" : "8.53.2"
+      }
+    },
+    {
+      "identity" : "swift-log",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-log.git",
+      "state" : {
+        "revision" : "3d8596ed08bd13520157f0355e35caed215ffbfa",
+        "version" : "1.6.3"
       }
     },
     {

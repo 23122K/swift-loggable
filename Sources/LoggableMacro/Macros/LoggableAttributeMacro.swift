@@ -22,6 +22,13 @@ extension LoggableAttributeMacro {
       guard case let .attribute(syntax) = attribute else { return false }
       return self.ignore(syntax)
     }
+//    
+//    context.diagnose(
+//      .init(
+//        node: node,
+//        message: .debug(self.introduce(for: node))
+//      )
+//    )
 
     return canExpand.contains(true)
       ? self.attributes()

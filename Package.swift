@@ -46,6 +46,15 @@ let package = Package(
       name: "Loggable",
       dependencies: [
         "LoggableMacro"
+      ],
+      swiftSettings: [
+        .swiftLanguageMode(.v6)
+      ]
+    ),
+    .executableTarget(
+      name: "Client",
+      dependencies: [
+        "Loggable"
       ]
     ),
     .testTarget(
@@ -62,5 +71,6 @@ let package = Package(
         ),
       ]
     ),
-  ]
+  ],
+  swiftLanguageModes: [.v6]
 )

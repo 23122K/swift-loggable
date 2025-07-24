@@ -11,7 +11,7 @@ class FavoriteFactsModel: Identifiable {
     self.facts = try self.storageClient.fetch()
   }
   
-  @Log(using: .printer)
+  @Log(using: .nsLog)
   func deleteFromFavoriteButtonTapped(_ fact: sending Fact) throws {
     try self.storageClient.delete(fact)
   }

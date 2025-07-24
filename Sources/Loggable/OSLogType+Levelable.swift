@@ -43,27 +43,27 @@ extension OSLogType: Levelable {
 
 extension Levelable where Self == OSLogType {
   /// A `default` OSLogType level.
-  public static var `default`: Self {
+  public static var `osDefault`: Self {
     OSLogType.default
   }
   
   /// A `debug` OSLogType level.
-  public static var debug: Self {
+  public static var osDebug: Self {
     OSLogType.debug
   }
   
   /// A `fault` OSLogType level.
-  public static var fault: Self {
+  public static var osFault: Self {
     OSLogType.fault
   }
   
   /// An `error` OSLogType level.
-  public static var error: Self {
+  public static var osError: Self {
     OSLogType.error
   }
   
   /// An `info` OSLogType level.
-  public static var info: Self {
+  public static var osInfo: Self {
     OSLogType.info
   }
 }

@@ -7,7 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0C01EFE92E1D01FA0026B9B3 /* Loggable in Frameworks */ = {isa = PBXBuildFile; productRef = 0C01EFE82E1D01FA0026B9B3 /* Loggable */; };
+		0C2A32782E32AA0800C1019F /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 0C2A32772E32AA0800C1019F /* Sentry */; };
+		0C71A4C22E2593C0004F86DA /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = 0C71A4C12E2593C0004F86DA /* Logging */; };
+		0CDDA7BE2E21AB6300237BA9 /* Loggable in Frameworks */ = {isa = PBXBuildFile; productRef = 0CDDA7BD2E21AB6300237BA9 /* Loggable */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,7 +58,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0C01EFE92E1D01FA0026B9B3 /* Loggable in Frameworks */,
+				0C71A4C22E2593C0004F86DA /* Logging in Frameworks */,
+				0CDDA7BE2E21AB6300237BA9 /* Loggable in Frameworks */,
+				0C2A32782E32AA0800C1019F /* Sentry in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -108,7 +112,9 @@
 			);
 			name = CountMeIn;
 			packageProductDependencies = (
-				0C01EFE82E1D01FA0026B9B3 /* Loggable */,
+				0CDDA7BD2E21AB6300237BA9 /* Loggable */,
+				0C71A4C12E2593C0004F86DA /* Logging */,
+				0C2A32772E32AA0800C1019F /* Sentry */,
 			);
 			productName = CountMeIn;
 			productReference = 0C01EF992E1D00D00026B9B3 /* CountMeIn.app */;
@@ -166,7 +172,9 @@
 			mainGroup = 0C01EF902E1D00D00026B9B3;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				0C01EFE72E1D01FA0026B9B3 /* XCRemoteSwiftPackageReference "swift-loggable" */,
+				0CDDA7BB2E21AB3600237BA9 /* XCLocalSwiftPackageReference "../../../swift-loggable" */,
+				0CDDA7F12E21BB4200237BA9 /* XCRemoteSwiftPackageReference "swift-log" */,
+				0C2A32762E32AA0800C1019F /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 0C01EF9A2E1D00D00026B9B3 /* Products */;
@@ -491,21 +499,46 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		0CDDA7BB2E21AB3600237BA9 /* XCLocalSwiftPackageReference "../../../swift-loggable" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../../../swift-loggable";
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
-		0C01EFE72E1D01FA0026B9B3 /* XCRemoteSwiftPackageReference "swift-loggable" */ = {
+		0C2A32762E32AA0800C1019F /* XCRemoteSwiftPackageReference "sentry-cocoa" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/23122K/swift-loggable";
+			repositoryURL = "https://github.com/getsentry/sentry-cocoa.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.2.4;
+				minimumVersion = 8.53.2;
+			};
+		};
+		0CDDA7F12E21BB4200237BA9 /* XCRemoteSwiftPackageReference "swift-log" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-log.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.6.3;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		0C01EFE82E1D01FA0026B9B3 /* Loggable */ = {
+		0C2A32772E32AA0800C1019F /* Sentry */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 0C01EFE72E1D01FA0026B9B3 /* XCRemoteSwiftPackageReference "swift-loggable" */;
+			package = 0C2A32762E32AA0800C1019F /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
+			productName = Sentry;
+		};
+		0C71A4C12E2593C0004F86DA /* Logging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0CDDA7F12E21BB4200237BA9 /* XCRemoteSwiftPackageReference "swift-log" */;
+			productName = Logging;
+		};
+		0CDDA7BD2E21AB6300237BA9 /* Loggable */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0CDDA7BB2E21AB3600237BA9 /* XCLocalSwiftPackageReference "../../../swift-loggable" */;
 			productName = Loggable;
 		};
 /* End XCSwiftPackageProductDependency section */

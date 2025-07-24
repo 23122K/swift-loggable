@@ -2,12 +2,9 @@ import Foundation
 import Loggable
 import SwiftData
 
-@OSLogger
-@OSLogged
 struct ApiClient: Sendable {
   var request: @Sendable (URL) async throws -> (Data, URLResponse)
   
-  @Omit(.decoder)
   func fetch<T>(
     _ url: URL,
     decoder: JSONDecoder = JSONDecoder(),
@@ -43,4 +40,3 @@ extension Omittable where Self == Omit {
     Omit.parameter("decoder")
   }
 }
-

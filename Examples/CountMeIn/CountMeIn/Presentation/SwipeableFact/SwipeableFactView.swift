@@ -8,7 +8,7 @@ struct SwipeableFactView: View {
       switch self.swipeableFactModel.fact {
         case let .content(fact):
           SwipeableFactCard(fact: fact) {
-            await self.swipeableFactModel.getRandomFact()
+            try? await self.swipeableFactModel.getRandomFact()
           } onSwipeRight: {
             try? await self.swipeableFactModel.onSwipeToRight(fact)
           }
@@ -35,7 +35,7 @@ struct SwipeableFactView: View {
       }
     }
     .padding(.primary)
-    .task { await self.swipeableFactModel.getRandomFact() }
+    .task { try? await self.swipeableFactModel.getRandomFact() }
     .navigationTitle("\(self.swipeableFactModel.factKind.title) facts!")
     .navigationBarTitleDisplayMode(.large)
     .toolbar {
