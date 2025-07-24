@@ -13,7 +13,6 @@ class SwipeableFactModel {
   var factKind: Fact.Kind
   var destination: Destination?
   
-  @Level(.sentryDebug)
   func getRandomFact() async throws {
     do {
       self.fact = .loading
@@ -27,13 +26,14 @@ class SwipeableFactModel {
     }
   }
  
+  @Log(level: .sentryDebug)
   func onSwipeToRight(_ fact: sending Fact) async throws {
     fact.isFavorite = true
     try self.storageClient.save(fact)
     try await getRandomFact()
   }
   
-  func factKindSelected(_ kind: Fact.Kind) async throws {
+  func factKindSelected(_ kind: Fact.Kind) async  {
     self.factKind = kind
   }
   
