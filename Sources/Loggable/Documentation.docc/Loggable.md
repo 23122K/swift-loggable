@@ -17,7 +17,6 @@ All macros include the ability to add tags to logged functions, suppress their o
 
 Loggable provides macros that leverage Apple's OSLog framework, eliminating the need to manually create a [`Logger`](https://developer.apple.com/documentation/os/logger) instance, configure subsystems and categories, or log each function individually.
 
-
 **On top of that**, Loggable does not bind you into any proprietary logging system - use the logger of you choice without compromising on convinence that comes with macros.
 
 ## Topics
@@ -25,9 +24,10 @@ Loggable provides macros that leverage Apple's OSLog framework, eliminating the 
 ### Essentials
 
 - <doc:Usage>
-- <doc:CreatingCustomLoggableInstance>
 - <doc:LeverageOSLog>
 - <doc:CustomizingMacroBehavior>
+- <doc:CreatingCustomLoggableInstance>
+
 ### Logged and Log macros
 
 - ``Logged(using:)``

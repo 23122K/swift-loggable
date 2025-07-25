@@ -1,6 +1,6 @@
 # Customizing macro behavior 
 
-Customize macro behavior to suit your requirements.
+Customize macro behavior using ``Omit(_:)``, ``Tag(_:)`` and ``Level(_:)`` 
 
 ## Overview
 

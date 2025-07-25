@@ -1,6 +1,6 @@
 # Defining custom Loggable instance
 
-Define custom Loggable instance and use it with macros.
+Define custom ``Loggable`` instance and use it with macros.
 
 ## Overview
 

@@ -1,19 +1,19 @@
 # Getting started
 
-Learn how to incorporate the `@Logged` and `@Log` macros into your project, how they work, and much more.
+Learn how to incorporate the ``Logged(using:)`` and ``Log(using:)`` macros into your project, how they work, and much more.
 
 ## Overview
 
 This article showcases how to incorporate and use:
-* **@Logged**
+* ``Logged(using:)``
 
 You will learn how to implicitly annotate each method inside a type or extension, how to provide a custom instance of `Loggable`, and how this instance is propagated.
 
-* **@Log**
+* ``Log(using:)``
 
 Explore how to capture events from specific functions and override the implicit conformance introduced by ``@Logged``.
 
-* **@Omit**
+* ``Omit()``
 
 Opt out of logging and exclude methods from emitting events.
 
@@ -31,7 +31,7 @@ import Loggable
 ```
 
 ## Mark a declaration with the @Logged macro
-Mark `FavoriteFactsModel` with` @Logged` annotation. Order in which this annotation is attached does not matter.
+Mark `FavoriteFactsModel` with ``Logged(using:)`` annotation. Order in which this annotation is attached does not matter.
 ```swift
 // FavoriteFactsModel.swift
 // ...
@@ -75,15 +75,15 @@ extension FavoriteFactsModel {
 }
 ```
 
-This alone is sufficient for debugging. All methods within the `FavoriteFactsModel` scope are now implicitly marked with the `@Log` annotation and will emit a `LoggableEvent` when invoked. Note that `deleteAllFavoriteFacts`, which is defined within an extension to `FavoriteFactsModel`, lies outside the scope of `@Logged` and thus will not be affected.
+This alone is sufficient for debugging. All methods within the `FavoriteFactsModel` scope are now implicitly marked with the ``Log(using:)`` annotation and will emit a `LoggableEvent` when invoked. Note that `deleteAllFavoriteFacts`, which is defined within an extension to `FavoriteFactsModel`, lies outside the scope of ``Logged(using:)`` and thus will not be affected.
 
-By default, `@Logged` uses the `LoggableLogger` instance. Refer to <doc:CreatingCustomLoggableInstance> for more information about incorporating custom loggers.
+By default, ``Logged(using:)`` uses the ``LoggableLogger`` instance. Refer to <doc:CreatingCustomLoggableInstance> for more information about incorporating custom loggers.
 
-> Initializers are not implicitly marked with the `@Log` annotation. Marking them explicitly also has no effect.
+> Initializers are not implicitly marked with the ``Log(using:)`` annotation. Marking them explicitly also has no effect.
 
 ## Overriding @Logged behavior
 
-Methods within the @Logged scope can also be explicitly marked with the `@Log` macro. In such cases, the annotation is overridden and will behave independently of `@Logged`.
+Methods within the ``Logged(using:)`` scope can also be explicitly marked with the ``Log(using:)`` macro. In such cases, the annotation is overridden and will behave independently of ``Logged(using:)``.
 
 ```swift
 // FavoriteFactsModel.swift
@@ -114,7 +114,7 @@ If we invoke both `fetchFavoriteFacts` and `deleteFromFavoriteButtonTapped`, the
 
 ## Omit methods from being logged
 
-Simply change the `@Log` annotation to `@Omit`. In this scenario, an event won’t be emitted when the function is invoked. The `@Omit` macro also has an override, which you can learn more about in <doc:CustomizingMacroBehavior>.
+Simply change the ``Log(using:)`` annotation to ``Omit()``. In this scenario, an event won’t be emitted when the function is invoked. The ``Omit(_:)`` macro also has an override, which you can learn more about in <doc:CustomizingMacroBehavior>.
 
 ```swift
 // FavoriteFactsModel.swift
@@ -140,7 +140,7 @@ class FavoriteFactsModel: Identifiable {
 ```
 
 ## Passing traits to @Log annotation
-The `@Log` macro supports traits that can be used to tailor its behavior. These traits can also be used used on their own, without `@Logged` being attached to a scope.
+The ``Log(using:level:omit:tag:)`` macro supports traits that can be used to tailor its behavior. These traits can also be used used on their own, without ``Logged(using:)`` being attached to a scope.
 
 ```swift
 // FavoriteFactsModel.swift

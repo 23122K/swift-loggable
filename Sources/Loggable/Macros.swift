@@ -25,7 +25,7 @@ public macro osLogger(
 ///   - subsystem: A Logger sybsystem to which logs are associated with.
 ///   - category: The Logger category which logs are associated with.
 ///
-/// - Note: ``OSLogged()`` and ``OSLog()`` depends on this macro.
+/// - Note: ``OSLogged()`` and ``OSLog(level:omit:tag:)`` depends on this macro.
 ///
 /// This macro is specialized to accomodate Logger usage allowing to override its subsystem, category
 /// and access level. Once introduced static instance can be access within declaration as
@@ -109,17 +109,17 @@ public macro OSLog(
 ///
 /// When  `loggable` parameter is specified, introdcued``Log(using:)``
 /// macros will use it. In order to override implicit parameter, we must explicity
-/// mar method with ``Log(using:)``
+/// mark method with ``Log(using:)``
 /// ```swift
 /// @Logged
 /// struct Foo {
-///   @Log(using: .example)
+///   @Log(using: .nsLog)
 ///   func bar() async throws {
-///
+///     // ...
 ///   }
 ///
 ///   func baz() async -> Qux {
-///
+///     // ...
 ///   }
 /// }
 /// ```

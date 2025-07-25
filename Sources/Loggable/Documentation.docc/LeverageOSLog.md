@@ -1,50 +1,64 @@
 # Leverage OSLog framework
 
-Learn how to leverage `@OSLogger`, `@OSLogged` and `@OSLog`.
+Learn how to leverage ``OSLogger(access:subsystem:category:)``, ``OSLogged()`` and ``OSLog(level:omit:tag:)``
 
 ## Overview
 
-This article will be based on sample project release by apple - [memecreator](https://developer.apple.com/tutorials/sample-apps/memecreator)
+This article explains how to leverage the [`Logger`](https://developer.apple.com/documentation/os/logger) from the OSLog framework to send all events through it.
 
 ### Import the loggable library
 
 To import loggable library, add the following to the Swift source file.
 ```swift
+// StorageClient.swift
+
 import Loggable
 ```
+### Conform to ``OSLogger`` protocol
 
-### Logged annotation
+You can either conform to this protocol manually—its only requirement is a static instance of [`Logger`](https://developer.apple.com/documentation/os/logger) - or use ``OSLogger(access:subsystem:category:)`` to automatically synthesize the conformance. You only need to do this once; afterward, you can use the logger to record additional information, and macros will tap into it to send events.
 
-Now, simply mark any top level declaration with ``Logged(using:)`` macro and let the magic happen.
-Every function within declaration is now implicity anottated with ``Log(using:)`` macro.
 ```swift
-import Loggable
-import SwiftUI
+@OSLogger
+@MainActor
+struct StorageClient: Sendable {
+  // ...
+}
+```
 
-class PandaCollectionFetcher: ObservableObject {
-  @Published var imageData = PandaCollection(sample: [Panda.defaultPanda])
-  @Published var currentPanda = Panda.defaultPanda
+``OSLogger(access:subsystem:category:)`` allows you to override the access level used to create the [`Logger`](https://developer.apple.com/documentation/os/logger) instance, as well as specify the subsystem and category. By default, the subsystem is set to `Bundle.main.bundleIdentifier ?? ""`, while the category defaults to the declaration name - `StorageClient` in above case.
 
-  let urlString = "http://playgrounds-cdn.apple.com/assets/pandaData.json"
 
-  enum FetchError: Error {
-    case badRequest
-    case badJSON
+### Capturing Events into Logger
+
+Now that we conform to the ``OSLogger`` protocol, we can simply mark either the type itself with ``@OSLogged()`` or, for example, an extension containing its methods. This way, all functions within that extension are automatically logged. You can learn more about customizing their behavior in <doc:CustomizingMacroBehavior>.
+
+```swift
+@OSLogged
+extension StorageClient {
+  func save<T: PersistentModel>(_ model: T) throws {
+    // ...
   }
-
-  func fetchData() async
-  throws  {
-    guard let url = URL(string: urlString) else { return }
-
-    let (data, response) = try await URLSession.shared.data(for: URLRequest(url: url))
-    guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw FetchError.badRequest }
-
-    Task { @MainActor in
-      imageData = try JSONDecoder().decode(PandaCollection.self, from: data)
-    }
+  
+  func delete<T: PersistentModel>(_ model: T) throws {
+    // ...
+  }
+ 
+  func fetch<T: PersistentModel>() throws -> [T] {
+    // ...
   }
 }
 ```
 
-### Thats it!
+### Logging a Single Function
 
+If you only want to log a single method, there’s no need to mark the entire extension with ``@OSLogged()``. Instead, you can use ``@OSLog(level:omit:tag:)`` directly on that method. This way, events will be captured only for that specific function.
+
+```swift
+extension StorageClient {
+  @OSLog
+  func save<T: PersistentModel>(_ model: T) throws {
+    // ...
+  }
+}
+```
