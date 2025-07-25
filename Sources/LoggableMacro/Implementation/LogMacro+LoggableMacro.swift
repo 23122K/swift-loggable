@@ -1,1 +1,0 @@
-extension LogMacro: LoggableMacro {}

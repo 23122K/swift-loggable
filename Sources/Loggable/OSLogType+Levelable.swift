@@ -8,10 +8,16 @@ extension OSLogType: @retroactive ExpressibleByUnicodeScalarLiteral {}
 extension OSLogType: @retroactive @unchecked Sendable {}
 extension OSLogType: @retroactive Hashable {}
 extension OSLogType: Levelable {
+  /// Creates an instance of ``OSLogType`` from its raw value.
   public static func level(_ value: UInt8) -> OSLogType {
     OSLogType(value)
   }
 
+  /// Intializes an instace of ``OSLogType`` from the string literal.
+  ///
+  /// - Parameter value: String literal that must match the name
+  ///   of defines properties. Defaults to `OSLogType.default` when
+  ///   invalid value is provided.
   public init(stringLiteral value: StringLiteralType) {
     switch value {
       case "debug":
@@ -36,23 +42,28 @@ extension OSLogType: Levelable {
 }
 
 extension Levelable where Self == OSLogType {
-  public static var `default`: Self {
+  /// A `default` OSLogType level.
+  public static var `osDefault`: Self {
     OSLogType.default
   }
   
-  public static var debug: Self {
+  /// A `debug` OSLogType level.
+  public static var osDebug: Self {
     OSLogType.debug
   }
   
-  public static var fault: Self {
+  /// A `fault` OSLogType level.
+  public static var osFault: Self {
     OSLogType.fault
   }
   
-  public static var error: Self {
+  /// An `error` OSLogType level.
+  public static var osError: Self {
     OSLogType.error
   }
   
-  public static var info: Self {
+  /// An `info` OSLogType level.
+  public static var osInfo: Self {
     OSLogType.info
   }
 }

@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
   name: "swift-loggable",
   platforms: [
-    .macOS(.v12),
+    .macOS(.v15),
     .iOS(.v18),
   ],
   products: [
@@ -22,6 +22,10 @@ let package = Package(
     .package(
       url: "https://github.com/pointfreeco/swift-macro-testing.git",
       from: "0.6.3"
+    ),
+    .package(
+      url: "https://github.com/swiftlang/swift-docc-plugin",
+      from: "1.4.4"
     ),
   ],
   targets: [
@@ -58,5 +62,17 @@ let package = Package(
         ),
       ]
     ),
+    .testTarget(
+      name: "LoggableTests",
+      dependencies: [
+        "Loggable",
+      ]
+    ),
   ]
 )
+
+for target in package.targets {
+  target.swiftSettings = [
+    .swiftLanguageMode(.v6)
+  ]
+}
