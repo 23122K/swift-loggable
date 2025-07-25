@@ -46,7 +46,7 @@ let package = Package(
       name: "Loggable",
       dependencies: [
         "LoggableMacro"
-      ],
+      ]
     ),
     .testTarget(
       name: "LoggableMacroTests",
