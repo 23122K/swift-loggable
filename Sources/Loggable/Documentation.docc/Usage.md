@@ -7,20 +7,21 @@ Learn how to incorporate the ``Logged(using:)`` and ``Log(using:)`` macros into 
 This article showcases how to incorporate and use:
 * ``Logged(using:)``
 
-You will learn how to implicitly annotate each method inside a type or extension, how to provide a custom instance of `Loggable`, and how this instance is propagated.
+You will learn how to implicitly annotate each method inside a type or extension, how to provide a custom instance of ``Loggable``, and how this instance is propagated.
 
 * ``Log(using:)``
 
-Explore how to capture events from specific functions and override the implicit conformance introduced by ``@Logged``.
+Explore how to capture events from specific functions and override the implicit conformance introduced by ``Logged(using:)``.
 
 * ``Omit()``
 
 Opt out of logging and exclude methods from emitting events.
 
-> Code examples used throughout this article are part of the example app [Count Me In]([Count Me In](https://github.com/23122K/swift-loggable/tree/main/Examples/CountMeIn)
+> Code examples used throughout this article are part of the example app [Count Me In](https://github.com/23122K/swift-loggable/tree/main/Examples/CountMeIn)
 > The first line in each code snippet refers to a file within the app.
 
 ## Import the Loggable library
+
 After importing Loggable for the first time, you will be prompted to enable macros provided by the library.
 ```swift
 // FavoriteFactsModel.swift
@@ -34,8 +35,8 @@ import Loggable
 Mark `FavoriteFactsModel` with ``Logged(using:)`` annotation. Order in which this annotation is attached does not matter.
 ```swift
 // FavoriteFactsModel.swift
-// ...
 
+// ...
 @Logged
 @MainActor
 @Observable
@@ -87,14 +88,13 @@ Methods within the ``Logged(using:)`` scope can also be explicitly marked with t
 
 ```swift
 // FavoriteFactsModel.swift
-// ...
 
+// ...
 @Logged
 @MainActor
 @Observable
 class FavoriteFactsModel: Identifiable {
   // ...
-
   func fetchFavoriteFacts() throws {
     self.facts = try self.storageClient.fetch()
   }
@@ -103,7 +103,6 @@ class FavoriteFactsModel: Identifiable {
   func deleteFromFavoriteButtonTapped(_ fact: sending Fact) throws {
     try self.storageClient.delete(fact)
   }
-
   // ..
 }
 
@@ -118,14 +117,13 @@ Simply change the ``Log(using:)`` annotation to ``Omit()``. In this scenario, an
 
 ```swift
 // FavoriteFactsModel.swift
-// ...
 
+// ...
 @Logged
 @MainActor
 @Observable
 class FavoriteFactsModel: Identifiable {
   // ...
-
   @Omit
   func fetchFavoriteFacts() throws {
     self.facts = try self.storageClient.fetch()
@@ -134,7 +132,6 @@ class FavoriteFactsModel: Identifiable {
   func deleteFromFavoriteButtonTapped(_ fact: sending Fact) throws {
     try self.storageClient.delete(fact)
   }
-
   // ..
 }
 ```
@@ -144,8 +141,8 @@ The ``Log(using:level:omit:tag:)`` macro supports traits that can be used to tai
 
 ```swift
 // FavoriteFactsModel.swift
-// ...
 
+// ...
 extension FavoriteFactsModel {
   @Log(tag: "Deletion")
   func deleteAllFavoriteFacts() throws {

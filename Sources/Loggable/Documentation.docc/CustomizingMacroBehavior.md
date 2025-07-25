@@ -6,6 +6,9 @@ Customize macro behavior using ``Omit(_:)``, ``Tag(_:)`` and ``Level(_:)``
 
 In this article, you will learn how to utilize trait macros and their associated traits to customize macro behavior.
 
+> Code examples used throughout this article are part of the example app [Count Me In](https://github.com/23122K/swift-loggable/tree/main/Examples/CountMeIn)
+> The first line in each code snippet refers to a file within the app.
+
 Trait macros are macros used to pass parameters to a ``LoggableEvent``. They must always be preceded by either the ``Log(using:)`` or ``OSLog(level:omit:tag:)`` macros - either explicitly, or implicitly when a type is annotated with ``Logged(using:)`` or ``OSLogged()``, respectively. Otherwise, an error is emitted.
 
 The trait macros include:

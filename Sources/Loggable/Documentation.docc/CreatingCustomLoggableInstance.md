@@ -7,10 +7,15 @@ Define custom ``Loggable`` instance and use it with macros.
 This article focuses on creating a custom `Loggable` instance.
 Below example depends on [SentrySDK](https://github.com/getsentry/sentry-cocoa) Additionaly, you can create a free account on [sentry.io](http://sentry.io/) to provide your own DNS.
 
+> Code examples used throughout this article are part of the example app [Count Me In](https://github.com/23122K/swift-loggable/tree/main/Examples/CountMeIn)
+> The first line in each code snippet refers to a file within the app.
+
 ### Import Sentry and Loggable library
 
 Since we will be extending types from both libraries, their imports must be marked as public.
 ```swift
+// SentryLogger.swift
+
 public import Loggable
 public import Sentry
 ```
@@ -24,6 +29,8 @@ Loggable protocol has two requirements, conforming type must:
 This method is called each time a function either completes successfully or throws an error.
 
 ```swift
+// SentryLogger.swift
+
 public import Loggable
 public import Sentry
 
@@ -42,6 +49,8 @@ Note that not all events emitted via `emit(event: LoggableEvent)` represent erro
 > Learn more about [breadcrumbs](https://docs.sentry.io/product/issues/issue-details/breadcrumbs/) and [scopes](https://docs.sentry.io/platforms/apple/guides/ios/enriching-events/scopes/).
 
 ```swift
+// SentryLogger.swift
+
 extension LoggableEvent {
   var sentryBreadcrumb: Sentry.Breadcrumb {
     let breadcrumb = Sentry.Breadcrumb()
@@ -70,6 +79,8 @@ extension LoggableEvent {
 Now that we've identified the information to log on both success and failure, it's time to implement the logic that will run when the emit method is invoked.
 
 ```swift
+// SentryLogger.swift
+
 public import Sentry
 public import Loggable
 
@@ -97,6 +108,8 @@ On failure, we use `SentrySDK.capture(error:)`, passing in the error that trigge
 For cleaner syntax and easier usage of `SentryLogger`, create an extension to the Loggable protocol and declare a conditional conformance to it.
 
 ```swift
+// SentryLogger.swift
+
 extension Loggable where Self == SentryLogger {
   static var sentry: any Loggable {
     SentryLogger()
@@ -116,6 +129,8 @@ Levelable requires that a type is `Sendable`, `ExpressibleByStringLiteral`, and 
 Sentry levels are represented by the `SentryLevel` enum. To make it conform to ``Levelable``, start by adding conformance to `Sendable` and `ExpressibleByStringLiteral`.
 
 ```swift
+// SentryLogger.swift
+
 extension SentryLevel: @retroactive @unchecked Sendable {}
 extension SentryLevel: @retroactive ExpressibleByStringLiteral {}
 ```
@@ -127,6 +142,8 @@ To satisfy `Levelable` protocol, define the required static function where the `
 Additionally, implement the ``ExpressibleByStringLiteral`` initializer. This is necessary because the `@Level` macro allows you to pass either a string literal (e.g. `@Level("fatal")`) or `any Levelable` type (e.g. `@Level(.sentryFatal)`), both of which should result in the same `SentryLevel.fatal` value.
 
 ```swift
+// SentryLogger.swift
+
 extension SentryLevel: @retroactive Levelable {
   public static func level(_ value: UInt) -> Self {
     SentryLevel(rawValue: value) ?? SentryLevel.none
@@ -164,9 +181,11 @@ extension SentryLevel: @retroactive Levelable {
 As previously mentioned, macros such as ``Level(_:)`` and ``Log(using:level:omit:tag:)`` overload accept any type conforming to ``Levelable`` as a parameter. For a cleaner and more intuitive syntax, add a conditional conformance to the ``Levelable`` protocol.
 
 > Tip:
-> String conforms to `Levelable` protocol.
+> String conforms to ``Levelable``, ``Omittable`` and ``Taggable`` protocols.
 
 ```swift
+// SentryLogger.swift
+
 extension Levelable where Self == SentryLevel {
   static var sentryNone: any Levelable {
     SentryLevel.none
