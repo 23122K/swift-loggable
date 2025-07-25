@@ -27,6 +27,19 @@ extension ExprSyntaxProtocol {
         return false
     }
   }
+  
+  func isOmitParameter(_ label: TokenSyntax) -> Bool {
+    switch ExprSyntax(fromProtocol: self).as(ExprSyntaxEnum.self) {
+      case let .memberAccessExpr(memberAccessExprSyntax):
+        return memberAccessExprSyntax.declName.baseName.tokenKind == label.tokenKind
+        
+      case let .stringLiteralExpr(stringLiteralExprSynta):
+        return stringLiteralExprSynta.isEqual(to: label.text)
+        
+      default:
+        return false
+    }
+  }
 }
 
 extension StringLiteralExprSyntax {

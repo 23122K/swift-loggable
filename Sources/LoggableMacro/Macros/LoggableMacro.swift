@@ -191,7 +191,12 @@ extension LoggableMacro {
                       ) {
                         DictionaryElementListSyntax {
                           declaration.parameters.compactMap { parameter in
-                            DictionaryElementSyntax(
+                            // TODO: 23122K - Is there a better way to handle it?
+                            if omittableTraits.contains(
+                              where: { trait in trait.isOmitParameter(parameter.name) }
+                            ) { return nil }
+                            
+                            return DictionaryElementSyntax(
                               key: StringLiteralExprSyntax(content: parameter.name.text),
                               value: DeclReferenceExprSyntax(baseName: parameter.name.trimmed),
                               trailingComma: .commaToken(

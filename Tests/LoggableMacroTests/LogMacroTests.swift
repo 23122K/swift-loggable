@@ -428,7 +428,7 @@ struct LogMacroTests {
           location: "TestModule/Test.swift:1:1",
           declaration: "func foo(_ value: Int) throws",
           parameters: [
-            "value": value
+            :
           ],
           tags: []
         )
@@ -644,7 +644,7 @@ struct LogMacroTests {
           location: "TestModule/Test.swift:1:1",
           declaration: "static func staticMethod(info: String) -> String",
           parameters: [
-            "info": info
+            :
           ],
           tags: []
         )
@@ -678,7 +678,7 @@ struct LogMacroTests {
           location: "TestModule/Test.swift:1:1",
           declaration: "func execute(operation: () throws -> Void) rethrows",
           parameters: [
-            "operation": operation
+            :
           ],
           tags: []
         )
@@ -1252,7 +1252,7 @@ struct LogMacroTests {
           declaration: "func merge<T, U>(_ first: [T], with second: [U]) -> [(T, U)]\n  where T: Comparable, U: Comparable",
           parameters: [
             "first": first,
-            "second": second
+
           ],
           tags: []
         )

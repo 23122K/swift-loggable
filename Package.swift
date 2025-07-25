@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
   name: "swift-loggable",
   platforms: [
-    .macOS(.v12),
+    .macOS(.v15),
     .iOS(.v18),
   ],
   products: [
@@ -47,15 +47,6 @@ let package = Package(
       dependencies: [
         "LoggableMacro"
       ],
-      swiftSettings: [
-        .swiftLanguageMode(.v6)
-      ]
-    ),
-    .executableTarget(
-      name: "Client",
-      dependencies: [
-        "Loggable"
-      ]
     ),
     .testTarget(
       name: "LoggableMacroTests",
@@ -71,6 +62,17 @@ let package = Package(
         ),
       ]
     ),
-  ],
-  swiftLanguageModes: [.v6]
+    .testTarget(
+      name: "LoggableTests",
+      dependencies: [
+        "Loggable",
+      ]
+    ),
+  ]
 )
+
+for target in package.targets {
+  target.swiftSettings = [
+    .swiftLanguageMode(.v6)
+  ]
+}

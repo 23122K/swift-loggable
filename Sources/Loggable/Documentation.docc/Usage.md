@@ -17,7 +17,7 @@ Explore how to capture events from specific functions and override the implicit 
 
 Opt out of logging and exclude methods from emitting events.
 
-> Code examples used throughout this article are part of the example app [Count Me In](https://github.com/23122K/swift-loggable/tree/feature/documentation).
+> Code examples used throughout this article are part of the example app [Count Me In]([Count Me In](https://github.com/23122K/swift-loggable/tree/main/Examples/CountMeIn)
 > The first line in each code snippet refers to a file within the app.
 
 ## Import the Loggable library

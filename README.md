@@ -47,7 +47,7 @@ actor SwiftDataClient {
 }
 ```
 
-That's it! Now, whenever the `save` method is invoked, an event is emitted that captures metadata such as the location, signature, parameters, and result. For a more detailed guide, refer to the **[documentation]()**.
+That's it! Now, whenever the `save` method is invoked, an event is emitted that captures metadata such as the location, signature, parameters, and result. For a more detailed guide, refer to the [documentation](https://swiftpackageindex.com/23122K/swift-loggable/main/documentation/loggable).
 
 Alternatively, you can take advantage of the OSLog framework by switching to the following approach:
 
@@ -65,10 +65,10 @@ actor SwiftDataClient {
   }
 }
 ```
-The `@OSLogger` annotation introduces a static instance of [`Logger`](https://developer.apple.com/documentation/os/logger) , while `@OSLogged` implicitly makes every method within the annotated scope loggable. Refer to the **[documentation]()** to learn more.
+The `@OSLogger` annotation introduces a static instance of [`Logger`](https://developer.apple.com/documentation/os/logger) , while `@OSLogged` implicitly makes every method within the annotated scope loggable. Refer to the [documentation](https://swiftpackageindex.com/23122K/swift-loggable/main/documentation/loggable) to learn more.
 
 ## Learn More
-Loggable offers a wide range of additional features. You can create custom loggers, add tags to captured events for later processing, exclude specific methods from logging, ignore certain parameters (or all of them) from being captured, override the log level for individual events, and much more. For usage examples and detailed information, see the **[documentation]()** or check example app [**Count Me In**]().
+Loggable offers a wide range of additional features. You can create custom loggers, add tags to captured events for later processing, exclude specific methods from logging, ignore certain parameters (or all of them) from being captured, override the log level for individual events, and much more. For usage examples and detailed information, see the [documentation](https://swiftpackageindex.com/23122K/swift-loggable/main/documentation/loggable) or check example app [Count Me In](https://github.com/23122K/swift-loggable/tree/main/Examples/CountMeIn).
 
 ## Installation
 Add the following dependency to your Package.swift
