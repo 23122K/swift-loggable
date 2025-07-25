@@ -49,7 +49,7 @@ struct SwipeableFactView: View {
         ForEach(Fact.Kind.allCases, id: \.rawValue) { kind in
           Button {
             Task {
-              try? await self.swipeableFactModel.factKindSelected(kind)
+              await self.swipeableFactModel.factKindSelected(kind)
             }
           } label: {
             if self.swipeableFactModel.factKind == kind {
