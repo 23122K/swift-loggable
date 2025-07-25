@@ -32,7 +32,8 @@ class SwipeableFactModel {
     try self.storageClient.save(fact)
     try await getRandomFact()
   }
-  
+ 
+  @Omit
   func factKindSelected(_ kind: Fact.Kind) async  {
     self.factKind = kind
   }

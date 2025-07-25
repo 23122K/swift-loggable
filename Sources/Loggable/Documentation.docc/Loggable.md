@@ -11,7 +11,7 @@ There is no need to annotate each method individually - simply apply the desired
 
 * **Customize how logs are handled**
 
-All macros include the ability to add tags to logged functions, suppress their output or parameters, or ecent exclude the functions entirely from emmiting an event.
+All macros include the ability to add tags to logged functions, suppress their output or parameters, or exclude the functions entirely from emmiting an event.
 
 * **Leverage OSLog support**
 

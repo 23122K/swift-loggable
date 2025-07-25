@@ -24,18 +24,27 @@ extension StorageClient {
 
 @OSLogged
 extension StorageClient {
+  @Omit(.model)
   func save<T: PersistentModel>(_ model: T) throws {
     self.context().insert(model)
     try self.context().save()
   }
   
+  @Omit(.result)
   func delete<T: PersistentModel>(_ model: T) throws {
     self.context().delete(model)
     try self.context().save()
   }
-  
+ 
+  @Omit(.result)
   func fetch<T: PersistentModel>() throws -> [T] {
     try self.context()
       .fetch(FetchDescriptor<T>())
+  }
+}
+
+extension Omittable where Self == Omit {
+  static var model: any Omittable {
+    Omit.parameter("model")
   }
 }

@@ -6,7 +6,7 @@ import Loggable
 class FavoriteFactsModel: Identifiable {
   let storageClient: StorageClient
   var facts: [Fact]
-  
+ 
   func fetchFavoriteFacts() throws {
     self.facts = try self.storageClient.fetch()
   }
@@ -31,8 +31,26 @@ class FavoriteFactsModel: Identifiable {
   }
 }
 
+enum FavoriteFactsModelTags: Taggable {
+  case tag(String)
+  
+  static var swiftData: Self {
+    Self.tag("SwiftData")
+  }
+  
+  init(stringLiteral value: StringLiteralType) {
+    self = .tag(value)
+  }
+}
+
+extension Taggable where Self == FavoriteFactsModelTags {
+  static var swiftData: any Taggable {
+    self.swiftData
+  }
+}
+
 extension FavoriteFactsModel {
-  @Log(tag: "Deletion")
+  @Log(tag: .swiftData)
   func deleteAllFavoriteFacts() throws {
     for fact in self.facts {
       try self.storageClient.delete(fact)

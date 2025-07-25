@@ -5,9 +5,9 @@ Define custom Loggable instance and use it with macros.
 ## Overview
 
 This article focuses on creating a custom `Loggable` instance.
-Below example depends on [SentrySDK](https://github.com/getsentry/sentry-cocoa) Additionaly, you can create a free account on [sentry.io](http://sentry.io/) and provide your own dns to see events in action.
+Below example depends on [SentrySDK](https://github.com/getsentry/sentry-cocoa) Additionaly, you can create a free account on [sentry.io](http://sentry.io/) to provide your own DNS.
 
-### Import Sentry and the Loggable library
+### Import Sentry and Loggable library
 
 Since we will be extending types from both libraries, their imports must be marked as public.
 ```swift
@@ -96,7 +96,7 @@ On failure, we use `SentrySDK.capture(error:)`, passing in the error that trigge
 
 For cleaner syntax and easier usage of `SentryLogger`, create an extension to the Loggable protocol and declare a conditional conformance to it.
 
-```
+```swift
 extension Loggable where Self == SentryLogger {
   static var sentry: any Loggable {
     SentryLogger()
@@ -109,22 +109,22 @@ extension Loggable where Self == SentryLogger {
 
 ### Custom logger levels
 
-Each logger will likely have its own predefined set of logging levels. To integrate them with macros, simply conform to the `Levelable` protocol.
+Each logger will likely have its own predefined set of logging levels. To integrate them with macros, simply conform to the ``Levelable`` protocol.
 
 Levelable requires that a type is `Sendable`, `ExpressibleByStringLiteral`, and implements the static method `static func level(_ value: RawValue) -> Self`.
 
-Sentry levels are represented by the `SentryLevel` enum. To make it conform to `Levelable`, start by adding conformance to `Sendable` and `ExpressibleByStringLiteral`.
+Sentry levels are represented by the `SentryLevel` enum. To make it conform to ``Levelable``, start by adding conformance to `Sendable` and `ExpressibleByStringLiteral`.
 
 ```swift
 extension SentryLevel: @retroactive @unchecked Sendable {}
 extension SentryLevel: @retroactive ExpressibleByStringLiteral {}
 ```
 
-Now, we must fulfill the requirements of both the `Levelable`  and `ExpressibleByStringLiteral` protocols.
+Now, we must fulfill the requirements of both the ``Levelable``  and ``ExpressibleByStringLiteral`` protocols.
 
 To satisfy `Levelable` protocol, define the required static function where the `RawValue` type matches the underlying type of the extended logging level, in case of `SentryLevel` it is `UInt`. Provide a fallback level of your choice for values that don’t match predefined cases.
 
-Additionally, implement the `ExpressibleByStringLiteral` initializer. This is necessary because the `@Level` macro allows you to pass either a string literal (e.g. `@Level("fatal")`) or `any Levelable` type (e.g. `@Level(sentryFatal)`), both of which should result in the same `SentryLevel.fatal` value.
+Additionally, implement the ``ExpressibleByStringLiteral`` initializer. This is necessary because the `@Level` macro allows you to pass either a string literal (e.g. `@Level("fatal")`) or `any Levelable` type (e.g. `@Level(.sentryFatal)`), both of which should result in the same `SentryLevel.fatal` value.
 
 ```swift
 extension SentryLevel: @retroactive Levelable {
@@ -161,7 +161,7 @@ extension SentryLevel: @retroactive Levelable {
 
 ### Levelable extension
 
-As previously mentioned, macros such as `@Level` and `@Log(level:)` overload accept any type conforming to `Levelable` as a parameter. For a cleaner and more intuitive syntax, add a conditional conformance to the Levelable protocol.
+As previously mentioned, macros such as ``Level(_:)`` and ``Log(using:level:omit:tag:)`` overload accept any type conforming to ``Levelable`` as a parameter. For a cleaner and more intuitive syntax, add a conditional conformance to the ``Levelable`` protocol.
 
 > Tip:
 > String conforms to `Levelable` protocol.
@@ -193,4 +193,12 @@ extension Levelable where Self == SentryLevel {
   }
 }
 ```
+
+### Results 
+
+After that, any error thrown within a type or function marked with either ``Logged(using:)`` or ``Log(using:)`` will be sent to Sentry, including all breadcrumbs leading up to the error.
+
+
+![Sentry breadcrumbs](sentry-scope)
+![Sentry breadcrumbs](sentry-breadcrumbs)
 
