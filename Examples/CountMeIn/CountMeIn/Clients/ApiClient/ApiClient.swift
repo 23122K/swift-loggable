@@ -34,9 +34,3 @@ extension URL {
     Self(string: "http://numbersapi.com/random/\(kind.rawValue)?json")!
   }
 }
-
-extension Omittable where Self == Omit {
-  static var decoder: Self {
-    Omit.parameter("decoder")
-  }
-}

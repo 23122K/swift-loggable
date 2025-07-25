@@ -19,13 +19,13 @@ struct CountMeInTests {
       apiClient: apiClient
     )
     
-    try await swipeableFactModel.factKindSelected(.math)
+    await swipeableFactModel.factKindSelected(.math)
     #expect(swipeableFactModel.factKind == Fact.Kind.math)
     
-    await swipeableFactModel.getRandomFact()
+    try await swipeableFactModel.getRandomFact()
     #expect(swipeableFactModel.fact.value != nil)
     
-    try await swipeableFactModel.factKindSelected(.year)
+    await swipeableFactModel.factKindSelected(.year)
     #expect(swipeableFactModel.factKind == Fact.Kind.year)
   }
 }

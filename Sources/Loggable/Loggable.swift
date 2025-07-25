@@ -11,10 +11,10 @@ public protocol Loggable: Sendable {
   ///   - When the function completes successfully
   ///   - When the function throws an error.
   ///
-  /// To customize the behavoir of event see //TODO
   func emit(event: LoggableEvent)
 }
 
+// TODO: 23122K - Make this type conform to Sendable and use CustomDebugStringConvertible
 /// A type representing captured metadata from an invoked function.
 public struct LoggableEvent: CustomStringConvertible, CustomDebugStringConvertible {
   /// The logging level associated with the event.
@@ -85,6 +85,7 @@ public struct LoggableEvent: CustomStringConvertible, CustomDebugStringConvertib
   }
 }
 
+// TODO: 23122K - Consider using swift-log as a fallback when not running on Apple platforms
 /// A default `Loggable` implementation that
 /// uses a ``Logger`` instance to log to the default subsystem.
 public struct LoggableLogger: Loggable {

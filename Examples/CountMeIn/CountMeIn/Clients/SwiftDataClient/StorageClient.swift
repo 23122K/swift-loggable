@@ -30,7 +30,7 @@ extension StorageClient {
     try self.context().save()
   }
   
-  @Omit(.result)
+  @Omit(.parameters)
   func delete<T: PersistentModel>(_ model: T) throws {
     self.context().delete(model)
     try self.context().save()
