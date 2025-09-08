@@ -111,7 +111,7 @@ struct LogMacroTests {
           return "Foo"
         }
         let result = _foo()
-        event.result = .success(result)
+        event.result = .success(String(reflecting: result))
         loggable.emit(event: event)
         return result
       }
@@ -137,7 +137,7 @@ struct LogMacroTests {
           location: "TestModule/Test.swift:1:1",
           declaration: "func foo(bar: String) -> String",
           parameters: [
-            "bar": bar
+            "bar": String(reflecting: bar)
           ],
           tags: []
         )
@@ -145,7 +145,7 @@ struct LogMacroTests {
           print("Foo: \(bar)")
         }
         let result = _foo(bar: bar)
-        event.result = .success(result)
+        event.result = .success(String(reflecting: result))
         loggable.emit(event: event)
         return result
       }
@@ -170,7 +170,7 @@ struct LogMacroTests {
           location: "TestModule/Test.swift:1:1",
           declaration: "func foo(bar: String) -> String",
           parameters: [
-            "bar": bar
+            "bar": String(reflecting: bar)
           ],
           tags: ["example"]
         )
@@ -178,7 +178,7 @@ struct LogMacroTests {
           return "Foo: \(bar)"
         }
         let result = _foo(bar: bar)
-        event.result = .success(result)
+        event.result = .success(String(reflecting: result))
         loggable.emit(event: event)
         return result
       }
@@ -203,8 +203,8 @@ struct LogMacroTests {
           location: "TestModule/Test.swift:1:1",
           declaration: "func foo(_ bar: String, baz biz: Int) -> (String, Int)",
           parameters: [
-            "bar": bar,
-            "biz": biz
+            "bar": String(reflecting: bar),
+            "biz": String(reflecting: biz)
           ],
           tags: []
         )
@@ -212,7 +212,7 @@ struct LogMacroTests {
           return ("Bar: \(bar)", biz * 2)
         }
         let result = _foo(bar: bar, biz: biz)
-        event.result = .success(result)
+        event.result = .success(String(reflecting: result))
         loggable.emit(event: event)
         return result
       }
@@ -267,7 +267,7 @@ struct LogMacroTests {
           location: "TestModule/Test.swift:1:1",
           declaration: "mutating func foo(bar: String)",
           parameters: [
-            "bar": bar
+            "bar": String(reflecting: bar)
           ],
           tags: [.common, "example"]
         )
@@ -391,7 +391,7 @@ struct LogMacroTests {
         }
         do {
           let result = try _foo()
-          event.result = .success(result)
+          event.result = .success(String(reflecting: result))
           loggable.emit(event: event)
           return result
         } catch {
@@ -483,7 +483,7 @@ struct LogMacroTests {
         }
         do {
           let result = try _foo(value: value, content: content)
-          event.result = .success(result)
+          event.result = .success(String(reflecting: result))
           loggable.emit(event: event)
           return result
         } catch {
@@ -550,7 +550,7 @@ struct LogMacroTests {
           location: "TestModule/Test.swift:1:1",
           declaration: "func performTask(completion: @escaping () -> Void)",
           parameters: [
-            "completion": completion
+            "completion": String(reflecting: completion)
           ],
           tags: []
         )
@@ -581,14 +581,14 @@ struct LogMacroTests {
           location: "TestModule/Test.swift:1:1",
           declaration: "func check(condition: @autoclosure () -> Bool) -> Bool",
           parameters: [
-            "condition": condition
+            "condition": String(reflecting: condition)
           ],
           tags: []
         )
         func _check(condition: @autoclosure () -> Bool) -> Bool {
           return condition()
         }
-        let result = _check(condition: condition())
+        let result = _check(condition: condition)
         loggable.emit(event: event)
         return result
       }
@@ -613,8 +613,8 @@ struct LogMacroTests {
           location: "TestModule/Test.swift:1:1",
           declaration: "func update(value: inout Int, with newValue: Int)",
           parameters: [
-            "value": value,
-            "newValue": newValue
+            "value": String(reflecting: value),
+            "newValue": String(reflecting: newValue)
           ],
           tags: []
         )
@@ -787,8 +787,8 @@ struct LogMacroTests {
           location: "TestModule/Test.swift:1:1",
           declaration: "func combine<T, U>(first: T, second: U) -> (T, U) where T: CustomStringConvertible, U: CustomStringConvertible",
           parameters: [
-            "first": first,
-            "second": second
+            "first": String(reflecting: first),
+            "second": String(reflecting: second)
           ],
           tags: [.example, "example"]
         )
@@ -796,7 +796,7 @@ struct LogMacroTests {
           return (first, second)
         }
         let result = _combine(first: first, second: second)
-        event.result = .success(result)
+        event.result = .success(String(reflecting: result))
         loggable.emit(event: event)
         return result
       }
@@ -821,7 +821,7 @@ struct LogMacroTests {
           location: "TestModule/Test.swift:1:1",
           declaration: #"func greet(name: String = "Guest") -> String"#,
           parameters: [
-            "name": name
+            "name": String(reflecting: name)
           ],
           tags: []
         )
@@ -829,7 +829,7 @@ struct LogMacroTests {
           return "Hello, \(name)!"
         }
         let result = _greet(name: name)
-        event.result = .success(result)
+        event.result = .success(String(reflecting: result))
         loggable.emit(event: event)
         return result
       }
@@ -854,7 +854,7 @@ struct LogMacroTests {
           location: "TestModule/Test.swift:1:1",
           declaration: "func sum(numbers: Int...) -> Int",
           parameters: [
-            "numbers": numbers
+            "numbers": String(reflecting: numbers)
           ],
           tags: []
         )
@@ -862,7 +862,7 @@ struct LogMacroTests {
           return numbers.reduce(0, +)
         }
         let result = _sum(numbers: numbers)
-        event.result = .success(result)
+        event.result = .success(String(reflecting: result))
         loggable.emit(event: event)
         return result
       }
@@ -891,7 +891,7 @@ struct LogMacroTests {
           location: "TestModule/Test.swift:1:1",
           declaration: "func compute(value: Int) -> Int",
           parameters: [
-            "value": value
+            "value": String(reflecting: value)
           ],
           tags: []
         )
@@ -931,7 +931,7 @@ struct LogMacroTests {
           }
         }
         let result = _makeIncrementer()
-        event.result = .success(result)
+        event.result = .success(String(reflecting: result))
         loggable.emit(event: event)
         return result
       }
@@ -959,7 +959,7 @@ struct LogMacroTests {
           location: "TestModule/Test.swift:1:1",
           declaration: "func fetchData(completion: @escaping () async -> String)",
           parameters: [
-            "completion": completion
+            "completion": String(reflecting: completion)
           ],
           tags: []
         )
@@ -992,7 +992,7 @@ struct LogMacroTests {
           location: "TestModule/Test.swift:1:1",
           declaration: "func updateUI(message: String)",
           parameters: [
-            "message": message
+            "message": String(reflecting: message)
           ],
           tags: []
         )
@@ -1020,8 +1020,8 @@ struct LogMacroTests {
           location: "TestModule/Test.swift:1:1",
           declaration: "func process<T: Equatable, U: Numeric>(first: T, second: U) -> Bool",
           parameters: [
-            "first": first,
-            "second": second
+            "first": String(reflecting: first),
+            "second": String(reflecting: second)
           ],
           tags: []
         )
@@ -1029,7 +1029,7 @@ struct LogMacroTests {
           return true
         }
         let result = _process(first: first, second: second)
-        event.result = .success(result)
+        event.result = .success(String(reflecting: result))
         loggable.emit(event: event)
         return result
       }
@@ -1088,7 +1088,7 @@ struct LogMacroTests {
           return nil
         }
         let result = _getOptionalValue()
-        event.result = .success(result)
+        event.result = .success(String(reflecting: result))
         loggable.emit(event: event)
         return result
       }
@@ -1114,7 +1114,7 @@ struct LogMacroTests {
           location: "TestModule/Test.swift:1:1",
           declaration: "func performAsyncTask(completion: @escaping () async throws -> String) async throws -> String",
           parameters: [
-            "completion": completion
+            "completion": String(reflecting: completion)
           ],
           tags: []
         )
@@ -1123,7 +1123,7 @@ struct LogMacroTests {
         }
         do {
           let result = try await _performAsyncTask(completion: completion)
-          event.result = .success(result)
+          event.result = .success(String(reflecting: result))
           loggable.emit(event: event)
           return result
         } catch {
@@ -1159,7 +1159,7 @@ struct LogMacroTests {
           return "Override"
         }
         let result = _description()
-        event.result = .success(result)
+        event.result = .success(String(reflecting: result))
         loggable.emit(event: event)
         return result
       }
@@ -1184,8 +1184,8 @@ struct LogMacroTests {
           location: "TestModule/Test.swift:1:1",
           declaration: "func updateScore(score: inout Int, increment: Int = 1)",
           parameters: [
-            "score": score,
-            "increment": increment
+            "score": String(reflecting: score),
+            "increment": String(reflecting: increment)
           ],
           tags: []
         )
@@ -1213,7 +1213,7 @@ struct LogMacroTests {
           location: "TestModule/Test.swift:1:1",
           declaration: "func optionalTest(value: String?) -> String",
           parameters: [
-            "value": value
+            "value": String(reflecting: value)
           ],
           tags: []
         )
@@ -1221,7 +1221,7 @@ struct LogMacroTests {
           return value ?? "Default"
         }
         let result = _optionalTest(value: value)
-        event.result = .success(result)
+        event.result = .success(String(reflecting: result))
         loggable.emit(event: event)
         return result
       }
@@ -1251,7 +1251,7 @@ struct LogMacroTests {
           location: "TestModule/Test.swift:1:1",
           declaration: "func merge<T, U>(_ first: [T], with second: [U]) -> [(T, U)]\n  where T: Comparable, U: Comparable",
           parameters: [
-            "first": first,
+            "first": String(reflecting: first),
 
           ],
           tags: []
@@ -1261,7 +1261,7 @@ struct LogMacroTests {
           return []
         }
         let result = _merge(first: first, second: second)
-        event.result = .success(result)
+        event.result = .success(String(reflecting: result))
         loggable.emit(event: event)
         return result
       }
@@ -1286,7 +1286,7 @@ struct LogMacroTests {
           location: "TestModule/Test.swift:1:1",
           declaration: "func perform(action: (() -> Void)? = nil)",
           parameters: [
-            "action": action
+            "action": String(reflecting: action)
           ],
           tags: []
         )
@@ -1316,7 +1316,7 @@ struct LogMacroTests {
           location: "TestModule/Test.swift:1:1",
           declaration: "static func create<T>(value: T) -> [T]",
           parameters: [
-            "value": value
+            "value": String(reflecting: value)
           ],
           tags: []
         )
@@ -1324,7 +1324,7 @@ struct LogMacroTests {
           return [value]
         }
         let result = _create(value: value)
-        event.result = .success(result)
+        event.result = .success(String(reflecting: result))
         loggable.emit(event: event)
         return result
       }
@@ -1349,7 +1349,7 @@ struct LogMacroTests {
           location: "TestModule/Test.swift:1:1",
           declaration: "func process(pair: (Int, String)) -> String",
           parameters: [
-            "pair": pair
+            "pair": String(reflecting: pair)
           ],
           tags: []
         )
@@ -1357,7 +1357,7 @@ struct LogMacroTests {
           return "\(pair.0) - \(pair.1)"
         }
         let result = _process(pair: pair)
-        event.result = .success(result)
+        event.result = .success(String(reflecting: result))
         loggable.emit(event: event)
         return result
       }
@@ -1382,8 +1382,8 @@ struct LogMacroTests {
           location: "TestModule/Test.swift:1:1",
           declaration: "func filterElements<T>(elements: [T], using predicate: (T) -> Bool) -> [T]",
           parameters: [
-            "elements": elements,
-            "predicate": predicate
+            "elements": String(reflecting: elements),
+            "predicate": String(reflecting: predicate)
           ],
           tags: []
         )
@@ -1391,7 +1391,7 @@ struct LogMacroTests {
           return elements.filter(predicate)
         }
         let result = _filterElements(elements: elements, predicate: predicate)
-        event.result = .success(result)
+        event.result = .success(String(reflecting: result))
         loggable.emit(event: event)
         return result
       }
@@ -1417,8 +1417,8 @@ struct LogMacroTests {
           location: "TestModule/Test.swift:1:1",
           declaration: "func filterElements<T>(elements: [T], using predicate: (T) -> Bool) -> [T]",
           parameters: [
-            "elements": elements,
-            "predicate": predicate
+            "elements": String(reflecting: elements),
+            "predicate": String(reflecting: predicate)
           ],
           tags: []
         )
@@ -1426,7 +1426,7 @@ struct LogMacroTests {
           return elements.filter(predicate)
         }
         let result = _filterElements(elements: elements, predicate: predicate)
-        event.result = .success(result)
+        event.result = .success(String(reflecting: result))
         loggable.emit(event: event)
         return result
       }

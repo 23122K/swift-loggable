@@ -9,10 +9,10 @@ extension LoggedMacro: LoggableAttributeMacro {
     }
 
     switch identifierType.name.tokenKind {
-    case .predefined(.Log):
+    case TokenKind.type(.Log):
       return true
 
-    case .predefined(.Omit) where attribute.arguments == nil:
+    case TokenKind.type(.Omit) where attribute.arguments == nil:
       return true
 
     default:
@@ -24,7 +24,7 @@ extension LoggedMacro: LoggableAttributeMacro {
     var syntax = node
     syntax.attributeName = TypeSyntax(
       IdentifierTypeSyntax(
-        name: .predefined(.Log)
+        name: TokenSyntax.type(.Log)
       )
     )
     return syntax

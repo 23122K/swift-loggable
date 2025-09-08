@@ -1,4 +1,5 @@
 import Loggable
+import Synchronization
 
 final class MockLogger: Loggable, @unchecked Sendable {
   var events: [LoggableEvent]

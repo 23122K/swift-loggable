@@ -33,7 +33,7 @@ public struct FunctionSyntax {
       ),
       leftParen: .leftParenToken(),
       arguments: self.signature.arguments,
-      rightParen: .rightParenToken()
+      rightParen: TokenSyntax.rightParenToken()
     )
 
     switch (self.signature.isThrowing, self.signature.isAsync) {
@@ -133,7 +133,7 @@ public struct FunctionSyntax {
         return attributedType.attributes.contains { attribute in
           guard case let .attribute(syntax) = attribute else { return false }
           guard let name = syntax.attributeName.as(IdentifierTypeSyntax.self) else { return false }
-          return name.name.tokenKind == .predefined(.autoclosure)
+          return name.name.tokenKind == TokenKind.keyword(.autoclosure)
         }
       }
 
@@ -142,7 +142,7 @@ public struct FunctionSyntax {
         case (true, false):
           return LabeledExprSyntax(
             label: self.name,
-            colon: .colonToken(),
+            colon: TokenSyntax.colonToken(),
             expression: InOutExprSyntax(
               expression: DeclReferenceExprSyntax(baseName: self.name)
             ),
@@ -152,12 +152,12 @@ public struct FunctionSyntax {
         case (false, true):
           return LabeledExprSyntax(
             label: self.name,
-            colon: .colonToken(),
+            colon: TokenSyntax.colonToken(),
             expression: FunctionCallExprSyntax(
               calledExpression: DeclReferenceExprSyntax(baseName: self.name),
               leftParen: .leftParenToken(),
               arguments: [],
-              rightParen: .rightParenToken()
+              rightParen: TokenSyntax.rightParenToken()
             ),
             trailingComma: .commaToken(presence: presence)
           )
@@ -165,7 +165,7 @@ public struct FunctionSyntax {
         default:
           return LabeledExprSyntax(
             label: self.name,
-            colon: .colonToken(),
+            colon: TokenSyntax.colonToken(),
             expression: DeclReferenceExprSyntax(baseName: self.name),
             trailingComma: .commaToken(presence: presence)
           )

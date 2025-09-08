@@ -8,10 +8,13 @@ protocol LoggableMacro: BodyMacro {
 
 extension LoggableMacro {
   public static func initialize(for node: AttributeSyntax) -> ExprSyntax {
-    guard let expression = node.extract(argument: .using, as: ExprSyntax.self) else {
+    guard let expression = node.extract(
+      argument: TokenKind.parameter(.using),
+      as: ExprSyntax.self
+    ) else {
       return ExprSyntax(
         MemberAccessExprSyntax(
-          name: .predefined(.logger)
+          name: TokenSyntax.variable(.logger)
         )
       )
     }
@@ -95,17 +98,17 @@ extension LoggableMacro {
   ) -> CodeBlockItemSyntax {
     return CodeBlockItemSyntax(
       VariableDeclSyntax(
-        bindingSpecifier: .keyword(.let),
+        bindingSpecifier: TokenSyntax.keyword(.let),
         bindings: PatternBindingListSyntax(
           arrayLiteral: PatternBindingSyntax(
             pattern: IdentifierPatternSyntax(
-              identifier: .predefined(.loggable)
+              identifier: TokenSyntax.variable(.loggable)
             ),
             typeAnnotation: TypeAnnotationSyntax(
               type: SomeOrAnyTypeSyntax(
-                someOrAnySpecifier: .keyword(.any),
+                someOrAnySpecifier: TokenSyntax.keyword(.any),
                 constraint: IdentifierTypeSyntax(
-                  name: .predefined(.Loggable)
+                  name: TokenSyntax.conformance(.Loggable)
                 )
               )
             ),
@@ -135,58 +138,60 @@ extension LoggableMacro {
         ),
         bindings: PatternBindingListSyntax(
           arrayLiteral: PatternBindingSyntax(
-            pattern: IdentifierPatternSyntax(identifier: .predefined(.event)),
+            pattern: IdentifierPatternSyntax(
+              identifier: TokenSyntax.variable(.event)
+            ),
             initializer: InitializerClauseSyntax(
               value: FunctionCallExprSyntax(
                 calledExpression: DeclReferenceExprSyntax(
-                  baseName: .predefined(.LoggableEvent)
+                  baseName: TokenSyntax.type(.LoggableEvent)
                 ),
                 leftParen: .leftParenToken(),
                 arguments: LabeledExprListSyntax {
                   // MARK: - level: (any Levelable)?
                   if let level = levelTrait {
                     LabeledExprSyntax(
-                      leadingTrivia: .newline,
-                      label: .predefined(.level),
-                      colon: .colonToken(),
+                      leadingTrivia: Trivia.newline,
+                      label: TokenSyntax.parameter(.level),
+                      colon: TokenSyntax.colonToken(),
                       expression: level,
-                      trailingComma: .commaToken()
+                      trailingComma: TokenSyntax.commaToken()
                     )
                   }
 
                   // MARK: - location: String
                   LabeledExprSyntax(
-                    leadingTrivia: .newline,
-                    label: .predefined(.location),
-                    colon: .colonToken(),
+                    leadingTrivia: Trivia.newline,
+                    label: TokenSyntax.parameter(.location),
+                    colon: TokenSyntax.colonToken(),
                     expression: self.location(
                       of: declaration,
                       in: context
                     ),
-                    trailingComma: .commaToken(),
-                    trailingTrivia: .newline
+                    trailingComma: TokenSyntax.commaToken(),
+                    trailingTrivia: Trivia.newline
                   )
 
                   // MARK: - declaration: String
                   LabeledExprSyntax(
-                    label: .predefined(.declaration),
-                    colon: .colonToken(),
+                    label: TokenSyntax.parameter(.declaration),
+                    colon: TokenSyntax.colonToken(),
                     expression: StringLiteralExprSyntax(content: declaration.description),
-                    trailingComma: .commaToken(),
-                    trailingTrivia: .newline
+                    trailingComma: TokenSyntax.commaToken(),
+                    trailingTrivia: Trivia.newline
                   )
 
-                  // MARK: - parameters: [String: Any]
+                  // MARK: - parameters: [String: LoggableMetadata]
                   if !omittableTraits.contains(where: \.isOmitParameters) {
                     LabeledExprSyntax(
-                      label: .predefined(.parameters),
-                      colon: .colonToken(),
+                      label: TokenSyntax.parameter(.parameters),
+                      colon: TokenSyntax.colonToken(),
                       expression: DictionaryExprSyntax(
                         leftSquare: .leftSquareToken(
-                          trailingTrivia: declaration.parameters.isEmpty ? [] : .newline
+                          trailingTrivia: declaration.parameters.isEmpty ? [] : Trivia.newline
                         ),
                         rightSquare: .rightSquareToken(
-                          leadingTrivia: declaration.parameters.isEmpty ? [] : .newline
+                          leadingTrivia: declaration.parameters.isEmpty ? [] : Trivia.newline
                         )
                       ) {
                         DictionaryElementListSyntax {
@@ -198,24 +203,39 @@ extension LoggableMacro {
                             
                             return DictionaryElementSyntax(
                               key: StringLiteralExprSyntax(content: parameter.name.text),
-                              value: DeclReferenceExprSyntax(baseName: parameter.name.trimmed),
+                              value: FunctionCallExprSyntax(
+                                calledExpression: DeclReferenceExprSyntax(
+                                  baseName: TokenSyntax.type(.String)
+                                ),
+                                leftParen: TokenSyntax.leftParenToken(),
+                                arguments: LabeledExprListSyntax {
+                                  LabeledExprSyntax(
+                                    label: TokenSyntax.parameter(.reflecting),
+                                    colon: TokenSyntax.colonToken(),
+                                    expression: DeclReferenceExprSyntax(
+                                      baseName: parameter.name.trimmed
+                                    )
+                                  )
+                                },
+                                rightParen: TokenSyntax.rightParenToken()
+                              ),
                               trailingComma: .commaToken(
                                 presence: declaration.parameters.last == parameter ? .missing : .present
                               ),
-                              trailingTrivia: .newline
+                              trailingTrivia: Trivia.newline
                             )
                           }
                         }
                       },
-                      trailingComma: .commaToken(),
-                      trailingTrivia: .newline
+                      trailingComma: TokenSyntax.commaToken(),
+                      trailingTrivia: Trivia.newline
                     )
                   }
 
                   // MARK: - Tags
                   LabeledExprSyntax(
-                    label: .predefined(.tags),
-                    colon: .colonToken(),
+                    label: TokenSyntax.parameter(.tags),
+                    colon: TokenSyntax.colonToken(),
                     expression: ArrayExprSyntax(
                       elements: ArrayElementListSyntax {
                         taggableTraits.map { trait in
@@ -223,10 +243,10 @@ extension LoggableMacro {
                         }
                       }
                     ),
-                    trailingTrivia: .newline
+                    trailingTrivia: Trivia.newline
                   )
                 },
-                rightParen: .rightParenToken()
+                rightParen: TokenSyntax.rightParenToken()
               )
             )
           )
@@ -235,25 +255,52 @@ extension LoggableMacro {
     )
   }
 
-  static func capture(_ baseName: TokenSyntax.Predefined) -> CodeBlockItemSyntax {
+  static func capture(
+    _ baseName: LoggableMacroTokens.Variable
+  ) -> CodeBlockItemSyntax {
     CodeBlockItemSyntax(
       InfixOperatorExprSyntax(
         leftOperand: MemberAccessExprSyntax(
-          base: DeclReferenceExprSyntax(baseName: .predefined(.event)),
-          name: TokenSyntax.predefined(.result)
+          base: DeclReferenceExprSyntax(
+            baseName: TokenSyntax.variable(.event)
+          ),
+          name: TokenSyntax.variable(.result)
         ),
         operator: AssignmentExprSyntax(),
         rightOperand: FunctionCallExprSyntax(
           calledExpression: MemberAccessExprSyntax(
-            name: TokenSyntax.predefined(baseName == .result ? .success : .failure)
+            name: TokenSyntax.variable(baseName == .result ? .success : .failure)
           ),
           leftParen: .leftParenToken(),
           arguments: LabeledExprListSyntax {
-            LabeledExprSyntax(
-              expression: DeclReferenceExprSyntax(baseName: baseName.identifier)
-            )
+            if baseName == LoggableMacroTokens.Variable.error {
+              LabeledExprSyntax(
+                expression: DeclReferenceExprSyntax(
+                  baseName: TokenSyntax.variable(baseName)
+                )
+              )
+            } else {
+              LabeledExprSyntax(
+                expression: FunctionCallExprSyntax(
+                  calledExpression: DeclReferenceExprSyntax(
+                    baseName: TokenSyntax.type(.String)
+                  ),
+                  leftParen: TokenSyntax.leftParenToken(),
+                  arguments: LabeledExprListSyntax {
+                    LabeledExprSyntax(
+                      label: TokenSyntax.parameter(.reflecting),
+                      colon: TokenSyntax.colonToken(),
+                      expression: DeclReferenceExprSyntax(
+                        baseName: TokenSyntax.variable(baseName)
+                      )
+                    )
+                  },
+                  rightParen: TokenSyntax.rightParenToken()
+                )
+              )
+            }
           },
-          rightParen: .rightParenToken()
+          rightParen: TokenSyntax.rightParenToken()
         )
       )
     )
@@ -264,20 +311,22 @@ extension LoggableMacro {
       FunctionCallExprSyntax(
         calledExpression: MemberAccessExprSyntax(
           base: DeclReferenceExprSyntax(
-            baseName: .predefined(.loggable)
+            baseName: TokenSyntax.variable(.loggable)
           ),
           period: .periodToken(),
-          name: .predefined(.emit)
+          name: TokenSyntax.function(.emit)
         ),
         leftParen: .leftParenToken(),
         arguments: LabeledExprListSyntax(
           arrayLiteral: LabeledExprSyntax(
-            label: .predefined(.event),
-            colon: .colonToken(),
-            expression: DeclReferenceExprSyntax(baseName: .predefined(.event))
+            label: TokenSyntax.variable(.event),
+            colon: TokenSyntax.colonToken(),
+            expression: DeclReferenceExprSyntax(
+              baseName: TokenSyntax.variable(.event)
+            )
           )
         ),
-        rightParen: .rightParenToken()
+        rightParen: TokenSyntax.rightParenToken()
       )
     )
   }

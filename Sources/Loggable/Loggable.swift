@@ -2,8 +2,7 @@
 @_exported public import OSLog
 #endif
 
-/// A protocol that provides instances of conforming types with the ability to
-/// handle emitted events.
+/// A protocol that provides instances of conforming types with the ability to handle emitted events.
 public protocol Loggable: Sendable {
   /// Handle an emitted event.
   ///
@@ -16,7 +15,7 @@ public protocol Loggable: Sendable {
 
 // TODO: 23122K - Make this type conform to Sendable and use CustomDebugStringConvertible
 /// A type representing captured metadata from an invoked function.
-public struct LoggableEvent: CustomStringConvertible, CustomDebugStringConvertible {
+public struct LoggableEvent: Sendable {
   /// The logging level associated with the event.
   public let level: (any Levelable)?
 
@@ -29,34 +28,13 @@ public struct LoggableEvent: CustomStringConvertible, CustomDebugStringConvertib
 
   /// A set of arguments passed to a function, associated
   /// with their parameter labels.
-  public var parameters: [String: Any]
+  public var parameters: [String: String]
 
   /// The result of the function.
-  public var result: Result<Any, any Error>
+  public var result: Result<String , any Error>
 
   /// The collection of tags associated with the event.
   public let tags: [any Taggable]
-
-  public var description: String {
-    """
-    location: \(location)
-    declaration: \(declaration)
-    parameters: \(parameters)
-    result: \(result)
-    tags: \(tags)
-    """
-  }
-
-  public var debugDescription: String {
-    """
-    level: \(String(describing: level))
-    location: \(location)
-    declaration: \(declaration)
-    parameters: \(parameters)
-    result: \(result)
-    tags: \(tags)
-    """
-  }
 
   /// Initializes an instance that aggregates metadata captured at
   /// the time of function invocation.
@@ -72,8 +50,8 @@ public struct LoggableEvent: CustomStringConvertible, CustomDebugStringConvertib
     level: (any Levelable)? = nil,
     location: String,
     declaration: String,
-    parameters: [String: Any] = [:],
-    result: Result<Any, any Error> = .success(()),
+    parameters: [String: String] = [:],
+    result: Result<String, any Error> = .success(String()),
     tags: [any Taggable] = []
   ) {
     self.level = level

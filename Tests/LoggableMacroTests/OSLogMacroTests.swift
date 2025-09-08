@@ -53,7 +53,7 @@ struct OSLogMacroTests {
           location: "TestModule/Test.swift:1:1",
           declaration: "func sum(numbers: Int...) -> Int",
           parameters: [
-            "numbers": numbers
+            "numbers": String(reflecting: numbers)
           ],
           tags: ["example"]
         )
@@ -61,7 +61,7 @@ struct OSLogMacroTests {
           return numbers.reduce(0, +)
         }
         let result = _sum(numbers: numbers)
-        event.result = .success(result)
+        event.result = .success(String(reflecting: result))
         loggable.emit(event: event)
         return result
       }

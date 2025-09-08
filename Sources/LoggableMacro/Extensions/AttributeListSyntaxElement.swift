@@ -71,22 +71,24 @@ extension AttributeListSyntax {
     }
   }
   
-  func extractTraits(for label: TokenKind.Predefined) -> [any ExprSyntaxProtocol] {
+  func extractTraits(for label: LoggableMacroTokens.Parameter) -> [any ExprSyntaxProtocol] {
     self.attributesFromAllAttachedAnnotations
       .flatMap { annotation, attributes -> [any ExprSyntaxProtocol] in
         switch annotation {
-          case .predefined(.Tag) where label == .tag:
+          case TokenKind.type(.Tag) where label == LoggableMacroTokens.Parameter.tag:
             return attributes.map(\.expression)
             
-          case .predefined(.Omit) where label == .omit:
+          case TokenKind.type(.Omit) where label == LoggableMacroTokens.Parameter.omit:
             return attributes.map(\.expression)
             
-          case .predefined(.Level) where label == .level:
+          case TokenKind.type(.Level) where label == LoggableMacroTokens.Parameter.level:
             return attributes.map(\.expression)
             
-          case .predefined(.Log), .predefined(.OSLog):
+          case TokenKind.type(.Log), TokenKind.type(.OSLog):
             return attributes
-              .extractVariadicArguments(for: label)
+              .extractVariadicArguments(
+                for: TokenKind.parameter(label)
+              )
               .map(\.expression)
             
           default:
@@ -106,10 +108,10 @@ extension LabeledExprListSyntax {
   ///   - `LabeledExprListSyntax` that contains only arguments from specified
   ///      parameter label.
   ///
-  func extractVariadicArguments(for label: TokenKind.Predefined) -> LabeledExprListSyntax {
+  func extractVariadicArguments(for label: TokenKind) -> LabeledExprListSyntax {
     /// Find the start index of element with label that matches one passed as argument
     guard let startIndex = self.firstIndex(
-      where: { $0.label?.tokenKind == label.identifier }
+      where: { $0.label?.tokenKind == label }
     ) else {
       return []
     }
