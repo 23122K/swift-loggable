@@ -10,10 +10,10 @@ extension OSLoggedMacro: LoggableAttributeMacro {
     }
 
     switch identifierType.name.tokenKind {
-    case .predefined(.OSLog):
+    case TokenKind.type(.OSLog):
       return true
 
-    case .predefined(.Omit) where attribute.arguments == nil:
+    case TokenKind.type(.Omit) where attribute.arguments == nil:
       return true
 
     default:
@@ -24,7 +24,9 @@ extension OSLoggedMacro: LoggableAttributeMacro {
   static func introduce(for node: AttributeSyntax) -> AttributeSyntax {
     AttributeSyntax(
       TypeSyntax(
-        IdentifierTypeSyntax(name: .predefined(.OSLog))
+        IdentifierTypeSyntax(
+          name: TokenSyntax.type(.OSLog)
+        )
       )
     )
   }

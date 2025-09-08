@@ -46,9 +46,8 @@ struct LoggableTests {
     #expect(
       {
         return switch Self.mock.events.last?.result {
-        case .success(_ as String): false
-        case .success(_ as Void): true
-        default: false
+          case .success(""): true
+          default: false
         }
       }()
     )

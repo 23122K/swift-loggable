@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
   name: "swift-loggable",
   platforms: [
-    .macOS(.v15),
+    .macOS(.v14),
     .iOS(.v18),
   ],
   products: [

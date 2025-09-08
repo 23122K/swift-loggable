@@ -50,18 +50,18 @@ public struct OSLoggerMacro {
     leftOperand: MemberAccessExprSyntax(
       base: MemberAccessExprSyntax(
         base: DeclReferenceExprSyntax(
-          baseName: .predefined(.Bundle)
+          baseName: TokenSyntax.type(.Bundle)
         ),
         declName: DeclReferenceExprSyntax(
-          baseName: .predefined(.main)
+          baseName: TokenSyntax.variable(.main)
         )
       ),
       declName: DeclReferenceExprSyntax(
-        baseName: .predefined(.bundleIdentifier)
+        baseName: TokenSyntax.variable(.bundleIdentifier)
       )
     ),
     operator: BinaryOperatorExprSyntax(
-      operator: .predefined(.doubleQuestionMark)
+      operator: TokenSyntax.keyword(.doubleQuestionMark)
     ),
     rightOperand: EmptyStringLiteralExprSyntax()
   )
@@ -120,43 +120,51 @@ extension OSLoggerMacro: DeclarationMacro {
       category: self._category(context)
     )
 
-    let subsystem = node.extract(argument: .subsystem, as: StringLiteralExprSyntax.self)
-    let category = node.extract(argument: .category, as: StringLiteralExprSyntax.self)
+    let subsystem = node.extract(
+      argument: TokenKind.parameter(.subsystem),
+      as: StringLiteralExprSyntax.self
+    )
+    
+    let category = node.extract(
+      argument: TokenKind.parameter(.category),
+      as: StringLiteralExprSyntax.self
+    )
+    
     return self.declaration {
       VariableDeclSyntax(
         modifiers: DeclModifierListSyntax {
           DeclModifierSyntax(
-            name: .keyword(.static)
+            name: TokenSyntax.keyword(.static)
           )
         },
         bindingSpecifier: .keyword(.let),
         bindings: PatternBindingListSyntax {
           PatternBindingSyntax(
             pattern: IdentifierPatternSyntax(
-              identifier: .predefined(.logger)
+              identifier: TokenSyntax.variable(.logger)
             ),
             initializer: InitializerClauseSyntax(
               value: FunctionCallExprSyntax(
                 calledExpression: DeclReferenceExprSyntax(
-                  baseName: .predefined(.Logger)
+                  baseName: TokenSyntax.type(.Logger)
                 ),
                 leftParen: .leftParenToken(),
                 arguments: LabeledExprListSyntax {
                   LabeledExprSyntax(
-                    leadingTrivia: .newline,
-                    label: .predefined(.subsystem),
-                    colon: .colonToken(),
+                    leadingTrivia: Trivia.newline,
+                    label: TokenSyntax.parameter(.subsystem),
+                    colon: TokenSyntax.colonToken(),
                     expression: ExprSyntax(fromProtocol: subsystem ?? fallback.subsystem)
                   )
                   LabeledExprSyntax(
-                    leadingTrivia: .newline,
-                    label: .predefined(.category),
-                    colon: .colonToken(),
+                    leadingTrivia: Trivia.newline,
+                    label: TokenSyntax.parameter(.category),
+                    colon: TokenSyntax.colonToken(),
                     expression: ExprSyntax(fromProtocol: category ?? fallback.category),
-                    trailingTrivia: .newline
+                    trailingTrivia: Trivia.newline
                   )
                 },
-                rightParen: .rightParenToken()
+                rightParen: TokenSyntax.rightParenToken()
               )
             )
           )
@@ -179,47 +187,58 @@ extension OSLoggerMacro: ExtensionMacro {
       category: self._category(declaration)
     )
 
-    let subsystem = node.extract(argument: .subsystem, as: StringLiteralExprSyntax.self)
-    let category = node.extract(argument: .category, as: StringLiteralExprSyntax.self)
-    let accessModifier = node.extract(argument: .access, as: MemberAccessExprSyntax.self)
-      .flatMap { memberAccessExprSyntax in
-        TokenSyntax.identifier(memberAccessExprSyntax.declName.baseName.trimmedDescription)
-      }
+    let subsystem = node.extract(
+      argument: TokenKind.parameter(.subsystem),
+      as: StringLiteralExprSyntax.self
+    )
+    
+    let category = node.extract(
+      argument: TokenKind.parameter(.category),
+      as: StringLiteralExprSyntax.self
+    )
+    
+    let accessModifier = node.extract(
+      argument: TokenKind.parameter(.access),
+      as: MemberAccessExprSyntax.self
+    )
+    .flatMap { memberAccessExprSyntax in
+      TokenSyntax.identifier(memberAccessExprSyntax.declName.baseName.trimmedDescription)
+    }
 
     let functionCallExprSyntax = FunctionCallExprSyntax(
       calledExpression: DeclReferenceExprSyntax(
-        baseName: .predefined(.Logger)
+        baseName: TokenSyntax.type(.Logger)
       ),
-      leftParen: .leftParenToken(),
+      leftParen: TokenSyntax.leftParenToken(),
       arguments: LabeledExprListSyntax {
         LabeledExprSyntax(
-          leadingTrivia: .newline,
-          label: .predefined(.subsystem),
-          colon: .colonToken(),
+          leadingTrivia: Trivia.newline,
+          label: TokenSyntax.parameter(.subsystem),
+          colon: TokenSyntax.colonToken(),
           expression: ExprSyntax(
             fromProtocol: subsystem ?? fallback.subsystem
           )
         )
         LabeledExprSyntax(
-          leadingTrivia: .newline,
-          label: .predefined(.category),
-          colon: .colonToken(),
+          leadingTrivia: Trivia.newline,
+          label: TokenSyntax.parameter(.category),
+          colon: TokenSyntax.colonToken(),
           expression: ExprSyntax(
             fromProtocol: category ?? fallback.category
           ),
-          trailingTrivia: .newline
+          trailingTrivia: Trivia.newline
         )
       },
-      rightParen: .rightParenToken()
+      rightParen: TokenSyntax.rightParenToken()
     )
 
     var patternBindingSyntax = PatternBindingSyntax(
       pattern: IdentifierPatternSyntax(
-        identifier: .predefined(.logger)
+        identifier: TokenSyntax.variable(.logger)
       ),
       typeAnnotation: TypeAnnotationSyntax(
         type: IdentifierTypeSyntax(
-          name: .predefined(.Logger)
+          name: TokenSyntax.type(.Logger)
         )
       )
     )
